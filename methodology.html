@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methodology — Football Data Lab</title>
+<title>Methodology — Rinus Labs</title>
 <style>
 :root {
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
@@ -82,6 +82,26 @@ table.ladder td.total { font-weight:600; }
 table.ladder td.pos { color:var(--pos); }
 table.ladder td.neg { color:var(--neg); }
 table.ladder tbody tr:hover { background:var(--surface); }
+body.js table.ladder th.sortable { cursor:pointer; user-select:none; }
+body.js table.ladder th.sortable:hover { color:var(--ink); }
+table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+table.ladder th.sortable.sorted { color:var(--accent); }
+table.ladder th.sortable.sorted .caret { opacity:1; }
+table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+td.delta .dup { color:var(--pos); }
+td.delta .ddn { color:var(--neg); }
+td.delta .dmut { color:var(--muted); }
+.lookback {
+  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
+  font-size:13px; color:var(--muted);
+}
+.lookback .seg { display:inline-flex; gap:4px; }
+.lookback button {
+  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:4px 10px; border-radius:8px;
+}
+.lookback button.active { color:var(--accent); border-color:var(--accent); }
 .wide { overflow-x:auto; }
 .prose { font-size:15px; }
 .prose p { margin:14px 0; }
@@ -96,7 +116,7 @@ body.js .tab-panel.active { display:block; }
 <script>document.body.className="js";</script>
 <div class="wrap">
 <header class="site">
-  <div class="brand"><h1>Football Data Lab</h1>
+  <div class="brand"><h1>Rinus Labs</h1>
     <span class="tag">team ratings from the betting market</span></div>
   <nav class="site"><a href="index.html">Leagues</a><a href="global.html">Global</a><a href="methodology.html" class="active">Methodology</a></nav>
   <div class="stamp"><span class="dot"></span>ratings as of 2026-07-26 · last rebuilt 2026-07-26 05:45 UTC</div>
@@ -104,5 +124,36 @@ body.js .tab-panel.active { display:block; }
 <div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="global.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p></div>
 <footer class="site">Market-implied team ratings · rebuilt daily.</footer>
 </div>
+
+<script>
+(function(){
+  function sortTable(t, key, dir){
+    var body=t.querySelector('tbody');
+    var rows=[].slice.call(body.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var x=parseFloat(a.dataset[key]), y=parseFloat(b.dataset[key]);
+      return dir==='asc' ? x-y : y-x;
+    });
+    rows.forEach(function(r){ body.appendChild(r); });
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      var on=th.dataset.sort===key;
+      th.classList.toggle('sorted', on);
+      var c=th.querySelector('.caret');
+      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
+    });
+  }
+  document.querySelectorAll('table.ladder').forEach(function(t){
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      th.addEventListener('click', function(){
+        var key=th.dataset.sort;
+        var dir = th.classList.contains('sorted')
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc') : 'desc';
+        t.dataset.dir=dir;
+        sortTable(t, key, dir);
+      });
+    });
+  });
+})();
+</script>
 </body>
 </html>
