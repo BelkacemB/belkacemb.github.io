@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology — Football Data Lab</title>
+<style>
+:root {
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
+  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
+  --stale-bg:#fef3c7; --stale-ink:#92400e;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
+    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
+    --stale-bg:#3f2d0a; --stale-ink:#fbbf24;
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
+header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.brand h1 { font-size:22px; font-weight:650; letter-spacing:-0.01em; margin:0; }
+.brand .tag { color:var(--muted); font-size:14px; }
+nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
+nav.site a {
+  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
+  padding:6px 12px; border-radius:8px;
+}
+nav.site a:hover { color:var(--ink); background:var(--surface); }
+nav.site a.active { color:var(--accent); background:var(--surface); }
+.stamp {
+  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+  font-size:13px; color:var(--muted);
+}
+.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
+.dot.stale { background:var(--stale-ink); }
+.stale-flag {
+  display:inline-block; margin-left:8px; padding:1px 8px; border-radius:6px;
+  background:var(--stale-bg); color:var(--stale-ink); font-size:12px;
+  font-weight:600; letter-spacing:0.02em;
+}
+h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
+.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.banner {
+  border:1px solid var(--line); background:var(--surface); border-radius:12px;
+  padding:16px 18px; margin:28px 0 20px;
+}
+.banner .beta {
+  display:inline-block; background:var(--accent); color:#fff; font-size:11px;
+  font-weight:700; letter-spacing:0.08em; padding:2px 8px; border-radius:6px;
+  vertical-align:middle; margin-right:8px;
+}
+.banner p { margin:8px 0 0; font-size:13.5px; color:var(--muted); }
+.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
+.tabs button {
+  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:6px 12px; border-radius:8px;
+}
+.tabs button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
+table.ladder thead th {
+  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
+}
+table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
+table.ladder th.team, table.ladder td.team { text-align:left; }
+table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.ladder td.rank, table.ladder td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
+}
+table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
+table.ladder td.total { font-weight:600; }
+table.ladder td.pos { color:var(--pos); }
+table.ladder td.neg { color:var(--neg); }
+table.ladder tbody tr:hover { background:var(--surface); }
+.wide { overflow-x:auto; }
+.prose { font-size:15px; }
+.prose p { margin:14px 0; }
+.prose a { color:var(--accent); }
+table.gates { width:100%; border-collapse:collapse; font-size:13.5px; }
+table.gates th, table.gates td {
+  text-align:left; vertical-align:top; padding:10px 10px; border-bottom:1px solid var(--line);
+}
+table.gates thead th {
+  font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted);
+}
+table.gates code { font-size:12px; }
+.verdict-pass { color:var(--pos); font-weight:600; }
+.verdict-fail { color:var(--neg); font-weight:600; }
+footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13px; }
+footer.site a { color:var(--muted); }
+body.js .tab-panel { display:none; }
+body.js .tab-panel.active { display:block; }
+</style>
+</head>
+<body>
+<script>document.body.className="js";</script>
+<div class="wrap">
+<header class="site">
+  <div class="brand"><h1>Football Data Lab</h1>
+    <span class="tag">market-implied team strength ratings</span></div>
+  <nav class="site"><a href="index.html">Leagues</a><a href="global.html">Global</a><a href="methodology.html" class="active">Methodology</a></nav>
+  <div class="stamp"><span class="dot"></span>ratings as of 2026-07-26 · last rebuilt 2026-07-26 05:45 UTC</div>
+</header>
+<div class="prose"><h2>Methodology</h2><p>One value chain: <strong>market prices in &rarr; validated strength ratings out.</strong> Closing Asian-handicap and over/under odds are inverted into goal expectations (&lambda;) for each fixture; a &lambda;-space ridge then fits the team attack and defence strengths those prices imply. A team&rsquo;s rating is Att + Def, in log-goals.</p><p>What sets this apart from a plain rating system is the discipline: every modeling claim must pass a <strong>pre-registered, out-of-sample gate</strong> &mdash; frozen before the results exist &mdash; before it graduates. The within-league team ratings passed <strong>Gate T</strong> (they beat Club Elo out of sample). The cross-league euro-linked scale behind the <a href="global.html">global ladder</a> is still <strong>beta</strong>: its gate, <strong>Gate E</strong>, is pre-registered and scores on 2026-27 euro results.</p><h2>Gate log</h2><div class="wide"><table class="gates"><thead><tr><th>Date</th><th>Gate</th><th>Verdict</th><th>Detail</th></tr></thead><tbody><tr><td>2026-07-13</td><td>Gate B (#9) — do frozen MIPS player ratings beat an Elo baseline OOS?</td><td><span class="verdict-fail"><strong>FAIL</strong></span></td><td>B beats A in 0/3 folds; pooled rotated Δdev −0.070 [−0.094, −0.046]. Player ratings move onto team controls in M2.</td></tr><tr><td>2026-07-16</td><td>Gate T (#12) — do frozen-at-t team ratings beat Club Elo OOS?</td><td><span class="verdict-pass"><strong>PASS</strong></span></td><td>T beats A 3/3 folds on deviance and RPS; pooled Δdev +0.026 [+0.019, +0.034], Δrps +0.0036 [+0.0022, +0.0050], closing 64% / 53% of the gap to the market ceiling. Beats odds-Elo on deviance, ties on RPS. <code>outputs/gate_t_results.csv</code>.</td></tr><tr><td>2026-07-17</td><td>Gate T re-run (#17 Phase C) — still beats Club Elo <strong>fit on all seven leagues</strong>?</td><td><span class="verdict-pass"><strong>PASS</strong></span></td><td>3/3 folds; pooled Δdev +0.0265 [+0.0189, +0.0345] — marginally stronger. <code>team_ratings.csv</code> moves to the seven-league within-league design; the four leagues without Club Elo inherit the gate-validated method.</td></tr><tr><td>2026-07-18</td><td>Gate B rerun (#10) — do player ratings <strong>v2</strong> (frozen team-η control + ζ decay) beat Elo OOS?</td><td><span class="verdict-fail"><strong>FAIL — kill criterion</strong></span></td><td>0/3 folds; pooled rotated Δdev −0.025 [−0.038, −0.011]. v2 fixes worked (corr(S, log market λ) fell to +0.39–0.74; movers structured) but residual individual value carries no OOS signal at this scale. Player track <strong>stops</strong>; #11 does not proceed.</td></tr><tr><td>2026-07-18</td><td>Gate E (#17) — does euro linkage order leagues OOS?</td><td><strong>PRE-REGISTERED</strong></td><td>Frozen in <code>pipeline/validate/gate_e.py</code> before any 2026-27 euro fixture exists: predict 2026-27 euro results with (L) vs without (U) cross-league linkage; PASS iff the paired-bootstrap 95% CI of the U−L RPS delta excludes zero in L&#x27;s favour and the deviance delta is positive. Scored when results land.</td></tr></tbody></table></div><p class="note" style="margin-top:16px">Full derivations and the live roadmap live in the <a href="https://github.com/BelkacemB/football-data-lab#readme">README</a>.</p></div>
+<footer class="site">
+  Ratings are market-implied (closing Asian-handicap &amp; totals odds inverted to
+  goal expectations, then a &lambda;-space ridge). Rebuilt daily.
+  &nbsp;·&nbsp; <a href="https://github.com/BelkacemB/football-data-lab">source &amp; methodology on GitHub</a>
+</footer>
+</div>
+</body>
+</html>
