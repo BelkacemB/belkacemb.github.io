@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Methodology — Bayes FC</title>
+<meta name="description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/methodology.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Methodology — Bayes FC"><meta property="og:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta property="og:url" content="https://bayesfc.com/methodology.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Methodology — Bayes FC"><meta name="twitter:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.">
 <style>
 :root {
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
@@ -161,9 +162,17 @@ footer.site .made a { color:var(--muted); text-decoration:none;
   border-bottom:1px solid var(--line); }
 footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
 footer.site .heart { color:var(--neg); }
+footer.site .cite { font-size:12px; opacity:0.85; }
+.faq { margin:20px 0 0; }
+.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
+.faq p { margin:0 0 4px; }
+.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
+  padding-top:16px; border-top:1px solid var(--line); }
+.about a { color:var(--accent); }
 body.js .tab-panel { display:none; }
 body.js .tab-panel.active { display:block; }
 :root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "FAQPage", "@id": "https://bayesfc.com/methodology.html#faq", "mainEntity": [{"@type": "Question", "name": "How are these ratings calculated?", "acceptedAnswer": {"@type": "Answer", "text": "They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in."}}, {"@type": "Question", "name": "What does a team's rating number mean?", "acceptedAnswer": {"@type": "Answer", "text": "A team's rating is its attack plus its defence, shown as a deviation from its league's average — a higher number is a stronger team. Within a league the numbers rank teams directly."}}, {"@type": "Question", "name": "Are the ratings comparable across leagues?", "acceptedAnswer": {"@type": "Answer", "text": "Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta."}}, {"@type": "Question", "name": "How often are the ratings updated?", "acceptedAnswer": {"@type": "Answer", "text": "Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available."}}]}]}</script>
 </head>
 <body>
 <script>document.body.className="js";</script>
@@ -172,12 +181,15 @@ body.js .tab-panel.active { display:block; }
   <div class="brand"><h1>Bayes FC</h1>
     <span class="tag">team ratings from the betting market</span></div>
   <nav class="site"><a href="index.html">Leagues</a><a href="global.html">Global</a><a href="methodology.html" class="active">Methodology</a></nav>
-  <div class="stamp"><span class="dot"></span>ratings as of 2026-07-27 · last rebuilt 2026-07-27 05:45 UTC</div>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-07-27">2026-07-27</time> · last rebuilt <time datetime="2026-07-27T05:45:03.320953+00:00">2026-07-27 05:45 UTC</time></div>
 </header>
-<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="global.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p></div>
+<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="global.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
 <footer class="site">
-  <div>Market-implied team ratings · rebuilt daily.</div>
-  <div class="made">made with <span class="heart">&#9829;</span> by
+  <div>Market-implied team ratings · rebuilt daily.<br>
+    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
+    all rights reserved.</span></div>
+  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
+    made with <span class="heart">&#9829;</span> by
     <a href="https://belkacem.xyz">Belkacem</a></div>
 </footer>
 </div>

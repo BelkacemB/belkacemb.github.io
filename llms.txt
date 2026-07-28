@@ -1,0 +1,14 @@
+# Bayes FC
+
+> Team ratings from the betting market: daily attack, defence, and overall strength ratings for Europe's top football clubs, derived from closing betting-market prices and rebuilt every day.
+
+## Ratings
+
+- [League ladders](https://bayesfc.com/): Daily attack, defence, and overall strength ratings for every club in Europe's top football leagues, derived from closing betting-market prices and comparable within each league.
+- [Global cross-league ladder (beta)](https://bayesfc.com/global.html): An experimental cross-league ladder placing every European club on one comparable strength scale, rebuilt daily from betting-market closing prices (beta).
+
+## About
+
+- [Methodology](https://bayesfc.com/methodology.html): How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.
+- Author: Belkacem (https://belkacem.xyz)
+- Cite as: Ratings: Bayes FC (bayesfc.com)
