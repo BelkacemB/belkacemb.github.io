@@ -9,12 +9,14 @@
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
   --stale-bg:#fef3c7; --stale-ink:#92400e;
+  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
     --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
     --stale-bg:#3f2d0a; --stale-ink:#fbbf24;
+    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
   }
 }
 * { box-sizing:border-box; }
@@ -126,6 +128,17 @@ svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
 body.js svg.scatter circle { cursor:pointer; }
 svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
 svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
+svg.scatter rect.quad { opacity:0.09; }
+svg.scatter rect.q-all { fill:var(--q-all); }
+svg.scatter rect.q-def { fill:var(--q-def); }
+svg.scatter rect.q-att { fill:var(--q-att); }
+svg.scatter rect.q-weak { fill:var(--q-weak); }
+svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
+  fill-opacity:0.9; }
+svg.scatter text.ql.q-all { fill:var(--q-all); }
+svg.scatter text.ql.q-def { fill:var(--q-def); }
+svg.scatter text.ql.q-att { fill:var(--q-att); }
+svg.scatter text.ql.q-weak { fill:var(--q-weak); }
 svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
   letter-spacing:0.03em; }
 .legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
@@ -142,10 +155,15 @@ svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
 .prose p { margin:14px 0; }
 .prose a { color:var(--accent); }
 footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
-  color:var(--muted); font-size:13px; }
+  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
+  justify-content:space-between; gap:8px 20px; }
+footer.site .made a { color:var(--muted); text-decoration:none;
+  border-bottom:1px solid var(--line); }
+footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+footer.site .heart { color:var(--neg); }
 body.js .tab-panel { display:none; }
 body.js .tab-panel.active { display:block; }
-:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}</style>
+:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
 </head>
 <body>
 <script>document.body.className="js";</script>
@@ -157,7 +175,11 @@ body.js .tab-panel.active { display:block; }
   <div class="stamp"><span class="dot"></span>ratings as of 2026-07-27 · last rebuilt 2026-07-27 05:45 UTC</div>
 </header>
 <div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="global.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p></div>
-<footer class="site">Market-implied team ratings · rebuilt daily.</footer>
+<footer class="site">
+  <div>Market-implied team ratings · rebuilt daily.</div>
+  <div class="made">made with <span class="heart">&#9829;</span> by
+    <a href="https://belkacem.xyz">Belkacem</a></div>
+</footer>
 </div>
 
 <script>
