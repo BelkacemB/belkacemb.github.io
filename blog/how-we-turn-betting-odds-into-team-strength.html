@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
-<title>Methodology — Bayes FC</title>
-<meta name="description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/methodology.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Methodology — Bayes FC"><meta property="og:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta property="og:url" content="https://bayesfc.com/methodology.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Methodology — Bayes FC"><meta name="twitter:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.">
+<title>How we turn betting odds into team strength — Bayes FC</title>
+<meta name="description" content="Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="How we turn betting odds into team strength — Bayes FC"><meta property="og:description" content="Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them."><meta property="og:url" content="https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="How we turn betting odds into team strength — Bayes FC"><meta name="twitter:description" content="Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.">
 <style>
 :root {
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
@@ -168,7 +168,7 @@ footer.site .cite { font-size:12px; opacity:0.85; }
 body.js .tab-panel { display:none; }
 body.js .tab-panel.active { display:block; }
 :root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "FAQPage", "@id": "https://bayesfc.com/methodology.html#faq", "mainEntity": [{"@type": "Question", "name": "How are these ratings calculated?", "acceptedAnswer": {"@type": "Answer", "text": "They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in."}}, {"@type": "Question", "name": "What does a team's rating number mean?", "acceptedAnswer": {"@type": "Answer", "text": "A team's rating is its attack plus its defence, shown as a deviation from its league's average — a higher number is a stronger team. Within a league the numbers rank teams directly."}}, {"@type": "Question", "name": "Are the ratings comparable across leagues?", "acceptedAnswer": {"@type": "Answer", "text": "Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta."}}, {"@type": "Question", "name": "How often are the ratings updated?", "acceptedAnswer": {"@type": "Answer", "text": "Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "BlogPosting", "@id": "https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html#post", "headline": "How we turn betting odds into team strength", "description": "Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.", "datePublished": "2026-07-29", "dateModified": "2026-07-29", "url": "https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html", "mainEntityOfPage": "https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html", "author": {"@id": "https://bayesfc.com/#person"}, "publisher": {"@id": "https://bayesfc.com/#org"}, "creditText": "Ratings: Bayes FC (bayesfc.com)"}]}</script>
 </head>
 <body>
 <script>document.body.className="js";</script>
@@ -176,10 +176,52 @@ body.js .tab-panel.active { display:block; }
 <header class="site">
   <div class="brand"><h1>Bayes FC</h1>
     <span class="tag">team ratings from the betting market</span></div>
-  <nav class="site"><a href="index.html">Global</a><a href="leagues.html">Leagues</a><a href="blog/index.html">Blog</a><a href="methodology.html" class="active">Methodology</a></nav>
+  <nav class="site"><a href="../index.html">Global</a><a href="../leagues.html">Leagues</a><a href="../blog/index.html" class="active">Blog</a><a href="../methodology.html">Methodology</a></nav>
   <div class="stamp"><span class="dot stale"></span>ratings as of <time datetime="2026-07-27">2026-07-27</time> · last rebuilt <time datetime="2026-07-27T05:45:03.320953+00:00">2026-07-27 05:45 UTC</time></div>
 </header>
-<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="index.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
+<style>
+.post-title{font-size:26px;font-weight:680;letter-spacing:-0.02em;
+  line-height:1.2;margin:26px 0 4px;}
+.post-date{color:var(--muted);font-size:13px;margin:0 0 10px;}
+.post-back{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);}
+.post-back a{color:var(--accent);text-decoration:none;}
+.postlist{list-style:none;padding:0;margin:18px 0 0;}
+.postlist li{padding:18px 0;border-bottom:1px solid var(--line);}
+.postlist a.pl-title{font-size:18px;font-weight:600;letter-spacing:-0.01em;
+  color:var(--ink);text-decoration:none;}
+.postlist a.pl-title:hover{color:var(--accent);}
+.postlist .pl-date{color:var(--muted);font-size:12px;margin:3px 0 0;}
+.postlist .pl-desc{color:var(--muted);font-size:14px;margin:6px 0 0;}
+</style><article class="prose"><h1 class="post-title">How we turn betting odds into team strength</h1><p class="post-date"><time datetime="2026-07-29">July 29, 2026</time></p><p>How good is a football team? Most people look at the league table. But the table
+is about results, and results are noisy. A team can play well and lose to a lucky
+goal, or play badly and still win. It takes a long time for that luck to even out.</p>
+<p>Expected goals (xG) helps. Instead of counting goals, it counts the quality of the
+chances a team made and gave away. That is a better signal. But xG only sees the
+match. It does not know that the best striker was injured, that the coach rested
+half the team, or that the other side had nothing to play for.</p>
+<h2>The odds already know</h2>
+<p>Betting odds see all of that. Before a match, lots of people — and some very sharp
+betting firms — put real money on the result. To win, they have to guess the true
+strength of each team, right now. Injuries, tired legs, motivation, the weather:
+anything that matters gets built into the price, because ignoring it loses money.</p>
+<p>The <strong>closing odds</strong>, just before kick-off, are the sharpest guess of all. By then
+every bit of news is in. Studies keep showing the same thing: these odds are very
+hard to beat. They are the best public prediction we have for a match. A result is
+one noisy sample of that prediction. xG is a better sample. The odds are the whole
+estimate.</p>
+<h2>From odds to strength</h2>
+<p>So we start from the odds, not the results. For each match we take the closing
+odds and turn them back into a simple number: how many goals each team was expected
+to score. That is the market's verdict on that game.</p>
+<p>Do this for every match and a pattern appears. A team the market keeps expecting to
+outscore strong opponents is strong. We use this to give each team an <strong>attack</strong>
+score and a <strong>defence</strong> score, after adjusting for who they played. Add them up and
+you get one strength rating for every club, updated every day.</p>
+<p>That is the whole idea. We do not try to beat the market — almost no one does. We
+let it do the hard work it is already great at, and read team strength out of it.</p>
+<p>See the current numbers on the <a href="../leagues.html">league tables</a> and the
+experimental <a href="../index.html">global ladder</a>.</p>
+<p class="post-back"><a href="index.html">&larr; All writing</a></p></article>
 <footer class="site">
   <div>Market-implied team ratings · rebuilt daily.<br>
     <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,

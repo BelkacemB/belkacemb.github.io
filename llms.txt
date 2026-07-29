@@ -7,6 +7,10 @@
 - [Global cross-league ladder (beta)](https://bayesfc.com/): An experimental cross-league ladder placing every European club on one comparable strength scale, rebuilt daily from betting-market closing prices (beta).
 - [League ladders](https://bayesfc.com/leagues.html): Daily attack, defence, and overall strength ratings for every club in Europe's top football leagues, derived from closing betting-market prices and comparable within each league.
 
+## Writing
+
+- [How we turn betting odds into team strength](https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html): Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.
+
 ## About
 
 - [Methodology](https://bayesfc.com/methodology.html): How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.
