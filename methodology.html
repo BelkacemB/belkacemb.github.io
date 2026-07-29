@@ -3,20 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
 <title>Methodology — Bayes FC</title>
 <meta name="description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/methodology.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Methodology — Bayes FC"><meta property="og:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta property="og:url" content="https://bayesfc.com/methodology.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Methodology — Bayes FC"><meta name="twitter:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.">
 <style>
 :root {
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
-  --stale-bg:#fef3c7; --stale-ink:#92400e;
+  --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
     --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
-    --stale-bg:#3f2d0a; --stale-ink:#fbbf24;
+    --stale-ink:#fbbf24;
     --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
   }
 }
@@ -44,11 +45,6 @@ nav.site a.active { color:var(--accent); background:var(--surface); }
 }
 .dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
 .dot.stale { background:var(--stale-ink); }
-.stale-flag {
-  display:inline-block; margin-left:8px; padding:1px 8px; border-radius:6px;
-  background:var(--stale-bg); color:var(--stale-ink); font-size:12px;
-  font-weight:600; letter-spacing:0.02em;
-}
 h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
 .note { color:var(--muted); font-size:13px; margin:0 0 16px; }
 .banner {
@@ -180,10 +176,10 @@ body.js .tab-panel.active { display:block; }
 <header class="site">
   <div class="brand"><h1>Bayes FC</h1>
     <span class="tag">team ratings from the betting market</span></div>
-  <nav class="site"><a href="index.html">Leagues</a><a href="global.html">Global</a><a href="methodology.html" class="active">Methodology</a></nav>
-  <div class="stamp"><span class="dot stale"></span>ratings as of <time datetime="2026-07-27">2026-07-27</time> · last rebuilt <time datetime="2026-07-27T05:45:03.320953+00:00">2026-07-27 05:45 UTC</time><span class="stale-flag">STALE</span></div>
+  <nav class="site"><a href="index.html">Global</a><a href="leagues.html">Leagues</a><a href="methodology.html" class="active">Methodology</a></nav>
+  <div class="stamp"><span class="dot stale"></span>ratings as of <time datetime="2026-07-27">2026-07-27</time> · last rebuilt <time datetime="2026-07-27T05:45:03.320953+00:00">2026-07-27 05:45 UTC</time></div>
 </header>
-<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="global.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
+<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="index.html">global ladder</a> places leagues on one experimental, cross-league scale (beta).</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Within a league, yes. Across leagues only on the experimental global ladder, which places every league on one common scale and is still labelled beta.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
 <footer class="site">
   <div>Market-implied team ratings · rebuilt daily.<br>
     <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
