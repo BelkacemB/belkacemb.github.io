@@ -12,6 +12,7 @@
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
   --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -19,6 +20,7 @@
     --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
     --stale-ink:#fbbf24;
     --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
   }
 }
 * { box-sizing:border-box; }
@@ -71,6 +73,39 @@ table.ladder td.total { font-weight:600; }
 table.ladder td.pos { color:var(--pos); }
 table.ladder td.neg { color:var(--neg); }
 table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 5px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:28px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:52px; }
+table.proj td.num.rat { color:var(--muted); }
+table.proj tbody tr:hover td { background:var(--surface); }
+th.phead { padding:6px 0; width:15px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:15px; min-width:15px;
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat { text-align:right; width:50px; padding:6px 6px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
 body.js table.ladder th.sortable { cursor:pointer; user-select:none; }
 body.js table.ladder th.sortable:hover { color:var(--ink); }
 table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }

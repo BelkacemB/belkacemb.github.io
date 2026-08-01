@@ -12,6 +12,7 @@
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
   --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -19,6 +20,7 @@
     --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
     --stale-ink:#fbbf24;
     --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
   }
 }
 * { box-sizing:border-box; }
@@ -71,6 +73,39 @@ table.ladder td.total { font-weight:600; }
 table.ladder td.pos { color:var(--pos); }
 table.ladder td.neg { color:var(--neg); }
 table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 5px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:28px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:52px; }
+table.proj td.num.rat { color:var(--muted); }
+table.proj tbody tr:hover td { background:var(--surface); }
+th.phead { padding:6px 0; width:15px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:15px; min-width:15px;
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat { text-align:right; width:50px; padding:6px 6px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
 body.js table.ladder th.sortable { cursor:pointer; user-select:none; }
 body.js table.ladder th.sortable:hover { color:var(--ink); }
 table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
@@ -184,7 +219,7 @@ body.js .tab-panel.active { display:block; }
   <nav class="site"><a href="index.html">Global</a><a href="leagues.html">Leagues</a><a href="blog/index.html">Blog</a><a href="methodology.html" class="active">Methodology</a></nav>
   <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-07-31">2026-07-31</time> · last rebuilt <time datetime="2026-07-31T07:28:04.703893+00:00">2026-07-31 07:28 UTC</time></div>
 </header>
-<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="index.html">global ladder</a> places every league on one comparable, cross-league scale.</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Yes. The global ladder places every league on one common scale, so clubs from different leagues can be compared directly; the per-league tables rank clubs within a single league.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
+<div class="prose"><h2>Methodology</h2><p>These ratings are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. They update daily as new prices come in.</p><p>A team&rsquo;s rating is its attack plus defence. Within a league the numbers rank teams directly; the <a href="index.html">global ladder</a> places every league on one comparable, cross-league scale.</p><h2>Season projection <span class="wip">beta</span></h2><p>The <a href="leagues.html">Leagues</a> page projects where each club is likely to finish. Every remaining fixture is simulated many times from the same market-implied ratings — a plausible score is drawn for each side — and the final tables are tallied into a finishing-position distribution, the shaded strip, from which Title, Top&nbsp;4 and Relegation probabilities follow. This is <strong>experimental and not yet independently validated</strong>: unlike the ratings, it has not been checked against held-out results, a just-promoted club with no market history is treated as its league&rsquo;s weakest existing side, and relegation play-off berths are not modelled. Treat it as an illustration, not a settled forecast.</p><div class="faq"><h2>Frequently asked</h2><h3>How are these ratings calculated?</h3><p>They are derived from the betting market. Closing prices are turned into an expected number of goals for each match, and a statistical model estimates the attacking and defensive strength those prices imply for every team. The ratings update every day as new prices come in.</p><h3>What does a team&#x27;s rating number mean?</h3><p>A team&#x27;s rating is its attack plus its defence, shown as a deviation from its league&#x27;s average — a higher number is a stronger team. Within a league the numbers rank teams directly.</p><h3>Are the ratings comparable across leagues?</h3><p>Yes. The global ladder places every league on one common scale, so clubs from different leagues can be compared directly; the per-league tables rank clubs within a single league.</p><h3>How often are the ratings updated?</h3><p>Every day. Each page shows when it was last rebuilt, and the ratings reflect the most recent closing prices available.</p></div><div class="about"><strong>About.</strong> Bayes FC is built and maintained by <a href="https://belkacem.xyz">Belkacem</a>. The ratings are rebuilt every day from the latest closing prices. Cite them as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo;.</div></div>
 <section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
 <footer class="site">
   <div>Market-implied team ratings · rebuilt daily.<br>
