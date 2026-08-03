@@ -13,6 +13,9 @@
   --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
   --heat:15,118,110; --hot-ink:#ffffff;
+  /* Status warning: fixed, not themed — a caution glyph must read the same
+     regardless of light/dark, unlike the series/ink tokens above. */
+  --warn:#fab219; --warn-ink:#1a1206;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -133,6 +136,18 @@ svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
 svg.spark circle.sup { fill:var(--pos); }
 svg.spark circle.sdn { fill:var(--neg); }
 .sparknull { color:var(--muted); }
+/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
+   name, shown only when its rating is materially less certain than the ladder's
+   typical club (wide margin, or too little recent data for one at all). Fixed
+   warning color (not themed) so it reads the same in light and dark — the
+   tooltip carries the specifics. */
+.ubadge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; margin-left:6px; border-radius:50%;
+  background:var(--warn); color:var(--warn-ink);
+  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
+  cursor:default;
+}
 .movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
 .mvcol { flex:1; min-width:240px; }
 .mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
@@ -217,7 +232,7 @@ body.js .tab-panel.active { display:block; }
   <div class="brand"><h1>Bayes FC</h1>
     <span class="tag">team ratings from the betting market</span></div>
   <nav class="site"><a href="../index.html">Global</a><a href="../leagues.html">Leagues</a><a href="../blog/index.html" class="active">Blog</a><a href="../methodology.html">Methodology</a></nav>
-  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-03">2026-08-03</time> · last rebuilt <time datetime="2026-08-03T05:45:06.881761+00:00">2026-08-03 05:45 UTC</time></div>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-03">2026-08-03</time> · last rebuilt <time datetime="2026-08-03T14:25:15.083255+00:00">2026-08-03 14:25 UTC</time></div>
 </header>
 <style>
 .post-title{font-size:26px;font-weight:680;letter-spacing:-0.02em;
