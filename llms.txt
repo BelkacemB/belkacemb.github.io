@@ -9,6 +9,7 @@
 
 ## Writing
 
+- [What a wage bill buys](https://bayesfc.com/blog/what-a-wage-bill-buys.html): Across Europe's top seven leagues, pay explains most of team strength — but the clubs off the line are the interesting ones.
 - [How we turn betting odds into team strength](https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html): Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.
 
 ## About
