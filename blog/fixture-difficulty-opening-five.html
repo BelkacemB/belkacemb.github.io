@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<title>Who got the easy start? First five games in England, Spain and Germany — Bayes FC</title>
+<meta name="description" content="Every club&#x27;s first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/blog/fixture-difficulty-opening-five.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Who got the easy start? First five games in England, Spain and Germany — Bayes FC"><meta property="og:description" content="Every club&#x27;s first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest."><meta property="og:url" content="https://bayesfc.com/blog/fixture-difficulty-opening-five.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Who got the easy start? First five games in England, Spain and Germany — Bayes FC"><meta name="twitter:description" content="Every club&#x27;s first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest.">
+<style>
+:root {
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
+  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
+  --stale-ink:#92400e;
+  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
+  /* Status warning: fixed, not themed — a caution glyph must read the same
+     regardless of light/dark, unlike the series/ink tokens above. */
+  --warn:#fab219; --warn-ink:#1a1206;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
+    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
+    --stale-ink:#fbbf24;
+    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
+header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
+   read as one word. --accent carries the theme, so it inverts with the page. */
+.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
+  color:var(--accent); }
+.brand h1 span { color:var(--ink); }
+.brand .tag { color:var(--muted); font-size:14px; }
+nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
+nav.site a {
+  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
+  padding:6px 12px; border-radius:8px;
+}
+nav.site a:hover { color:var(--ink); background:var(--surface); }
+nav.site a.active { color:var(--accent); background:var(--surface); }
+.stamp {
+  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+  font-size:13px; color:var(--muted);
+}
+.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
+.dot.stale { background:var(--stale-ink); }
+h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
+.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
+.tabs button {
+  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:6px 12px; border-radius:8px;
+}
+.tabs button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
+table.ladder thead th {
+  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
+}
+table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
+table.ladder th.team, table.ladder td.team { text-align:left; }
+table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.ladder td.rank, table.ladder td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
+}
+table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
+table.ladder td.total { font-weight:600; }
+table.ladder td.pos { color:var(--pos); }
+table.ladder td.neg { color:var(--neg); }
+table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 5px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:28px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:52px; }
+table.proj td.num.rat { color:var(--muted); }
+table.proj tbody tr:hover td { background:var(--surface); }
+th.phead { padding:6px 0; width:15px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:15px; min-width:15px;
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat { text-align:right; width:50px; padding:6px 6px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
+body.js table.ladder th.sortable { cursor:pointer; user-select:none; }
+body.js table.ladder th.sortable:hover { color:var(--ink); }
+table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+table.ladder th.sortable.sorted { color:var(--accent); }
+table.ladder th.sortable.sorted .caret { opacity:1; }
+table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+td.delta .dup { color:var(--pos); }
+td.delta .ddn { color:var(--neg); }
+td.delta .dmut { color:var(--muted); }
+.lookback {
+  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
+  font-size:13px; color:var(--muted);
+}
+.lookback .seg { display:inline-flex; gap:4px; }
+.lookback button {
+  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:4px 10px; border-radius:8px;
+}
+.lookback button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder th.spark, table.ladder td.spark { text-align:right; width:88px; }
+svg.spark { display:inline-block; vertical-align:middle; }
+svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
+  stroke-linejoin:round; stroke-linecap:round; }
+svg.spark circle.sup { fill:var(--pos); }
+svg.spark circle.sdn { fill:var(--neg); }
+.sparknull { color:var(--muted); }
+/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
+   name, shown only when its rating is materially less certain than the ladder's
+   typical club (wide margin, or too little recent data for one at all). Fixed
+   warning color (not themed) so it reads the same in light and dark — the
+   tooltip carries the specifics. */
+.ubadge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; margin-left:6px; border-radius:50%;
+  background:var(--warn); color:var(--warn-ink);
+  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
+  cursor:default;
+}
+.movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
+.mvcol { flex:1; min-width:240px; }
+.mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.mv { display:inline-flex; align-items:baseline; gap:7px; padding:4px 10px;
+  margin:0 6px 6px 0; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); font-size:13px; }
+.mv .mvd { font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-variant-numeric:tabular-nums; font-size:12px; }
+.mv.up .mvd { color:var(--pos); }
+.mv.down .mvd { color:var(--neg); }
+svg.scatter { display:block; width:100%; height:auto; max-width:640px; margin:6px auto 0; }
+svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
+  stroke:var(--surface); stroke-width:0.8; }
+body.js svg.scatter circle { cursor:pointer; }
+svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
+svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
+svg.scatter rect.quad { opacity:0.09; }
+svg.scatter rect.q-all { fill:var(--q-all); }
+svg.scatter rect.q-def { fill:var(--q-def); }
+svg.scatter rect.q-att { fill:var(--q-att); }
+svg.scatter rect.q-weak { fill:var(--q-weak); }
+svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
+  fill-opacity:0.9; }
+svg.scatter text.ql.q-all { fill:var(--q-all); }
+svg.scatter text.ql.q-def { fill:var(--q-def); }
+svg.scatter text.ql.q-att { fill:var(--q-att); }
+svg.scatter text.ql.q-weak { fill:var(--q-weak); }
+svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
+  letter-spacing:0.03em; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
+  max-width:640px; margin:12px auto 0; font-size:12px; color:var(--muted); }
+.legend .k { display:inline-flex; align-items:center; gap:6px; }
+.legend i.sw { width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
+.sc-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; line-height:1.35; padding:6px 9px; border-radius:8px;
+  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+.sc-tip .t-sub { color:var(--muted); }
+.wide { overflow-x:auto; }
+.prose { font-size:15px; }
+.prose p { margin:14px 0; }
+.prose a { color:var(--accent); }
+footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
+  justify-content:space-between; gap:8px 20px; }
+footer.site .made a { color:var(--muted); text-decoration:none;
+  border-bottom:1px solid var(--line); }
+footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+footer.site .heart { color:var(--neg); }
+footer.site .cite { font-size:12px; opacity:0.85; }
+.faq { margin:20px 0 0; }
+.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
+.faq p { margin:0 0 4px; }
+.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
+  padding-top:16px; border-top:1px solid var(--line); }
+.about a { color:var(--accent); }
+.subscribe { margin:44px 0 0; padding:20px 22px; border:1px solid var(--line);
+  background:var(--surface); border-radius:12px; }
+.subscribe h2 { font-size:16px; margin:0 0 4px; }
+.subscribe p { color:var(--muted); font-size:13.5px; margin:0 0 12px; }
+.subscribe form { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0; }
+.subscribe input[type=email] { flex:1 1 220px; min-width:0; padding:9px 12px;
+  font-size:14px; color:var(--ink); background:var(--bg);
+  border:1px solid var(--line); border-radius:8px; }
+.subscribe input[type=email]:focus { outline:none; border-color:var(--accent); }
+.subscribe button { padding:9px 18px; font-size:14px; font-weight:600;
+  color:#fff; background:var(--accent); border:none; border-radius:8px;
+  cursor:pointer; }
+.subscribe button:hover { opacity:0.9; }
+.subscribe .fine { font-size:12px; margin:10px 0 0; }
+.subscribe .fine a { color:var(--muted); }
+body.js .tab-panel { display:none; }
+body.js .tab-panel.active { display:block; }
+:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "BlogPosting", "@id": "https://bayesfc.com/blog/fixture-difficulty-opening-five.html#post", "headline": "Who got the easy start? First five games in England, Spain and Germany", "description": "Every club's first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest.", "datePublished": "2026-08-11", "dateModified": "2026-08-11", "url": "https://bayesfc.com/blog/fixture-difficulty-opening-five.html", "mainEntityOfPage": "https://bayesfc.com/blog/fixture-difficulty-opening-five.html", "author": {"@id": "https://bayesfc.com/#person"}, "publisher": {"@id": "https://bayesfc.com/#org"}, "creditText": "Ratings: Bayes FC (bayesfc.com)"}]}</script>
+</head>
+<body>
+<script>document.body.className="js";</script>
+<div class="wrap">
+<header class="site">
+  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
+    <span class="tag">team ratings from the betting market</span></div>
+  <nav class="site"><a href="../index.html">Global</a><a href="../leagues.html">Leagues</a><a href="../blog/index.html" class="active">Blog</a><a href="../methodology.html">Methodology</a></nav>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-11">2026-08-11</time> · last rebuilt <time datetime="2026-08-11T05:45:07.785275+00:00">2026-08-11 05:45 UTC</time></div>
+</header>
+<style>
+.post-title{font-size:26px;font-weight:680;letter-spacing:-0.02em;
+  line-height:1.2;margin:26px 0 4px;}
+.post-date{color:var(--muted);font-size:13px;margin:0 0 10px;}
+.post-back{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);}
+.post-back a{color:var(--accent);text-decoration:none;}
+.postlist{list-style:none;padding:0;margin:18px 0 0;}
+.postlist li{padding:18px 0;border-bottom:1px solid var(--line);}
+.postlist a.pl-title{font-size:18px;font-weight:600;letter-spacing:-0.01em;
+  color:var(--ink);text-decoration:none;}
+.postlist a.pl-title:hover{color:var(--accent);}
+.postlist .pl-date{color:var(--muted);font-size:12px;margin:3px 0 0;}
+.postlist .pl-desc{color:var(--muted);font-size:14px;margin:6px 0 0;}
+figure.chart{margin:28px 0;padding:14px 14px 6px;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px;}
+figure.chart svg{display:block;width:100%;height:auto;}
+figure.chart figcaption{color:var(--muted);font-size:13px;line-height:1.5;
+  margin:8px 2px 4px;}
+</style><article class="prose"><h1 class="post-title">Who got the easy start? First five games in England, Spain and Germany</h1><p class="post-date"><time datetime="2026-08-11">August 11, 2026</time></p><p>Every club's opening five league games, hardest draw at the top. Find your team,
+then look at who they have to play.</p>
+<h2>Premier League</h2>
+<style>
+/* Fixture-difficulty grid (issue #138). Colours come from the site's own --heat
+   / --hot-ink tokens, so light and dark themes need no rules here. */
+figure.fdgrid { margin:26px 0 30px; }
+figure.fdgrid .scroller { overflow-x:auto; }
+table.fd { border-collapse:separate; border-spacing:2px; margin:0 auto; }
+table.fd thead th { font-size:11px; font-weight:600; letter-spacing:0.05em;
+  text-transform:uppercase; color:var(--muted); padding:0 6px 8px;
+  vertical-align:bottom; }
+table.fd th.arrowhead { text-align:center; }
+table.fd th.arrowhead .arw { display:block; margin-top:5px; position:relative;
+  border-top:1.5px solid var(--line); }
+table.fd th.arrowhead .arw::after { content:""; position:absolute; right:0;
+  top:-4px; border-left:6px solid var(--line);
+  border-top:3.5px solid transparent; border-bottom:3.5px solid transparent; }
+table.fd th.avgh { text-align:right; width:92px; line-height:1.25; }
+table.fd td { padding:0; }
+table.fd td.rank { width:24px; text-align:right; padding-right:10px;
+  color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+table.fd td.team { text-align:right; padding-right:12px; white-space:nowrap;
+  font-size:14px; font-weight:600; }
+table.fd abbr.prov { color:var(--accent); text-decoration:none; font-weight:700;
+  cursor:help; margin-left:2px; }
+table.fd td.gcell { width:84px; min-width:74px; height:38px; text-align:center;
+  border-radius:5px; font-size:12.5px; font-weight:600; letter-spacing:0.02em;
+  cursor:default; background:rgba(var(--heat), var(--a,0));
+  box-shadow:inset 0 0 0 1px rgba(var(--heat), calc(var(--a,0) * 0.35 + 0.10)); }
+table.fd td.gcell .vn { font-weight:500; opacity:0.72; margin-left:3px;
+  font-size:11.5px; }
+table.fd td.gcell.away { font-style:italic; }
+table.fd td.gcell.hot-l { color:var(--hot-ink); }
+@media (prefers-color-scheme: dark) {
+  table.fd td.gcell.hot-l { color:var(--ink); }
+  table.fd td.gcell.hot-d { color:var(--hot-ink); }
+}
+table.fd td.gcell:hover { box-shadow:inset 0 0 0 2px var(--accent); }
+table.fd td.avg { text-align:right; width:92px; font-size:16px; font-weight:700;
+  font-variant-numeric:tabular-nums; padding-left:10px; }
+figure.fdgrid .ramp-wrap { max-width:400px; margin:22px auto 0; text-align:center; }
+figure.fdgrid .ramp-cap { font-size:12px; color:var(--muted); margin-bottom:7px; }
+/* Alpha is linear in the rating, so two stops describe the ramp exactly. */
+figure.fdgrid .ramp { height:11px; border-radius:3px;
+  background:linear-gradient(to right,
+    rgba(var(--heat),0.06), rgba(var(--heat),1.00));
+  box-shadow:inset 0 0 0 1px var(--line); }
+figure.fdgrid .ticks { position:relative; height:15px; margin-top:4px;
+  font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; }
+figure.fdgrid .ticks span { position:absolute; transform:translateX(-50%); }
+figure.fdgrid figcaption { color:var(--muted); font-size:13px; line-height:1.5;
+  margin:16px 2px 0; }
+#fdtip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .08s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; padding:5px 9px; border-radius:6px; white-space:nowrap;
+  transform:translate(-50%,-130%); box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+#fdtip.on { opacity:1; }
+@media (prefers-reduced-motion: reduce) { #fdtip { transition:none; } }
+</style>
+
+<figure class="fdgrid">
+<div class="scroller">
+<table class="fd">
+<thead><tr><th></th><th></th><th class="arrowhead" colspan="5">First 5 games<span class="arw"></span></th><th class="avgh">Opponent<br>avg. rating</th></tr></thead>
+<tbody>
+<tr><td class="rank">1</td><td class="team">Bournemouth</td><td class="gcell hot-l hot-d away" style="--a:0.992" data-tip="Manchester City (away), 23 Aug · rating +1.38">MCI<span class="vn">(A)</span></td><td class="gcell" style="--a:0.558" data-tip="Everton (home), 29 Aug · rating +0.51">EVE<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.672" data-tip="Newcastle (away), 5 Sep · rating +0.74">NEW<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.621" data-tip="Brentford (home), 12 Sep · rating +0.63">BRE<span class="vn">(H)</span></td><td class="gcell hot-d" style="--a:0.839" data-tip="Liverpool (home), 20 Sep · rating +1.07">LIV<span class="vn">(H)</span></td><td class="avg">+0.87</td></tr>
+<tr><td class="rank">2</td><td class="team">Sunderland</td><td class="gcell away" style="--a:0.343" data-tip="Ipswich (away), 22 Aug · rating +0.07">IPS<span class="vn">(A)</span></td><td class="gcell" style="--a:0.578" data-tip="Fulham (home), 30 Aug · rating +0.55">FUL<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.621" data-tip="Brentford (away), 5 Sep · rating +0.63">BRE<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.996" data-tip="Arsenal (home), 12 Sep · rating +1.39">ARS<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.992" data-tip="Manchester City (away), 19 Sep · rating +1.38">MCI<span class="vn">(A)</span></td><td class="avg">+0.81</td></tr>
+<tr><td class="rank">3</td><td class="team">Coventry<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell hot-l hot-d away" style="--a:0.996" data-tip="Arsenal (away), 21 Aug · rating +1.39">ARS<span class="vn">(A)</span></td><td class="gcell" style="--a:0.171" data-tip="Hull (home), 29 Aug · rating -0.28">HUL<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.992" data-tip="Manchester City (away), 5 Sep · rating +1.38">MCI<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.705" data-tip="Brighton (home), 13 Sep · rating +0.80">BHA<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.532" data-tip="Nottingham Forest (away), 19 Sep · rating +0.45">FOR<span class="vn">(A)</span></td><td class="avg">+0.75</td></tr>
+<tr><td class="rank">4</td><td class="team">Fulham</td><td class="gcell hot-d" style="--a:0.774" data-tip="Chelsea (home), 24 Aug · rating +0.94">CHE<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.467" data-tip="Sunderland (away), 30 Aug · rating +0.32">SUN<span class="vn">(A)</span></td><td class="gcell" style="--a:0.545" data-tip="Crystal Palace (home), 5 Sep · rating +0.48">CRY<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.839" data-tip="Liverpool (away), 12 Sep · rating +1.07">LIV<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.742" data-tip="Manchester Utd (home), 20 Sep · rating +0.88">MUN<span class="vn">(H)</span></td><td class="avg">+0.74</td></tr>
+<tr><td class="rank">5</td><td class="team">Brighton</td><td class="gcell hot-d" style="--a:0.701" data-tip="Aston Villa (home), 23 Aug · rating +0.80">AVL<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.774" data-tip="Chelsea (away), 30 Aug · rating +0.94">CHE<span class="vn">(A)</span></td><td class="gcell" style="--a:0.534" data-tip="Leeds (home), 5 Sep · rating +0.46">LEE<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.290" data-tip="Coventry (away), 13 Sep · rating -0.04">COV<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.996" data-tip="Arsenal (home), 19 Sep · rating +1.39">ARS<span class="vn">(H)</span></td><td class="avg">+0.71</td></tr>
+<tr><td class="rank">6</td><td class="team">Hull<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell hot-d" style="--a:0.742" data-tip="Manchester Utd (home), 22 Aug · rating +0.88">MUN<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.290" data-tip="Coventry (away), 29 Aug · rating -0.04">COV<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.701" data-tip="Aston Villa (home), 5 Sep · rating +0.80">AVL<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.774" data-tip="Chelsea (away), 12 Sep · rating +0.94">CHE<span class="vn">(A)</span></td><td class="gcell hot-d away" style="--a:0.672" data-tip="Newcastle (away), 19 Sep · rating +0.74">NEW<span class="vn">(A)</span></td><td class="avg">+0.66</td></tr>
+<tr><td class="rank">7</td><td class="team">Ipswich</td><td class="gcell" style="--a:0.467" data-tip="Sunderland (home), 22 Aug · rating +0.32">SUN<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.742" data-tip="Manchester Utd (away), 30 Aug · rating +0.88">MUN<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.839" data-tip="Liverpool (home), 4 Sep · rating +1.07">LIV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.545" data-tip="Crystal Palace (away), 12 Sep · rating +0.48">CRY<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.558" data-tip="Everton (away), 19 Sep · rating +0.51">EVE<span class="vn">(A)</span></td><td class="avg">+0.65</td></tr>
+<tr><td class="rank">8</td><td class="team">Tottenham</td><td class="gcell hot-d away" style="--a:0.621" data-tip="Brentford (away), 22 Aug · rating +0.63">BRE<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.672" data-tip="Newcastle (home), 29 Aug · rating +0.74">NEW<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.532" data-tip="Nottingham Forest (away), 5 Sep · rating +0.45">FOR<span class="vn">(A)</span></td><td class="gcell" style="--a:0.558" data-tip="Everton (home), 12 Sep · rating +0.51">EVE<span class="vn">(H)</span></td><td class="gcell hot-d" style="--a:0.701" data-tip="Aston Villa (home), 19 Sep · rating +0.80">AVL<span class="vn">(H)</span></td><td class="avg">+0.63</td></tr>
+<tr><td class="rank">9</td><td class="team">Leeds</td><td class="gcell away" style="--a:0.532" data-tip="Nottingham Forest (away), 22 Aug · rating +0.45">FOR<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.621" data-tip="Brentford (home), 30 Aug · rating +0.63">BRE<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.705" data-tip="Brighton (away), 5 Sep · rating +0.80">BHA<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.672" data-tip="Newcastle (home), 14 Sep · rating +0.74">NEW<span class="vn">(H)</span></td><td class="gcell" style="--a:0.545" data-tip="Crystal Palace (home), 19 Sep · rating +0.48">CRY<span class="vn">(H)</span></td><td class="avg">+0.62</td></tr>
+<tr><td class="rank">10</td><td class="team">Chelsea</td><td class="gcell away" style="--a:0.578" data-tip="Fulham (away), 24 Aug · rating +0.55">FUL<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.705" data-tip="Brighton (home), 30 Aug · rating +0.80">BHA<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.996" data-tip="Arsenal (away), 6 Sep · rating +1.39">ARS<span class="vn">(A)</span></td><td class="gcell" style="--a:0.171" data-tip="Hull (home), 12 Sep · rating -0.28">HUL<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.621" data-tip="Brentford (away), 18 Sep · rating +0.63">BRE<span class="vn">(A)</span></td><td class="avg">+0.62</td></tr>
+<tr><td class="rank">11</td><td class="team">Brentford</td><td class="gcell hot-d" style="--a:0.617" data-tip="Tottenham (home), 22 Aug · rating +0.63">TOT<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.534" data-tip="Leeds (away), 30 Aug · rating +0.46">LEE<span class="vn">(A)</span></td><td class="gcell" style="--a:0.467" data-tip="Sunderland (home), 5 Sep · rating +0.32">SUN<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.654" data-tip="Bournemouth (away), 12 Sep · rating +0.70">BOU<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.774" data-tip="Chelsea (home), 18 Sep · rating +0.94">CHE<span class="vn">(H)</span></td><td class="avg">+0.61</td></tr>
+<tr><td class="rank">12</td><td class="team">Aston Villa</td><td class="gcell hot-d away" style="--a:0.705" data-tip="Brighton (away), 23 Aug · rating +0.80">BHA<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.996" data-tip="Arsenal (home), 31 Aug · rating +1.39">ARS<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.171" data-tip="Hull (away), 5 Sep · rating -0.28">HUL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.532" data-tip="Nottingham Forest (home), 12 Sep · rating +0.45">FOR<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.617" data-tip="Tottenham (away), 19 Sep · rating +0.63">TOT<span class="vn">(A)</span></td><td class="avg">+0.60</td></tr>
+<tr><td class="rank">13</td><td class="team">Crystal Palace</td><td class="gcell away" style="--a:0.558" data-tip="Everton (away), 22 Aug · rating +0.51">EVE<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.992" data-tip="Manchester City (home), 28 Aug · rating +1.38">MCI<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.578" data-tip="Fulham (away), 5 Sep · rating +0.55">FUL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.343" data-tip="Ipswich (home), 12 Sep · rating +0.07">IPS<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.534" data-tip="Leeds (away), 19 Sep · rating +0.46">LEE<span class="vn">(A)</span></td><td class="avg">+0.59</td></tr>
+<tr><td class="rank">14</td><td class="team">Nottingham Forest</td><td class="gcell" style="--a:0.534" data-tip="Leeds (home), 22 Aug · rating +0.46">LEE<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.839" data-tip="Liverpool (away), 29 Aug · rating +1.07">LIV<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.617" data-tip="Tottenham (home), 5 Sep · rating +0.63">TOT<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.701" data-tip="Aston Villa (away), 12 Sep · rating +0.80">AVL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.290" data-tip="Coventry (home), 19 Sep · rating -0.04">COV<span class="vn">(H)</span></td><td class="avg">+0.58</td></tr>
+<tr><td class="rank">15</td><td class="team">Arsenal</td><td class="gcell" style="--a:0.290" data-tip="Coventry (home), 21 Aug · rating -0.04">COV<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.701" data-tip="Aston Villa (away), 31 Aug · rating +0.80">AVL<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.774" data-tip="Chelsea (home), 6 Sep · rating +0.94">CHE<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.467" data-tip="Sunderland (away), 12 Sep · rating +0.32">SUN<span class="vn">(A)</span></td><td class="gcell hot-d away" style="--a:0.705" data-tip="Brighton (away), 19 Sep · rating +0.80">BHA<span class="vn">(A)</span></td><td class="avg">+0.57</td></tr>
+<tr><td class="rank">16</td><td class="team">Everton</td><td class="gcell" style="--a:0.545" data-tip="Crystal Palace (home), 22 Aug · rating +0.48">CRY<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.654" data-tip="Bournemouth (away), 29 Aug · rating +0.70">BOU<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.742" data-tip="Manchester Utd (home), 6 Sep · rating +0.88">MUN<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.617" data-tip="Tottenham (away), 12 Sep · rating +0.63">TOT<span class="vn">(A)</span></td><td class="gcell" style="--a:0.343" data-tip="Ipswich (home), 19 Sep · rating +0.07">IPS<span class="vn">(H)</span></td><td class="avg">+0.55</td></tr>
+<tr><td class="rank">17</td><td class="team">Newcastle</td><td class="gcell hot-d" style="--a:0.839" data-tip="Liverpool (home), 23 Aug · rating +1.07">LIV<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.617" data-tip="Tottenham (away), 29 Aug · rating +0.63">TOT<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.654" data-tip="Bournemouth (home), 5 Sep · rating +0.70">BOU<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.534" data-tip="Leeds (away), 14 Sep · rating +0.46">LEE<span class="vn">(A)</span></td><td class="gcell" style="--a:0.171" data-tip="Hull (home), 19 Sep · rating -0.28">HUL<span class="vn">(H)</span></td><td class="avg">+0.52</td></tr>
+<tr><td class="rank">18</td><td class="team">Liverpool</td><td class="gcell hot-d away" style="--a:0.672" data-tip="Newcastle (away), 23 Aug · rating +0.74">NEW<span class="vn">(A)</span></td><td class="gcell" style="--a:0.532" data-tip="Nottingham Forest (home), 29 Aug · rating +0.45">FOR<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.343" data-tip="Ipswich (away), 4 Sep · rating +0.07">IPS<span class="vn">(A)</span></td><td class="gcell" style="--a:0.578" data-tip="Fulham (home), 12 Sep · rating +0.55">FUL<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.654" data-tip="Bournemouth (away), 20 Sep · rating +0.70">BOU<span class="vn">(A)</span></td><td class="avg">+0.50</td></tr>
+<tr><td class="rank">19</td><td class="team">Manchester City</td><td class="gcell hot-d" style="--a:0.654" data-tip="Bournemouth (home), 23 Aug · rating +0.70">BOU<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.545" data-tip="Crystal Palace (away), 28 Aug · rating +0.48">CRY<span class="vn">(A)</span></td><td class="gcell" style="--a:0.290" data-tip="Coventry (home), 5 Sep · rating -0.04">COV<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.742" data-tip="Manchester Utd (away), 13 Sep · rating +0.88">MUN<span class="vn">(A)</span></td><td class="gcell" style="--a:0.467" data-tip="Sunderland (home), 19 Sep · rating +0.32">SUN<span class="vn">(H)</span></td><td class="avg">+0.47</td></tr>
+<tr><td class="rank">20</td><td class="team">Manchester Utd</td><td class="gcell away" style="--a:0.171" data-tip="Hull (away), 22 Aug · rating -0.28">HUL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.343" data-tip="Ipswich (home), 30 Aug · rating +0.07">IPS<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.558" data-tip="Everton (away), 6 Sep · rating +0.51">EVE<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.992" data-tip="Manchester City (home), 13 Sep · rating +1.38">MCI<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.578" data-tip="Fulham (away), 20 Sep · rating +0.55">FUL<span class="vn">(A)</span></td><td class="avg">+0.45</td></tr>
+</tbody>
+</table>
+</div>
+<div class="ramp-wrap"><div class="ramp-cap">How strong the opponent is (Bayes FC rating)</div><div class="ramp"></div><div class="ticks"><span style="left:0.0%">-0.5</span><span style="left:26.3%">+0.0</span><span style="left:52.6%">+0.5</span><span style="left:78.9%">+1.0</span><span style="left:100.0%">+1.4</span></div></div>
+<figcaption>Premier League 2026-27, first 5 league games in order. Darker means a stronger opponent; away trips are in <em>italics</em>. Hover a cell for the date. Hardest opening at the top. Ratings as of 2026-08-11.</figcaption>
+</figure>
+
+<p><strong>Easiest start: Manchester Utd</strong> (+0.45) — Hull away, Ipswich, Everton away. City
+and Liverpool are next softest, which is how it usually goes: none of the big three
+has to play itself.</p>
+<p><strong>Toughest: Bournemouth</strong> (+0.87) — Manchester City away on day one, Newcastle away,
+Liverpool at home, all inside five games. Sunderland are not far behind.</p>
+<h2>La Liga</h2>
+<figure class="fdgrid">
+<div class="scroller">
+<table class="fd">
+<thead><tr><th></th><th></th><th class="arrowhead" colspan="5">First 5 games<span class="arw"></span></th><th class="avgh">Opponent<br>avg. rating</th></tr></thead>
+<tbody>
+<tr><td class="rank">1</td><td class="team">Rayo Vallecano</td><td class="gcell away" style="--a:0.429" data-tip="Sevilla (away), 15 Aug · rating +0.25">SEV<span class="vn">(A)</span></td><td class="gcell" style="--a:0.401" data-tip="Alaves (home), 20 Aug · rating +0.19">ALA<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.865" data-tip="Barcelona (away), 31 Aug · rating +1.13">BAR<span class="vn">(A)</span></td><td class="gcell" style="--a:0.340" data-tip="Santander (home), 6 Sep · rating +0.07">SAN<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.797" data-tip="Real Madrid (away), 13 Sep · rating +0.99">RMA<span class="vn">(A)</span></td><td class="avg">+0.52</td></tr>
+<tr><td class="rank">2</td><td class="team">Athletic Bilbao</td><td class="gcell" style="--a:0.429" data-tip="Sevilla (home), 22 Aug · rating +0.25">SEV<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.865" data-tip="Barcelona (away), 27 Aug · rating +1.13">BAR<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.501" data-tip="Celta Vigo (away), 30 Aug · rating +0.39">CEL<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.647" data-tip="Atletico Madrid (home), 6 Sep · rating +0.69">ATM<span class="vn">(H)</span></td><td class="gcell" style="--a:0.336" data-tip="Elche (home), 13 Sep · rating +0.06">ELC<span class="vn">(H)</span></td><td class="avg">+0.50</td></tr>
+<tr><td class="rank">3</td><td class="team">Real Sociedad</td><td class="gcell away" style="--a:0.512" data-tip="Real Betis (away), 21 Aug · rating +0.41">BET<span class="vn">(A)</span></td><td class="gcell hot-d away" style="--a:0.797" data-tip="Real Madrid (away), 26 Aug · rating +0.99">RMA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.400" data-tip="Espanyol (home), 29 Aug · rating +0.19">ESP<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.336" data-tip="Elche (away), 6 Sep · rating +0.06">ELC<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.647" data-tip="Atletico Madrid (home), 13 Sep · rating +0.69">ATM<span class="vn">(H)</span></td><td class="avg">+0.47</td></tr>
+<tr><td class="rank">4</td><td class="team">Valencia</td><td class="gcell" style="--a:0.501" data-tip="Celta Vigo (home), 22 Aug · rating +0.39">CEL<span class="vn">(H)</span></td><td class="gcell" style="--a:0.512" data-tip="Real Betis (home), 25 Aug · rating +0.41">BET<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.311" data-tip="La Coruna (away), 30 Aug · rating +0.01">LAC<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.865" data-tip="Barcelona (home), 6 Sep · rating +1.13">BAR<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.429" data-tip="Sevilla (away), 13 Sep · rating +0.25">SEV<span class="vn">(A)</span></td><td class="avg">+0.44</td></tr>
+<tr><td class="rank">5</td><td class="team">Malaga<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell hot-d away" style="--a:0.647" data-tip="Atletico Madrid (away), 19 Aug · rating +0.69">ATM<span class="vn">(A)</span></td><td class="gcell" style="--a:0.311" data-tip="La Coruna (home), 24 Aug · rating +0.01">LAC<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.797" data-tip="Real Madrid (away), 30 Aug · rating +0.99">RMA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.335" data-tip="Levante (home), 6 Sep · rating +0.06">LEV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.501" data-tip="Celta Vigo (away), 13 Sep · rating +0.39">CEL<span class="vn">(A)</span></td><td class="avg">+0.43</td></tr>
+<tr><td class="rank">6</td><td class="team">Real Betis</td><td class="gcell" style="--a:0.469" data-tip="Real Sociedad (home), 21 Aug · rating +0.33">RSO<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.439" data-tip="Valencia (away), 25 Aug · rating +0.27">VAL<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.335" data-tip="Levante (away), 29 Aug · rating +0.06">LEV<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.797" data-tip="Real Madrid (home), 6 Sep · rating +0.99">RMA<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.534" data-tip="Villarreal (away), 13 Sep · rating +0.46">VIL<span class="vn">(A)</span></td><td class="avg">+0.42</td></tr>
+<tr><td class="rank">7</td><td class="team">Elche</td><td class="gcell away" style="--a:0.311" data-tip="La Coruna (away), 17 Aug · rating +0.01">LAC<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.865" data-tip="Barcelona (home), 23 Aug · rating +1.13">BAR<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.340" data-tip="Santander (away), 28 Aug · rating +0.07">SAN<span class="vn">(A)</span></td><td class="gcell" style="--a:0.469" data-tip="Real Sociedad (home), 6 Sep · rating +0.33">RSO<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.559" data-tip="Athletic Bilbao (away), 13 Sep · rating +0.51">ATH<span class="vn">(A)</span></td><td class="avg">+0.41</td></tr>
+<tr><td class="rank">8</td><td class="team">Espanyol</td><td class="gcell" style="--a:0.335" data-tip="Levante (home), 16 Aug · rating +0.06">LEV<span class="vn">(H)</span></td><td class="gcell hot-d" style="--a:0.797" data-tip="Real Madrid (home), 22 Aug · rating +0.99">RMA<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.469" data-tip="Real Sociedad (away), 29 Aug · rating +0.33">RSO<span class="vn">(A)</span></td><td class="gcell" style="--a:0.429" data-tip="Sevilla (home), 6 Sep · rating +0.25">SEV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.453" data-tip="Osasuna (away), 13 Sep · rating +0.29">OSA<span class="vn">(A)</span></td><td class="avg">+0.38</td></tr>
+<tr><td class="rank">9</td><td class="team">Sevilla</td><td class="gcell" style="--a:0.424" data-tip="Rayo Vallecano (home), 15 Aug · rating +0.24">RAY<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.559" data-tip="Athletic Bilbao (away), 22 Aug · rating +0.51">ATH<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.647" data-tip="Atletico Madrid (home), 29 Aug · rating +0.69">ATM<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.400" data-tip="Espanyol (away), 6 Sep · rating +0.19">ESP<span class="vn">(A)</span></td><td class="gcell" style="--a:0.439" data-tip="Valencia (home), 13 Sep · rating +0.27">VAL<span class="vn">(H)</span></td><td class="avg">+0.38</td></tr>
+<tr><td class="rank">10</td><td class="team">Levante</td><td class="gcell away" style="--a:0.400" data-tip="Espanyol (away), 16 Aug · rating +0.19">ESP<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.453" data-tip="Osasuna (away), 24 Aug · rating +0.29">OSA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.512" data-tip="Real Betis (home), 29 Aug · rating +0.41">BET<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.107" data-tip="Malaga (away), 6 Sep · rating -0.40">MAL<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.865" data-tip="Barcelona (home), 13 Sep · rating +1.13">BAR<span class="vn">(H)</span></td><td class="avg">+0.32</td></tr>
+<tr><td class="rank">11</td><td class="team">Villarreal</td><td class="gcell away" style="--a:0.340" data-tip="Santander (away), 16 Aug · rating +0.07">SAN<span class="vn">(A)</span></td><td class="gcell hot-d away" style="--a:0.647" data-tip="Atletico Madrid (away), 23 Aug · rating +0.69">ATM<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.401" data-tip="Alaves (away), 28 Aug · rating +0.19">ALA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.311" data-tip="La Coruna (home), 6 Sep · rating +0.01">LAC<span class="vn">(H)</span></td><td class="gcell" style="--a:0.512" data-tip="Real Betis (home), 13 Sep · rating +0.41">BET<span class="vn">(H)</span></td><td class="avg">+0.27</td></tr>
+<tr><td class="rank">12</td><td class="team">Alaves</td><td class="gcell" style="--a:0.375" data-tip="Getafe (home), 15 Aug · rating +0.14">GET<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.424" data-tip="Rayo Vallecano (away), 20 Aug · rating +0.24">RAY<span class="vn">(A)</span></td><td class="gcell" style="--a:0.534" data-tip="Villarreal (home), 28 Aug · rating +0.46">VIL<span class="vn">(H)</span></td><td class="gcell" style="--a:0.453" data-tip="Osasuna (home), 6 Sep · rating +0.29">OSA<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.340" data-tip="Santander (away), 13 Sep · rating +0.07">SAN<span class="vn">(A)</span></td><td class="avg">+0.24</td></tr>
+<tr><td class="rank">13</td><td class="team">Atletico Madrid</td><td class="gcell" style="--a:0.107" data-tip="Malaga (home), 19 Aug · rating -0.40">MAL<span class="vn">(H)</span></td><td class="gcell" style="--a:0.534" data-tip="Villarreal (home), 23 Aug · rating +0.46">VIL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.429" data-tip="Sevilla (away), 29 Aug · rating +0.25">SEV<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.559" data-tip="Athletic Bilbao (away), 6 Sep · rating +0.51">ATH<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.469" data-tip="Real Sociedad (away), 13 Sep · rating +0.33">RSO<span class="vn">(A)</span></td><td class="avg">+0.23</td></tr>
+<tr><td class="rank">14</td><td class="team">Barcelona</td><td class="gcell away" style="--a:0.336" data-tip="Elche (away), 23 Aug · rating +0.06">ELC<span class="vn">(A)</span></td><td class="gcell" style="--a:0.559" data-tip="Athletic Bilbao (home), 27 Aug · rating +0.51">ATH<span class="vn">(H)</span></td><td class="gcell" style="--a:0.424" data-tip="Rayo Vallecano (home), 31 Aug · rating +0.24">RAY<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.439" data-tip="Valencia (away), 6 Sep · rating +0.27">VAL<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.335" data-tip="Levante (away), 13 Sep · rating +0.06">LEV<span class="vn">(A)</span></td><td class="avg">+0.23</td></tr>
+<tr><td class="rank">15</td><td class="team">Santander<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell" style="--a:0.534" data-tip="Villarreal (home), 16 Aug · rating +0.46">VIL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.375" data-tip="Getafe (away), 23 Aug · rating +0.14">GET<span class="vn">(A)</span></td><td class="gcell" style="--a:0.336" data-tip="Elche (home), 28 Aug · rating +0.06">ELC<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.424" data-tip="Rayo Vallecano (away), 6 Sep · rating +0.24">RAY<span class="vn">(A)</span></td><td class="gcell" style="--a:0.401" data-tip="Alaves (home), 13 Sep · rating +0.19">ALA<span class="vn">(H)</span></td><td class="avg">+0.22</td></tr>
+<tr><td class="rank">16</td><td class="team">Osasuna</td><td class="gcell away" style="--a:0.501" data-tip="Celta Vigo (away), 16 Aug · rating +0.39">CEL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.335" data-tip="Levante (home), 24 Aug · rating +0.06">LEV<span class="vn">(H)</span></td><td class="gcell" style="--a:0.375" data-tip="Getafe (home), 31 Aug · rating +0.14">GET<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.401" data-tip="Alaves (away), 6 Sep · rating +0.19">ALA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.400" data-tip="Espanyol (home), 13 Sep · rating +0.19">ESP<span class="vn">(H)</span></td><td class="avg">+0.19</td></tr>
+<tr><td class="rank">17</td><td class="team">Getafe</td><td class="gcell away" style="--a:0.401" data-tip="Alaves (away), 15 Aug · rating +0.19">ALA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.340" data-tip="Santander (home), 23 Aug · rating +0.07">SAN<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.453" data-tip="Osasuna (away), 31 Aug · rating +0.29">OSA<span class="vn">(A)</span></td><td class="gcell" style="--a:0.501" data-tip="Celta Vigo (home), 6 Sep · rating +0.39">CEL<span class="vn">(H)</span></td><td class="gcell" style="--a:0.311" data-tip="La Coruna (home), 13 Sep · rating +0.01">LAC<span class="vn">(H)</span></td><td class="avg">+0.19</td></tr>
+<tr><td class="rank">18</td><td class="team">Celta Vigo</td><td class="gcell" style="--a:0.453" data-tip="Osasuna (home), 16 Aug · rating +0.29">OSA<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.439" data-tip="Valencia (away), 22 Aug · rating +0.27">VAL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.559" data-tip="Athletic Bilbao (home), 30 Aug · rating +0.51">ATH<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.375" data-tip="Getafe (away), 6 Sep · rating +0.14">GET<span class="vn">(A)</span></td><td class="gcell" style="--a:0.107" data-tip="Malaga (home), 13 Sep · rating -0.40">MAL<span class="vn">(H)</span></td><td class="avg">+0.16</td></tr>
+<tr><td class="rank">19</td><td class="team">Real Madrid</td><td class="gcell away" style="--a:0.400" data-tip="Espanyol (away), 22 Aug · rating +0.19">ESP<span class="vn">(A)</span></td><td class="gcell" style="--a:0.469" data-tip="Real Sociedad (home), 26 Aug · rating +0.33">RSO<span class="vn">(H)</span></td><td class="gcell" style="--a:0.107" data-tip="Malaga (home), 30 Aug · rating -0.40">MAL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.512" data-tip="Real Betis (away), 6 Sep · rating +0.41">BET<span class="vn">(A)</span></td><td class="gcell" style="--a:0.424" data-tip="Rayo Vallecano (home), 13 Sep · rating +0.24">RAY<span class="vn">(H)</span></td><td class="avg">+0.15</td></tr>
+<tr><td class="rank">20</td><td class="team">La Coruna<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell" style="--a:0.336" data-tip="Elche (home), 17 Aug · rating +0.06">ELC<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.107" data-tip="Malaga (away), 24 Aug · rating -0.40">MAL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.439" data-tip="Valencia (home), 30 Aug · rating +0.27">VAL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.534" data-tip="Villarreal (away), 6 Sep · rating +0.46">VIL<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.375" data-tip="Getafe (away), 13 Sep · rating +0.14">GET<span class="vn">(A)</span></td><td class="avg">+0.10</td></tr>
+</tbody>
+</table>
+</div>
+<div class="ramp-wrap"><div class="ramp-cap">How strong the opponent is (Bayes FC rating)</div><div class="ramp"></div><div class="ticks"><span style="left:0.0%">-0.5</span><span style="left:26.3%">+0.0</span><span style="left:52.6%">+0.5</span><span style="left:78.9%">+1.0</span><span style="left:100.0%">+1.4</span></div></div>
+<figcaption>La Liga 2026-27, first 5 league games in order. Darker means a stronger opponent; away trips are in <em>italics</em>. Hover a cell for the date. Hardest opening at the top. Ratings as of 2026-08-11.</figcaption>
+</figure>
+
+<p><strong>Easiest start: La Coruña</strong> (+0.10), then <strong>Real Madrid</strong> (+0.15), whose opening
+five misses Barcelona and Atlético entirely.</p>
+<p><strong>Toughest: Rayo Vallecano</strong> (+0.52) — Barcelona away <em>and</em> Real Madrid away in the
+first five weeks.</p>
+<h2>Bundesliga</h2>
+<figure class="fdgrid">
+<div class="scroller">
+<table class="fd">
+<thead><tr><th></th><th></th><th class="arrowhead" colspan="5">First 5 games<span class="arw"></span></th><th class="avgh">Opponent<br>avg. rating</th></tr></thead>
+<tbody>
+<tr><td class="rank">1</td><td class="team">Stuttgart</td><td class="gcell hot-l hot-d away" style="--a:0.898" data-tip="Bayern Munich (away), 28 Aug · rating +1.19">BAY<span class="vn">(A)</span></td><td class="gcell" style="--a:0.342" data-tip="FC Koln (home), 4 Sep · rating +0.07">KOL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.557" data-tip="Hoffenheim (away), 12 Sep · rating +0.50">HOF<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.633" data-tip="Dortmund (home), 19 Sep · rating +0.66">DOR<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.196" data-tip="Paderborn (away), 10 Oct · rating -0.23">PAD<span class="vn">(A)</span></td><td class="avg">+0.44</td></tr>
+<tr><td class="rank">2</td><td class="team">Paderborn<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell away" style="--a:0.374" data-tip="Mainz (away), 29 Aug · rating +0.13">M05<span class="vn">(A)</span></td><td class="gcell" style="--a:0.404" data-tip="Freiburg (home), 5 Sep · rating +0.19">SCF<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.633" data-tip="Dortmund (away), 12 Sep · rating +0.66">DOR<span class="vn">(A)</span></td><td class="gcell" style="--a:0.557" data-tip="Hoffenheim (home), 20 Sep · rating +0.50">HOF<span class="vn">(H)</span></td><td class="gcell hot-d" style="--a:0.601" data-tip="Stuttgart (home), 10 Oct · rating +0.59">VFB<span class="vn">(H)</span></td><td class="avg">+0.42</td></tr>
+<tr><td class="rank">3</td><td class="team">Augsburg</td><td class="gcell" style="--a:0.311" data-tip="Schalke 04 (home), 30 Aug · rating +0.01">S04<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.396" data-tip="Ein Frankfurt (away), 6 Sep · rating +0.18">SGE<span class="vn">(A)</span></td><td class="gcell" style="--a:0.589" data-tip="Leverkusen (home), 12 Sep · rating +0.57">B04<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.353" data-tip="Werder Bremen (away), 19 Sep · rating +0.09">SVW<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.898" data-tip="Bayern Munich (home), 10 Oct · rating +1.19">BAY<span class="vn">(H)</span></td><td class="avg">+0.41</td></tr>
+<tr><td class="rank">4</td><td class="team">Hamburg</td><td class="gcell hot-d away" style="--a:0.633" data-tip="Dortmund (away), 29 Aug · rating +0.66">DOR<span class="vn">(A)</span></td><td class="gcell" style="--a:0.374" data-tip="Mainz (home), 6 Sep · rating +0.13">M05<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.595" data-tip="RB Leipzig (away), 13 Sep · rating +0.58">RBL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.342" data-tip="FC Koln (home), 19 Sep · rating +0.07">KOL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.557" data-tip="Hoffenheim (away), 10 Oct · rating +0.50">HOF<span class="vn">(A)</span></td><td class="avg">+0.39</td></tr>
+<tr><td class="rank">5</td><td class="team">Elversberg<abbr class="prov" title="Provisional: no played matches in the fit window yet — the rating comes from opening lines on upcoming fixtures, so its error bar is roughly 4x the rest.">*</abbr></td><td class="gcell" style="--a:0.589" data-tip="Leverkusen (home), 29 Aug · rating +0.57">B04<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.344" data-tip="M&#x27;gladbach (away), 5 Sep · rating +0.07">BMG<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.898" data-tip="Bayern Munich (home), 13 Sep · rating +1.19">BAY<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.311" data-tip="Schalke 04 (away), 20 Sep · rating +0.01">S04<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.318" data-tip="Union Berlin (away), 10 Oct · rating +0.02">UNB<span class="vn">(A)</span></td><td class="avg">+0.37</td></tr>
+<tr><td class="rank">6</td><td class="team">Union Berlin</td><td class="gcell" style="--a:0.396" data-tip="Ein Frankfurt (home), 29 Aug · rating +0.18">SGE<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.589" data-tip="Leverkusen (away), 5 Sep · rating +0.57">B04<span class="vn">(A)</span></td><td class="gcell" style="--a:0.311" data-tip="Schalke 04 (home), 11 Sep · rating +0.01">S04<span class="vn">(H)</span></td><td class="gcell hot-l hot-d away" style="--a:0.898" data-tip="Bayern Munich (away), 18 Sep · rating +1.19">BAY<span class="vn">(A)</span></td><td class="gcell" style="--a:0.142" data-tip="Elversberg (home), 10 Oct · rating -0.33">ELV<span class="vn">(H)</span></td><td class="avg">+0.32</td></tr>
+<tr><td class="rank">7</td><td class="team">Werder Bremen</td><td class="gcell away" style="--a:0.404" data-tip="Freiburg (away), 30 Aug · rating +0.19">SCF<span class="vn">(A)</span></td><td class="gcell" style="--a:0.595" data-tip="RB Leipzig (home), 5 Sep · rating +0.58">RBL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.342" data-tip="FC Koln (away), 12 Sep · rating +0.07">KOL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.322" data-tip="Augsburg (home), 19 Sep · rating +0.03">AUG<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.633" data-tip="Dortmund (away), 10 Oct · rating +0.66">DOR<span class="vn">(A)</span></td><td class="avg">+0.31</td></tr>
+<tr><td class="rank">8</td><td class="team">FC Koln</td><td class="gcell" style="--a:0.557" data-tip="Hoffenheim (home), 29 Aug · rating +0.50">HOF<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.601" data-tip="Stuttgart (away), 4 Sep · rating +0.59">VFB<span class="vn">(A)</span></td><td class="gcell" style="--a:0.353" data-tip="Werder Bremen (home), 12 Sep · rating +0.09">SVW<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.254" data-tip="Hamburg (away), 19 Sep · rating -0.11">HSV<span class="vn">(A)</span></td><td class="gcell" style="--a:0.344" data-tip="M&#x27;gladbach (home), 10 Oct · rating +0.07">BMG<span class="vn">(H)</span></td><td class="avg">+0.23</td></tr>
+<tr><td class="rank">9</td><td class="team">Schalke 04</td><td class="gcell away" style="--a:0.322" data-tip="Augsburg (away), 30 Aug · rating +0.03">AUG<span class="vn">(A)</span></td><td class="gcell hot-l hot-d" style="--a:0.898" data-tip="Bayern Munich (home), 5 Sep · rating +1.19">BAY<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.318" data-tip="Union Berlin (away), 11 Sep · rating +0.02">UNB<span class="vn">(A)</span></td><td class="gcell" style="--a:0.142" data-tip="Elversberg (home), 20 Sep · rating -0.33">ELV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.404" data-tip="Freiburg (away), 10 Oct · rating +0.19">SCF<span class="vn">(A)</span></td><td class="avg">+0.22</td></tr>
+<tr><td class="rank">10</td><td class="team">Hoffenheim</td><td class="gcell away" style="--a:0.342" data-tip="FC Koln (away), 29 Aug · rating +0.07">KOL<span class="vn">(A)</span></td><td class="gcell hot-d" style="--a:0.633" data-tip="Dortmund (home), 5 Sep · rating +0.66">DOR<span class="vn">(H)</span></td><td class="gcell hot-d" style="--a:0.601" data-tip="Stuttgart (home), 12 Sep · rating +0.59">VFB<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.196" data-tip="Paderborn (away), 20 Sep · rating -0.23">PAD<span class="vn">(A)</span></td><td class="gcell" style="--a:0.254" data-tip="Hamburg (home), 10 Oct · rating -0.11">HSV<span class="vn">(H)</span></td><td class="avg">+0.20</td></tr>
+<tr><td class="rank">11</td><td class="team">Ein Frankfurt</td><td class="gcell away" style="--a:0.318" data-tip="Union Berlin (away), 29 Aug · rating +0.02">UNB<span class="vn">(A)</span></td><td class="gcell" style="--a:0.322" data-tip="Augsburg (home), 6 Sep · rating +0.03">AUG<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.374" data-tip="Mainz (away), 12 Sep · rating +0.13">M05<span class="vn">(A)</span></td><td class="gcell" style="--a:0.404" data-tip="Freiburg (home), 19 Sep · rating +0.19">SCF<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.595" data-tip="RB Leipzig (away), 10 Oct · rating +0.58">RBL<span class="vn">(A)</span></td><td class="avg">+0.19</td></tr>
+<tr><td class="rank">12</td><td class="team">Dortmund</td><td class="gcell" style="--a:0.254" data-tip="Hamburg (home), 29 Aug · rating -0.11">HSV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.557" data-tip="Hoffenheim (away), 5 Sep · rating +0.50">HOF<span class="vn">(A)</span></td><td class="gcell" style="--a:0.196" data-tip="Paderborn (home), 12 Sep · rating -0.23">PAD<span class="vn">(H)</span></td><td class="gcell hot-d away" style="--a:0.601" data-tip="Stuttgart (away), 19 Sep · rating +0.59">VFB<span class="vn">(A)</span></td><td class="gcell" style="--a:0.353" data-tip="Werder Bremen (home), 10 Oct · rating +0.09">SVW<span class="vn">(H)</span></td><td class="avg">+0.17</td></tr>
+<tr><td class="rank">13</td><td class="team">RB Leipzig</td><td class="gcell" style="--a:0.344" data-tip="M&#x27;gladbach (home), 29 Aug · rating +0.07">BMG<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.353" data-tip="Werder Bremen (away), 5 Sep · rating +0.09">SVW<span class="vn">(A)</span></td><td class="gcell" style="--a:0.254" data-tip="Hamburg (home), 13 Sep · rating -0.11">HSV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.589" data-tip="Leverkusen (away), 20 Sep · rating +0.57">B04<span class="vn">(A)</span></td><td class="gcell" style="--a:0.396" data-tip="Ein Frankfurt (home), 10 Oct · rating +0.18">SGE<span class="vn">(H)</span></td><td class="avg">+0.16</td></tr>
+<tr><td class="rank">14</td><td class="team">M&#x27;gladbach</td><td class="gcell away" style="--a:0.595" data-tip="RB Leipzig (away), 29 Aug · rating +0.58">RBL<span class="vn">(A)</span></td><td class="gcell" style="--a:0.142" data-tip="Elversberg (home), 5 Sep · rating -0.33">ELV<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.404" data-tip="Freiburg (away), 12 Sep · rating +0.19">SCF<span class="vn">(A)</span></td><td class="gcell" style="--a:0.374" data-tip="Mainz (home), 19 Sep · rating +0.13">M05<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.342" data-tip="FC Koln (away), 10 Oct · rating +0.07">KOL<span class="vn">(A)</span></td><td class="avg">+0.13</td></tr>
+<tr><td class="rank">15</td><td class="team">Mainz</td><td class="gcell" style="--a:0.196" data-tip="Paderborn (home), 29 Aug · rating -0.23">PAD<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.254" data-tip="Hamburg (away), 6 Sep · rating -0.11">HSV<span class="vn">(A)</span></td><td class="gcell" style="--a:0.396" data-tip="Ein Frankfurt (home), 12 Sep · rating +0.18">SGE<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.344" data-tip="M&#x27;gladbach (away), 19 Sep · rating +0.07">BMG<span class="vn">(A)</span></td><td class="gcell" style="--a:0.589" data-tip="Leverkusen (home), 10 Oct · rating +0.57">B04<span class="vn">(H)</span></td><td class="avg">+0.10</td></tr>
+<tr><td class="rank">16</td><td class="team">Leverkusen</td><td class="gcell away" style="--a:0.142" data-tip="Elversberg (away), 29 Aug · rating -0.33">ELV<span class="vn">(A)</span></td><td class="gcell" style="--a:0.318" data-tip="Union Berlin (home), 5 Sep · rating +0.02">UNB<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.322" data-tip="Augsburg (away), 12 Sep · rating +0.03">AUG<span class="vn">(A)</span></td><td class="gcell" style="--a:0.595" data-tip="RB Leipzig (home), 20 Sep · rating +0.58">RBL<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.374" data-tip="Mainz (away), 10 Oct · rating +0.13">M05<span class="vn">(A)</span></td><td class="avg">+0.09</td></tr>
+<tr><td class="rank">17</td><td class="team">Bayern Munich</td><td class="gcell hot-d" style="--a:0.601" data-tip="Stuttgart (home), 28 Aug · rating +0.59">VFB<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.311" data-tip="Schalke 04 (away), 5 Sep · rating +0.01">S04<span class="vn">(A)</span></td><td class="gcell away" style="--a:0.142" data-tip="Elversberg (away), 13 Sep · rating -0.33">ELV<span class="vn">(A)</span></td><td class="gcell" style="--a:0.318" data-tip="Union Berlin (home), 18 Sep · rating +0.02">UNB<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.322" data-tip="Augsburg (away), 10 Oct · rating +0.03">AUG<span class="vn">(A)</span></td><td class="avg">+0.06</td></tr>
+<tr><td class="rank">18</td><td class="team">Freiburg</td><td class="gcell" style="--a:0.353" data-tip="Werder Bremen (home), 30 Aug · rating +0.09">SVW<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.196" data-tip="Paderborn (away), 5 Sep · rating -0.23">PAD<span class="vn">(A)</span></td><td class="gcell" style="--a:0.344" data-tip="M&#x27;gladbach (home), 12 Sep · rating +0.07">BMG<span class="vn">(H)</span></td><td class="gcell away" style="--a:0.396" data-tip="Ein Frankfurt (away), 19 Sep · rating +0.18">SGE<span class="vn">(A)</span></td><td class="gcell" style="--a:0.311" data-tip="Schalke 04 (home), 10 Oct · rating +0.01">S04<span class="vn">(H)</span></td><td class="avg">+0.03</td></tr>
+</tbody>
+</table>
+</div>
+<div class="ramp-wrap"><div class="ramp-cap">How strong the opponent is (Bayes FC rating)</div><div class="ramp"></div><div class="ticks"><span style="left:0.0%">-0.5</span><span style="left:26.3%">+0.0</span><span style="left:52.6%">+0.5</span><span style="left:78.9%">+1.0</span><span style="left:100.0%">+1.4</span></div></div>
+<figcaption>Bundesliga 2026-27, first 5 league games in order. Darker means a stronger opponent; away trips are in <em>italics</em>. Hover a cell for the date. Hardest opening at the top. Ratings as of 2026-08-11.</figcaption>
+</figure>
+
+<p><strong>Easiest start: Freiburg</strong> (+0.03), a nose ahead of <strong>Bayern</strong> (+0.06) — the one
+club that never has to play Bayern.</p>
+<p><strong>Toughest: Stuttgart</strong> (+0.44), who open away at Bayern. Promoted Paderborn are
+second.</p>
+<h2>Notes</h2>
+<p>Higher is harder: the number beside each club is the average rating of its five
+opponents. A rating is a club's attack plus defence as the betting market prices it,
+so it says nothing about home advantage, fixture congestion or injuries — and five
+games is a small sample. Clubs marked with an asterisk have not played yet in the
+current window, so their rating rests on opening lines alone. <a href="../methodology.html">How the ratings
+work</a>.</p>
+<script>
+(function(){
+  var tip=document.createElement('div'); tip.id='fdtip';
+  document.body.appendChild(tip);
+  document.querySelectorAll('table.fd td.gcell').forEach(function(c){
+    c.addEventListener('mouseenter', function(){
+      tip.textContent=c.dataset.tip;
+      var r=c.getBoundingClientRect();
+      tip.style.left=(r.left+r.width/2)+'px';
+      tip.style.top=r.top+'px';
+      tip.classList.add('on');
+    });
+    c.addEventListener('mouseleave', function(){ tip.classList.remove('on'); });
+  });
+})();
+</script>
+
+<p class="post-back"><a href="index.html">&larr; All writing</a></p></article>
+<section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
+<footer class="site">
+  <div>Market-implied team ratings · rebuilt daily.<br>
+    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
+    all rights reserved.</span></div>
+  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
+    made with <span class="heart">&#9829;</span> by
+    <a href="https://belkacem.xyz">Belkacem</a></div>
+</footer>
+</div>
+
+<script>
+(function(){
+  function sortTable(t, key, dir){
+    var body=t.querySelector('tbody');
+    var rows=[].slice.call(body.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var x=parseFloat(a.dataset[key]), y=parseFloat(b.dataset[key]);
+      return dir==='asc' ? x-y : y-x;
+    });
+    rows.forEach(function(r){ body.appendChild(r); });
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      var on=th.dataset.sort===key;
+      th.classList.toggle('sorted', on);
+      var c=th.querySelector('.caret');
+      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
+    });
+  }
+  document.querySelectorAll('table.ladder').forEach(function(t){
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      th.addEventListener('click', function(){
+        var key=th.dataset.sort;
+        var dir = th.classList.contains('sorted')
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc') : 'desc';
+        t.dataset.dir=dir;
+        sortTable(t, key, dir);
+      });
+    });
+  });
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "762e95ac6c554a9aa575ff1d8cc88013"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

@@ -9,6 +9,7 @@
 
 ## Writing
 
+- [Who got the easy start? First five games in England, Spain and Germany](https://bayesfc.com/blog/fixture-difficulty-opening-five.html): Every club's first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest.
 - [What a wage bill buys](https://bayesfc.com/blog/what-a-wage-bill-buys.html): Across Europe's top seven leagues, pay explains most of team strength — but the clubs off the line are the interesting ones.
 - [How we turn betting odds into team strength](https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html): Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.
 

@@ -35,7 +35,11 @@ body {
 .wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
 header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
 .brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
-.brand h1 { font-size:22px; font-weight:650; letter-spacing:-0.01em; margin:0; }
+/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
+   read as one word. --accent carries the theme, so it inverts with the page. */
+.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
+  color:var(--accent); }
+.brand h1 span { color:var(--ink); }
 .brand .tag { color:var(--muted); font-size:14px; }
 nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
 nav.site a {
@@ -229,7 +233,7 @@ body.js .tab-panel.active { display:block; }
 <script>document.body.className="js";</script>
 <div class="wrap">
 <header class="site">
-  <div class="brand"><h1>Bayes FC</h1>
+  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
     <span class="tag">team ratings from the betting market</span></div>
   <nav class="site"><a href="index.html">Global</a><a href="leagues.html" class="active">Leagues</a><a href="blog/index.html">Blog</a><a href="methodology.html">Methodology</a></nav>
   <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-11">2026-08-11</time> · last rebuilt <time datetime="2026-08-11T05:45:07.785275+00:00">2026-08-11 05:45 UTC</time></div>
