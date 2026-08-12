@@ -119,6 +119,10 @@ table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
 table.ladder th.sortable.sorted { color:var(--accent); }
 table.ladder th.sortable.sorted .caret { opacity:1; }
 table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+/* The projection tables carry the same column beside the rank, narrower: one
+   fixed window, so the value is a single arrow + a one- or two-digit move. */
+table.proj th.delta, table.proj td.delta {
+  text-align:left; width:46px; white-space:nowrap; font-size:12px; }
 td.delta .dup { color:var(--pos); }
 td.delta .ddn { color:var(--neg); }
 td.delta .dmut { color:var(--muted); }
