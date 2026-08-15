@@ -8,11 +8,22 @@
 <meta name="description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/methodology.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Methodology — Bayes FC"><meta property="og:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club."><meta property="og:url" content="https://bayesfc.com/methodology.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Methodology — Bayes FC"><meta name="twitter:description" content="How Bayes FC turns football betting-market closing prices into daily attack and defence ratings for every club.">
 <style>
 :root {
-  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#6b7280;
+  /* --muted is secondary text everywhere (headers, notes, footer, the rank and
+     Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
+     lands on, not just the page: at #6b7280 it was 4.51 on --bg but 4.06 over
+     --band and 4.22 over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
   --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
   --heat:15,118,110; --hot-ink:#ffffff;
+  /* Neutral wash behind the projection table's results group (and its hover
+     step). Deliberately hueless: the heat ramp is the only colour carrying a
+     value in that table, so the grouping must not read as data. */
+  --band:#edebe7; --band-h:#f2f0ec;
+  /* Gridline on the distribution strip: recessive by construction — a neutral
+     at low alpha, so it never competes with the heat ramp carrying the value. */
+  --grid:rgba(0,0,0,0.16);
   /* Status warning: fixed, not themed — a caution glyph must read the same
      regardless of light/dark, unlike the series/ink tokens above. */
   --warn:#fab219; --warn-ink:#1a1206;
@@ -24,6 +35,7 @@
     --stale-ink:#fbbf24;
     --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
     --heat:45,212,191; --hot-ink:#0c0a09;
+    --band:#1c1917; --band-h:#242020; --grid:rgba(255,255,255,0.18);
   }
 }
 * { box-sizing:border-box; }
@@ -90,20 +102,56 @@ table.proj thead th {
   font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
   color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
 }
-table.proj tbody td { padding:6px 5px; font-variant-numeric:tabular-nums; }
+table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
 table.proj th.team, table.proj td.team { text-align:left; }
-table.proj th.rank, table.proj td.rank { text-align:right; width:28px; color:var(--muted); }
+table.proj th.rank, table.proj td.rank { text-align:right; width:26px; color:var(--muted); }
 table.proj td.rank, table.proj td.num {
   font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
 }
-table.proj th.num, table.proj td.num { text-align:right; width:52px; }
+table.proj th.num, table.proj td.num { text-align:right; width:46px; }
 table.proj td.num.rat { color:var(--muted); }
+/* Pts/GF/GA — the real table so far, on a started league. Narrower than the
+   rating columns (two digits, not a signed decimal) so the five extra columns
+   don't squeeze the position strip. */
+table.proj th.tbl, table.proj td.tbl { text-align:right; width:30px; }
+table.proj td.tbl { font-family:ui-monospace,"SF Mono",Menlo,monospace; }
+/* What happened vs what the market implies. The heat ramp owns colour here, so
+   the separation is structural: a banded header naming each group, a rule at
+   every boundary, and a recessive neutral wash behind the results — no second
+   hue competing with the probability scale. The wash is re-asserted on hover
+   (as the heat cells are) so the row highlight can't erase the grouping. */
+table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
+table.proj tr.grp th {
+  font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--muted); text-align:left; padding:2px 6px 3px; white-space:nowrap;
+  border-bottom:none; }
+table.proj th.tbl, table.proj td.tbl, table.proj tr.grp th.band {
+  background:var(--band); }
+table.proj td.num.tot { font-weight:600; }
 table.proj tbody tr:hover td { background:var(--surface); }
-th.phead { padding:6px 0; width:15px; font-size:10px; font-weight:500;
+table.proj tbody tr:hover td.tbl { background:var(--band-h); }
+th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
   color:var(--muted); text-align:center; }
-td.pcell { padding:0; width:15px; min-width:15px;
+td.pcell { padding:0; width:11px; min-width:11px; position:relative;
   background:rgba(var(--heat), var(--a, 0)); }
-td.heat { text-align:right; width:50px; padding:6px 6px;
+/* Alignment gridlines under the sparse ticks, centred on the tick label so a
+   cell reads back to its position without counting across an 18-wide strip.
+   Drawn over the heat as a hairline neutral — recessive, and never a value. */
+td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
+  width:1px; background:var(--grid); pointer-events:none; }
+/* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
+body.js td.pcell { cursor:crosshair; }
+body.js td.pcell:hover, body.js td.pcell:focus-visible {
+  outline:2px solid var(--accent); outline-offset:-2px; z-index:1; }
+#tip {
+  position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .08s;
+  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.45;
+  padding:6px 9px; border-radius:7px; max-width:220px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+#tip.on { opacity:1; }
+#tip b { font-size:13px; }
+#tip span { color:var(--bg); opacity:0.72; }
+td.heat { text-align:right; width:46px; padding:6px 5px;
   background:rgba(var(--heat), var(--a, 0)); }
 table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
   background:rgba(var(--heat), var(--a, 0)); }
@@ -113,11 +161,19 @@ td.heat.mut { color:var(--muted); }
   letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
   border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
   vertical-align:middle; }
-body.js table.ladder th.sortable { cursor:pointer; user-select:none; }
-body.js table.ladder th.sortable:hover { color:var(--ink); }
-table.ladder th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
-table.ladder th.sortable.sorted { color:var(--accent); }
-table.ladder th.sortable.sorted .caret { opacity:1; }
+/* Sortable headers, shared by the ladders and the projection tables. A header
+   carrying a tooltip gets a dotted underline so the explanation is discoverable
+   rather than hidden; the tooltip only ever restates what the column is, never
+   a value the table doesn't already print. */
+body.js th.sortable { cursor:pointer; user-select:none; }
+body.js th.sortable:hover { color:var(--ink); }
+body.js th.sortable:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+th.sortable.sorted { color:var(--accent); }
+th.sortable.sorted .caret { opacity:1; }
+body.js table.proj thead th[title] { text-decoration:underline dotted;
+  text-decoration-color:var(--line); text-underline-offset:3px; }
+body.js table.proj thead th[title]:hover { text-decoration-color:var(--accent); }
 table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
 /* The projection tables carry the same column beside the rank, narrower: one
    fixed window, so the value is a single arrow + a one- or two-digit move. */
@@ -196,6 +252,20 @@ svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
   white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
 .sc-tip .t-sub { color:var(--muted); }
 .wide { overflow-x:auto; }
+/* The projection table is the one thing on the site wider than the 880px prose
+   column: a started league carries results + strength + 18-20 position cells +
+   three summary columns. Rather than scroll it sideways (which hides Title /
+   Top 4 / Rel — the columns people come for), let it break out of the wrap and
+   re-centre, capped so it never exceeds the viewport or sprawls on a wide
+   monitor. .wrap's content box is 832px (880 less 2x24 padding), so the offset
+   that keeps the table centred is 416px minus half its own width. Below the
+   breakpoint nothing applies and .wide scrolls exactly as before. */
+@media (min-width:940px) {
+  .tab-panel .wide {
+    width:min(1240px, calc(100vw - 48px));
+    margin-left:calc(416px - min(620px, (100vw - 48px) / 2));
+  }
+}
 .prose { font-size:15px; }
 .prose p { margin:14px 0; }
 .prose a { color:var(--accent); }
@@ -256,29 +326,47 @@ body.js .tab-panel.active { display:block; }
 
 <script>
 (function(){
-  function sortTable(t, key, dir){
+  function cmp(a, b, key, dir, text){
+    var x=a.dataset[key], y=b.dataset[key];
+    var xm=(x===undefined||x===''), ym=(y===undefined||y==='');
+    if(xm||ym) return xm&&ym ? 0 : (xm?1:-1);          // blanks last, always
+    if(text) return dir==='asc' ? x.localeCompare(y) : y.localeCompare(x);
+    var d=parseFloat(x)-parseFloat(y);
+    return dir==='asc' ? d : -d;
+  }
+  function sortTable(t, th, dir){
+    var key=th.dataset.sort, text=th.dataset.type==='text';
+    var ties=(th.dataset.tie||'').split(',').filter(Boolean);
     var body=t.querySelector('tbody');
     var rows=[].slice.call(body.querySelectorAll('tr'));
     rows.sort(function(a,b){
-      var x=parseFloat(a.dataset[key]), y=parseFloat(b.dataset[key]);
-      return dir==='asc' ? x-y : y-x;
+      var r=cmp(a,b,key,dir,text);
+      for(var i=0;i<ties.length && r===0;i++) r=cmp(a,b,ties[i],dir,false);
+      return r;
     });
     rows.forEach(function(r){ body.appendChild(r); });
-    t.querySelectorAll('th.sortable').forEach(function(th){
-      var on=th.dataset.sort===key;
-      th.classList.toggle('sorted', on);
-      var c=th.querySelector('.caret');
+    t.querySelectorAll('th.sortable').forEach(function(o){
+      var on=o===th;
+      o.classList.toggle('sorted', on);
+      o.setAttribute('aria-sort', on ? (dir==='asc'?'ascending':'descending') : 'none');
+      var c=o.querySelector('.caret');
       if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
     });
   }
-  document.querySelectorAll('table.ladder').forEach(function(t){
+  document.querySelectorAll('table.ladder, table.proj').forEach(function(t){
     t.querySelectorAll('th.sortable').forEach(function(th){
-      th.addEventListener('click', function(){
-        var key=th.dataset.sort;
+      th.setAttribute('tabindex','0');
+      th.setAttribute('role','button');
+      function go(){
         var dir = th.classList.contains('sorted')
-          ? (t.dataset.dir==='asc' ? 'desc' : 'asc') : 'desc';
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc')
+          : (th.dataset.dir || 'desc');
         t.dataset.dir=dir;
-        sortTable(t, key, dir);
+        sortTable(t, th, dir);
+      }
+      th.addEventListener('click', go);
+      th.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
       });
     });
   });
