@@ -110,6 +110,13 @@ table.proj td.rank, table.proj td.num {
 }
 table.proj th.num, table.proj td.num { text-align:right; width:46px; }
 table.proj td.num.rat { color:var(--muted); }
+/* Projected finish: the rank, plus the move it implies from where the club sits
+   today. The move is an annotation, not a column — muted and small, and with no
+   up/down colour, so it can never be mistaken for the Δ beside it (which is a
+   different measurement entirely: yesterday's projection against today's). */
+table.proj th.pfin, table.proj td.pfin { width:62px; white-space:nowrap; }
+td.pfin .pmv { margin-left:4px; font-size:10.5px; color:var(--muted);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
 /* Pts/GF/GA — the real table so far, on a started league. Narrower than the
    rating columns (two digits, not a signed decimal) so the five extra columns
    don't squeeze the position strip. */
@@ -139,6 +146,13 @@ td.pcell { padding:0; width:11px; min-width:11px; position:relative;
    Drawn over the heat as a hairline neutral — recessive, and never a value. */
 td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
   width:1px; background:var(--grid); pointer-events:none; }
+/* The club's position in the table today. Rows are ordered by that table, so the
+   marks trace the diagonal themselves — the probability mass sitting left or
+   right of a club's mark is the move the market implies. Neutral ink, never the
+   heat hue: this is a fact about the season, not a value on the scale. */
+td.pcell.now::before { content:""; position:absolute; inset:1px;
+  border:1.5px solid var(--ink); opacity:0.5; border-radius:2px;
+  pointer-events:none; }
 /* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
 body.js td.pcell { cursor:crosshair; }
 body.js td.pcell:hover, body.js td.pcell:focus-visible {
