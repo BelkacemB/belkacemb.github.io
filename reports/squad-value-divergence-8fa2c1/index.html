@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<title>Ten squad valuations the betting market disagrees with — Bayes FC</title>
+<meta name="description" content="An independent, daily read on which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta property="og:type" content="article"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta property="og:description" content="An independent, daily read on which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta property="og:url" content="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta name="twitter:description" content="An independent, daily read on which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps.">
+<style>
+:root {
+  /* --muted is secondary text everywhere (headers, notes, footer, the rank and
+     Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
+     lands on, not just the page: at #6b7280 it was 4.51 on --bg but 4.06 over
+     --band and 4.22 over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
+  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
+  --stale-ink:#92400e;
+  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
+  /* Neutral wash behind the projection table's results group (and its hover
+     step). Deliberately hueless: the heat ramp is the only colour carrying a
+     value in that table, so the grouping must not read as data. */
+  --band:#edebe7; --band-h:#f2f0ec;
+  /* Gridline on the distribution strip: recessive by construction — a neutral
+     at low alpha, so it never competes with the heat ramp carrying the value. */
+  --grid:rgba(0,0,0,0.16);
+  /* Status warning: fixed, not themed — a caution glyph must read the same
+     regardless of light/dark, unlike the series/ink tokens above. */
+  --warn:#fab219; --warn-ink:#1a1206;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
+    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
+    --stale-ink:#fbbf24;
+    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
+    --band:#1c1917; --band-h:#242020; --grid:rgba(255,255,255,0.18);
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
+header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
+   read as one word. --accent carries the theme, so it inverts with the page. */
+.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
+  color:var(--accent); }
+.brand h1 span { color:var(--ink); }
+.brand .tag { color:var(--muted); font-size:14px; }
+nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
+nav.site a {
+  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
+  padding:6px 12px; border-radius:8px;
+}
+nav.site a:hover { color:var(--ink); background:var(--surface); }
+nav.site a.active { color:var(--accent); background:var(--surface); }
+.stamp {
+  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+  font-size:13px; color:var(--muted);
+}
+.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
+.dot.stale { background:var(--stale-ink); }
+h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
+.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
+.tabs button {
+  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:6px 12px; border-radius:8px;
+}
+.tabs button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
+table.ladder thead th {
+  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
+}
+table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
+table.ladder th.team, table.ladder td.team { text-align:left; }
+table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.ladder td.rank, table.ladder td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
+}
+table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
+table.ladder td.total { font-weight:600; }
+table.ladder td.pos { color:var(--pos); }
+table.ladder td.neg { color:var(--neg); }
+table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:26px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:46px; }
+table.proj td.num.rat { color:var(--muted); }
+/* Projected finish: the rank, plus the move it implies from where the club sits
+   today. The move is an annotation, not a column — muted and small, and with no
+   up/down colour, so it can never be mistaken for the Δ beside it (which is a
+   different measurement entirely: yesterday's projection against today's). */
+table.proj th.pfin, table.proj td.pfin { width:62px; white-space:nowrap; }
+td.pfin .pmv { margin-left:4px; font-size:10.5px; color:var(--muted);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+/* Pts/GF/GA — the real table so far, on a started league. Narrower than the
+   rating columns (two digits, not a signed decimal) so the five extra columns
+   don't squeeze the position strip. */
+table.proj th.tbl, table.proj td.tbl { text-align:right; width:30px; }
+table.proj td.tbl { font-family:ui-monospace,"SF Mono",Menlo,monospace; }
+/* What happened vs what the market implies. The heat ramp owns colour here, so
+   the separation is structural: a banded header naming each group, a rule at
+   every boundary, and a recessive neutral wash behind the results — no second
+   hue competing with the probability scale. The wash is re-asserted on hover
+   (as the heat cells are) so the row highlight can't erase the grouping. */
+table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
+table.proj tr.grp th {
+  font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--muted); text-align:left; padding:2px 6px 3px; white-space:nowrap;
+  border-bottom:none; }
+table.proj th.tbl, table.proj td.tbl, table.proj tr.grp th.band {
+  background:var(--band); }
+table.proj td.num.tot { font-weight:600; }
+table.proj tbody tr:hover td { background:var(--surface); }
+table.proj tbody tr:hover td.tbl { background:var(--band-h); }
+th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:11px; min-width:11px; position:relative;
+  background:rgba(var(--heat), var(--a, 0)); }
+/* Alignment gridlines under the sparse ticks, centred on the tick label so a
+   cell reads back to its position without counting across an 18-wide strip.
+   Drawn over the heat as a hairline neutral — recessive, and never a value. */
+td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
+  width:1px; background:var(--grid); pointer-events:none; }
+/* The club's position in the table today. Rows are ordered by that table, so the
+   marks trace the diagonal themselves — the probability mass sitting left or
+   right of a club's mark is the move the market implies. Neutral ink, never the
+   heat hue: this is a fact about the season, not a value on the scale. */
+td.pcell.now::before { content:""; position:absolute; inset:1px;
+  border:1.5px solid var(--ink); opacity:0.5; border-radius:2px;
+  pointer-events:none; }
+/* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
+body.js td.pcell { cursor:crosshair; }
+body.js td.pcell:hover, body.js td.pcell:focus-visible {
+  outline:2px solid var(--accent); outline-offset:-2px; z-index:1; }
+#tip {
+  position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .08s;
+  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.45;
+  padding:6px 9px; border-radius:7px; max-width:220px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+#tip.on { opacity:1; }
+#tip b { font-size:13px; }
+#tip span { color:var(--bg); opacity:0.72; }
+td.heat { text-align:right; width:46px; padding:6px 5px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
+/* Sortable headers, shared by the ladders and the projection tables. A header
+   carrying a tooltip gets a dotted underline so the explanation is discoverable
+   rather than hidden; the tooltip only ever restates what the column is, never
+   a value the table doesn't already print. */
+body.js th.sortable { cursor:pointer; user-select:none; }
+body.js th.sortable:hover { color:var(--ink); }
+body.js th.sortable:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+th.sortable.sorted { color:var(--accent); }
+th.sortable.sorted .caret { opacity:1; }
+body.js table.proj thead th[title] { text-decoration:underline dotted;
+  text-decoration-color:var(--line); text-underline-offset:3px; }
+body.js table.proj thead th[title]:hover { text-decoration-color:var(--accent); }
+table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+/* The projection tables carry the same column beside the rank, narrower: one
+   fixed window, so the value is a single arrow + a one- or two-digit move. */
+table.proj th.delta, table.proj td.delta {
+  text-align:left; width:46px; white-space:nowrap; font-size:12px; }
+td.delta .dup { color:var(--pos); }
+td.delta .ddn { color:var(--neg); }
+td.delta .dmut { color:var(--muted); }
+.lookback {
+  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
+  font-size:13px; color:var(--muted);
+}
+.lookback .seg { display:inline-flex; gap:4px; }
+.lookback button {
+  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:4px 10px; border-radius:8px;
+}
+.lookback button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder th.spark, table.ladder td.spark { text-align:right; width:88px; }
+svg.spark { display:inline-block; vertical-align:middle; }
+svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
+  stroke-linejoin:round; stroke-linecap:round; }
+svg.spark circle.sup { fill:var(--pos); }
+svg.spark circle.sdn { fill:var(--neg); }
+.sparknull { color:var(--muted); }
+/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
+   name, shown only when its rating is materially less certain than the ladder's
+   typical club (wide margin, or too little recent data for one at all). Fixed
+   warning color (not themed) so it reads the same in light and dark — the
+   tooltip carries the specifics. */
+.ubadge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; margin-left:6px; border-radius:50%;
+  background:var(--warn); color:var(--warn-ink);
+  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
+  cursor:default;
+}
+.movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
+.mvcol { flex:1; min-width:240px; }
+.mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.mv { display:inline-flex; align-items:baseline; gap:7px; padding:4px 10px;
+  margin:0 6px 6px 0; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); font-size:13px; }
+.mv .mvd { font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-variant-numeric:tabular-nums; font-size:12px; }
+.mv.up .mvd { color:var(--pos); }
+.mv.down .mvd { color:var(--neg); }
+svg.scatter { display:block; width:100%; height:auto; max-width:640px; margin:6px auto 0; }
+svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
+  stroke:var(--surface); stroke-width:0.8; }
+body.js svg.scatter circle { cursor:pointer; }
+svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
+svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
+svg.scatter rect.quad { opacity:0.09; }
+svg.scatter rect.q-all { fill:var(--q-all); }
+svg.scatter rect.q-def { fill:var(--q-def); }
+svg.scatter rect.q-att { fill:var(--q-att); }
+svg.scatter rect.q-weak { fill:var(--q-weak); }
+svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
+  fill-opacity:0.9; }
+svg.scatter text.ql.q-all { fill:var(--q-all); }
+svg.scatter text.ql.q-def { fill:var(--q-def); }
+svg.scatter text.ql.q-att { fill:var(--q-att); }
+svg.scatter text.ql.q-weak { fill:var(--q-weak); }
+svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
+  letter-spacing:0.03em; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
+  max-width:640px; margin:12px auto 0; font-size:12px; color:var(--muted); }
+.legend .k { display:inline-flex; align-items:center; gap:6px; }
+.legend i.sw { width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
+.sc-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; line-height:1.35; padding:6px 9px; border-radius:8px;
+  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+.sc-tip .t-sub { color:var(--muted); }
+.wide { overflow-x:auto; }
+/* The projection table is the one thing on the site wider than the 880px prose
+   column: a started league carries results + strength + 18-20 position cells +
+   three summary columns. Rather than scroll it sideways (which hides Title /
+   Top 4 / Rel — the columns people come for), let it break out of the wrap and
+   re-centre, capped so it never exceeds the viewport or sprawls on a wide
+   monitor. .wrap's content box is 832px (880 less 2x24 padding), so the offset
+   that keeps the table centred is 416px minus half its own width. Below the
+   breakpoint nothing applies and .wide scrolls exactly as before. */
+@media (min-width:940px) {
+  .tab-panel .wide {
+    width:min(1240px, calc(100vw - 48px));
+    margin-left:calc(416px - min(620px, (100vw - 48px) / 2));
+  }
+}
+.prose { font-size:15px; }
+.prose p { margin:14px 0; }
+.prose a { color:var(--accent); }
+/* Framed inline-SVG chart. Authored prose (blog posts, reports) hand-builds its
+   own SVG in the Markdown body; this is the frame around it. Shared rather than
+   per-surface: the same figure has to look the same wherever it is published. */
+figure.chart { margin:28px 0; padding:14px 14px 6px; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; }
+figure.chart svg { display:block; width:100%; height:auto; }
+figure.chart figcaption { color:var(--muted); font-size:13px; line-height:1.5;
+  margin:8px 2px 4px; }
+footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
+  justify-content:space-between; gap:8px 20px; }
+footer.site .made a { color:var(--muted); text-decoration:none;
+  border-bottom:1px solid var(--line); }
+footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+footer.site .heart { color:var(--neg); }
+footer.site .cite { font-size:12px; opacity:0.85; }
+.faq { margin:20px 0 0; }
+.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
+.faq p { margin:0 0 4px; }
+.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
+  padding-top:16px; border-top:1px solid var(--line); }
+.about a { color:var(--accent); }
+.subscribe { margin:44px 0 0; padding:20px 22px; border:1px solid var(--line);
+  background:var(--surface); border-radius:12px; }
+.subscribe h2 { font-size:16px; margin:0 0 4px; }
+.subscribe p { color:var(--muted); font-size:13.5px; margin:0 0 12px; }
+.subscribe form { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0; }
+.subscribe input[type=email] { flex:1 1 220px; min-width:0; padding:9px 12px;
+  font-size:14px; color:var(--ink); background:var(--bg);
+  border:1px solid var(--line); border-radius:8px; }
+.subscribe input[type=email]:focus { outline:none; border-color:var(--accent); }
+.subscribe button { padding:9px 18px; font-size:14px; font-weight:600;
+  color:#fff; background:var(--accent); border:none; border-radius:8px;
+  cursor:pointer; }
+.subscribe button:hover { opacity:0.9; }
+.subscribe .fine { font-size:12px; margin:10px 0 0; }
+.subscribe .fine a { color:var(--muted); }
+body.js .tab-panel { display:none; }
+body.js .tab-panel.active { display:block; }
+:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}]}</script>
+</head>
+<body>
+<script>document.body.className="js";</script>
+<div class="wrap">
+<header class="site">
+  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
+    <span class="tag">team ratings from the betting market</span></div>
+  <nav class="site"><a href="../../index.html">Global</a><a href="../../leagues.html">Leagues</a><a href="../../blog/index.html">Blog</a><a href="../../methodology.html">Methodology</a></nav>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-19">2026-08-19</time> · last rebuilt <time datetime="2026-08-19T05:45:02.013564+00:00">2026-08-19 05:45 UTC</time></div>
+</header>
+<style>
+.report-for{font-size:12px;font-weight:650;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:26px 0 8px;}
+.report-title{font-size:28px;font-weight:680;letter-spacing:-0.02em;
+  line-height:1.18;margin:0 0 6px;}
+.report-date{color:var(--muted);font-size:13px;margin:0 0 4px;}
+.report-lede{font-size:16.5px;line-height:1.6;color:var(--muted);
+  margin:14px 0 4px;}
+.print-only{display:none;}
+@media print{
+  :root{--bg:#ffffff;--surface:#ffffff;--ink:#18181b;--muted:#5f636b;
+    --line:#e7e5e4;--accent:#0f766e;--pos:#15803d;--neg:#b91c1c;
+    --heat:15,118,110;--hot-ink:#ffffff;--band:#edebe7;--band-h:#f2f0ec;
+    --grid:rgba(0,0,0,0.16);}
+  @page{size:A4;margin:18mm 16mm;}
+  body{background:#fff;}
+  .wrap{max-width:none;padding:0;}
+  nav.site,.stamp,.subscribe,footer.site .made{display:none!important;}
+  header.site{margin-bottom:8px;}
+  figure.chart,table,figcaption{break-inside:avoid;page-break-inside:avoid;}
+  tr,li{break-inside:avoid;page-break-inside:avoid;}
+  h2,h3{break-after:avoid;page-break-after:avoid;}
+  a{color:var(--ink);text-decoration:none;}
+  .print-only{display:block;margin-top:18px;padding-top:10px;
+    border-top:1px solid var(--line);color:var(--muted);font-size:11px;}
+}
+</style><article class="prose"><p class="report-for">A note from Bayes FC &middot; prepared for the Transfermarkt data desk</p><h1 class="report-title">Ten squad valuations the betting market disagrees with</h1><p class="report-date"><time datetime="2026-08-18">August 18, 2026</time></p><p><strong>Five of your top-flight squads are valued at about half, or less, of what the
+betting market implies they are worth.</strong> Osasuna is listed at €71m. The market
+prices that squad like a €184m one. Alavés, Lens, NEC Nijmegen and Groningen sit
+in the same place.</p>
+<p>This note names those five, and the five largest gaps in the other direction. It
+also rules out the obvious explanation: squad age does not account for them.</p>
+<p>This is not a claim to price squads better than you do. It is a daily,
+independent signal for <strong>which</strong> of your ~130 top-flight squads to re-check
+first.</p>
+<h2>Where the number comes from</h2>
+<p>Bayes FC reads closing Asian-handicap and totals odds. It converts them into an
+expected-goals reading for every match, then fits an attack and defence rating
+for each club. Strength is attack + defence, on one scale across seven leagues.
+It updates every day.</p>
+<p>No valuation data goes in. That is what makes it a second opinion and not an
+echo.</p>
+<style>
+/* Valuation figures (issues #142/#156). Site tokens only — no palette of its own,
+   so both themes and the print stylesheet are inherited. */
+.vs .grid { stroke:var(--line); stroke-width:1; }
+.vs .tick { fill:var(--muted); font-size:12px; }
+.vs .axttl { fill:var(--muted); font-size:12.5px; }
+.vs .src { fill:var(--muted); font-size:11px; }
+.vs .dot { fill:var(--ink); opacity:.28; }
+.vs .rich { fill:var(--warn); stroke:var(--surface); stroke-width:1.4; }
+.vs .light { fill:var(--accent); stroke:var(--surface); stroke-width:1.4; }
+.vs .lbl { fill:var(--ink); font-size:11.5px; font-weight:600; }
+.vs .fit { fill:none; stroke:var(--muted); stroke-width:2; stroke-dasharray:5 4; }
+.vs .band { fill:var(--muted); opacity:.09; }
+.vs .lead { stroke:var(--muted); stroke-width:1; opacity:.6; }
+
+/* Hover layer (screen only). A fat fully transparent stroke widens the hit target
+   to something a mouse can actually land on without changing the picture. */
+.vs .pt { cursor:pointer; }
+.vs .dot { stroke:var(--ink); stroke-opacity:0; stroke-width:11; }
+/* data-hl is set on the svg while a dot is hovered: the hovered club's league
+   stays lit, everything else drops back, so the peer cloud is the comparison. */
+.vs[data-hl] .pt { opacity:.06; }
+.vs[data-hl] .lbl, .vs[data-hl] .lead { opacity:.22; }
+.vs[data-hl] .peer { opacity:.75; }
+.vs[data-hl] .peer.dot { fill:var(--ink); }
+.vs[data-hl] .me { opacity:1; r:6.5; }
+.vs-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; line-height:1.45; padding:7px 10px; border-radius:8px;
+  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+.vs-tip strong, .vs-tip span { display:block; }
+.vs-tip .sub { color:var(--muted); }
+.vs-tip .peers { color:var(--muted); margin-top:4px; padding-top:4px;
+  border-top:1px solid rgba(255,255,255,0.18); }
+@media print { .vs-tip, .hoverhint { display:none; } }
+figure.chart .keys { color:var(--muted); font-size:12.5px; margin:10px 2px 0;
+  display:flex; flex-wrap:wrap; gap:4px 18px; }
+figure.chart .keys span { display:inline-flex; align-items:center; gap:6px; }
+figure.chart .keys i { width:10px; height:10px; border-radius:50%; }
+
+table.gaps { border-collapse:collapse; width:100%; font-size:13.5px;
+  margin:22px 0 6px; }
+table.gaps th { font-size:11px; font-weight:600; letter-spacing:0.05em;
+  text-transform:uppercase; color:var(--muted); text-align:right;
+  padding:0 0 8px 12px; vertical-align:bottom; }
+table.gaps th.l, table.gaps td.l { text-align:left; padding-left:0; }
+table.gaps td { padding:8px 0 8px 12px; text-align:right;
+  border-top:1px solid var(--line); font-variant-numeric:tabular-nums; }
+table.gaps td.club { font-weight:600; }
+table.gaps td.club .lg { color:var(--muted); font-weight:400; font-size:12px;
+  margin-left:6px; }
+table.gaps td.gap { font-weight:700; color:var(--ink); }
+table.gaps caption { caption-side:bottom; text-align:left; color:var(--muted);
+  font-size:12.5px; line-height:1.5; padding-top:10px; }
+</style>
+
+<h2>The picture</h2>
+<figure class="chart">
+<svg class="vs" viewBox="0 0 720 470" role="img" width="100%"
+     aria-label="Scatter of Transfermarkt squad market value on a log euro axis against Bayes FC market-implied team strength for the top seven European leagues. Most clubs track a rising line; the labelled clubs sit farthest off it, above when valued richly and below when valued lightly.">
+<line x1="66" y1="382.4" x2="694" y2="382.4" class="grid"/><text x="56" y="386.4" text-anchor="end" class="tick">&euro;10m</text>
+<line x1="66" y1="311.7" x2="694" y2="311.7" class="grid"/><text x="56" y="315.7" text-anchor="end" class="tick">&euro;30m</text>
+<line x1="66" y1="234.3" x2="694" y2="234.3" class="grid"/><text x="56" y="238.3" text-anchor="end" class="tick">&euro;100m</text>
+<line x1="66" y1="163.6" x2="694" y2="163.6" class="grid"/><text x="56" y="167.6" text-anchor="end" class="tick">&euro;300m</text>
+<line x1="66" y1="86.2" x2="694" y2="86.2" class="grid"/><text x="56" y="90.2" text-anchor="end" class="tick">&euro;1bn</text>
+<line x1="91.9" y1="54" x2="91.9" y2="408" class="grid"/><text x="91.9" y="427" text-anchor="middle" class="tick">-1.0</text>
+<line x1="214.8" y1="54" x2="214.8" y2="408" class="grid"/><text x="214.8" y="427" text-anchor="middle" class="tick">-0.5</text>
+<line x1="337.8" y1="54" x2="337.8" y2="408" class="grid"/><text x="337.8" y="427" text-anchor="middle" class="tick">+0.0</text>
+<line x1="460.7" y1="54" x2="460.7" y2="408" class="grid"/><text x="460.7" y="427" text-anchor="middle" class="tick">+0.5</text>
+<line x1="583.7" y1="54" x2="583.7" y2="408" class="grid"/><text x="583.7" y="427" text-anchor="middle" class="tick">+1.0</text>
+<polygon class="band" points="66.0,351.9 76.5,345.9 86.9,339.9 97.4,334.0 107.9,328.0 118.3,322.0 128.8,316.0 139.3,310.1 149.7,304.1 160.2,298.1 170.7,292.2 181.1,286.2 191.6,280.2 202.1,274.3 212.5,268.3 223.0,262.3 233.5,256.4 243.9,250.4 254.4,244.4 264.9,238.5 275.3,232.5 285.8,226.5 296.3,220.6 306.7,214.6 317.2,208.6 327.7,202.7 338.1,196.7 348.6,190.7 359.1,184.8 369.5,178.8 380.0,172.8 390.5,166.9 400.9,160.9 411.4,154.9 421.9,149.0 432.3,143.0 442.8,137.0 453.3,131.1 463.7,125.1 474.2,119.1 484.7,113.2 495.1,107.2 505.6,101.2 516.1,95.2 526.5,89.3 537.0,83.3 547.5,77.3 557.9,71.4 568.4,65.4 578.9,59.4 589.3,53.5 599.8,47.5 610.3,41.5 620.7,35.6 631.2,29.6 641.7,23.6 652.1,17.7 662.6,11.7 673.1,5.7 683.5,-0.2 694.0,-6.2 694.0,52.0 683.5,57.9 673.1,63.9 662.6,69.9 652.1,75.9 641.7,81.8 631.2,87.8 620.7,93.8 610.3,99.7 599.8,105.7 589.3,111.7 578.9,117.6 568.4,123.6 557.9,129.6 547.5,135.5 537.0,141.5 526.5,147.5 516.1,153.4 505.6,159.4 495.1,165.4 484.7,171.3 474.2,177.3 463.7,183.3 453.3,189.2 442.8,195.2 432.3,201.2 421.9,207.1 411.4,213.1 400.9,219.1 390.5,225.0 380.0,231.0 369.5,237.0 359.1,242.9 348.6,248.9 338.1,254.9 327.7,260.8 317.2,266.8 306.7,272.8 296.3,278.7 285.8,284.7 275.3,290.7 264.9,296.7 254.4,302.6 243.9,308.6 233.5,314.6 223.0,320.5 212.5,326.5 202.1,332.5 191.6,338.4 181.1,344.4 170.7,350.4 160.2,356.3 149.7,362.3 139.3,368.3 128.8,374.2 118.3,380.2 107.9,386.2 97.4,392.1 86.9,398.1 76.5,404.1 66.0,410.0"/>
+<polyline class="fit" points="66.0,380.9 76.5,375.0 86.9,369.0 97.4,363.0 107.9,357.1 118.3,351.1 128.8,345.1 139.3,339.2 149.7,333.2 160.2,327.2 170.7,321.3 181.1,315.3 191.6,309.3 202.1,303.4 212.5,297.4 223.0,291.4 233.5,285.5 243.9,279.5 254.4,273.5 264.9,267.6 275.3,261.6 285.8,255.6 296.3,249.7 306.7,243.7 317.2,237.7 327.7,231.8 338.1,225.8 348.6,219.8 359.1,213.9 369.5,207.9 380.0,201.9 390.5,195.9 400.9,190.0 411.4,184.0 421.9,178.0 432.3,172.1 442.8,166.1 453.3,160.1 463.7,154.2 474.2,148.2 484.7,142.2 495.1,136.3 505.6,130.3 516.1,124.3 526.5,118.4 537.0,112.4 547.5,106.4 557.9,100.5 568.4,94.5 578.9,88.5 589.3,82.6 599.8,76.6 610.3,70.6 620.7,64.7 631.2,58.7 641.7,52.7 652.1,46.8 662.6,40.8 673.1,34.8 683.5,28.9 694.0,22.9"/>
+<circle class="pt dot lg-EREDIVISIE" cx="359.0" cy="179.7" r="3.4" data-lg="EREDIVISIE" data-c="Ajax" data-l="Eredivisie" data-s="+0.09" data-v="€234m" data-i="€138m" data-g="+70%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LIGAPT" cx="154.2" cy="300.5" r="3.4" data-lg="LIGAPT" data-c="Alverca" data-l="Primeira Liga" data-s="-0.75" data-v="€36m" data-i="€23m" data-g="+53%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGUE1" cx="249.5" cy="254.3" r="3.4" data-lg="LIGUE1" data-c="Angers" data-l="Ligue 1" data-s="-0.36" data-v="€73m" data-i="€51m" data-g="+42%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LIGAPT" cx="141.1" cy="316.2" r="3.4" data-lg="LIGAPT" data-c="Arouca" data-l="Primeira Liga" data-s="-0.80" data-v="€28m" data-i="€20m" data-g="+43%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="679.2" cy="64.1" r="3.4" data-lg="EPL" data-c="Arsenal" data-l="Premier League" data-s="+1.39" data-v="€1.41bn" data-i="€2.43bn" data-g="−42%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGUE1" cx="450.1" cy="158.0" r="3.4" data-lg="LIGUE1" data-c="Monaco" data-l="Ligue 1" data-s="+0.46" data-v="€327m" data-i="€310m" data-g="+5%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-SERIEA" cx="469.3" cy="141.8" r="3.4" data-lg="SERIEA" data-c="Atalanta" data-l="Serie A" data-s="+0.53" data-v="€421m" data-i="€334m" data-g="+26%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LALIGA" cx="469.2" cy="177.8" r="3.4" data-lg="LALIGA" data-c="Athletic Bilbao" data-l="La Liga" data-s="+0.53" data-v="€241m" data-i="€344m" data-g="−30%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LALIGA" cx="508.0" cy="114.5" r="3.4" data-lg="LALIGA" data-c="Atlético Madrid" data-l="La Liga" data-s="+0.69" data-v="€644m" data-i="€463m" data-g="+39%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="345.1" cy="204.1" r="3.4" data-lg="BUNDESLIGA" data-c="Augsburg" data-l="Bundesliga" data-s="+0.03" data-v="€160m" data-i="€120m" data-g="+33%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LIGUE1" cx="318.6" cy="243.0" r="3.4" data-lg="LIGUE1" data-c="Auxerre" data-l="Ligue 1" data-s="-0.08" data-v="€87m" data-i="€106m" data-g="−18%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EPL" cx="533.5" cy="127.0" r="3.4" data-lg="EPL" data-c="Aston Villa" data-l="Premier League" data-s="+0.80" data-v="€530m" data-i="€609m" data-g="−13%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="336.7" cy="203.9" r="3.4" data-lg="EREDIVISIE" data-c="AZ Alkmaar" data-l="Eredivisie" data-s="-0.00" data-v="€160m" data-i="€122m" data-g="+31%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="477.4" cy="130.9" r="3.4" data-lg="BUNDESLIGA" data-c="Bayer Leverkusen" data-l="Bundesliga" data-s="+0.57" data-v="€499m" data-i="€405m" data-g="+23%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="620.3" cy="70.3" r="3.4" data-lg="LALIGA" data-c="Barcelona" data-l="La Liga" data-s="+1.15" data-v="€1.28bn" data-i="€1.68bn" data-g="−24%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="632.0" cy="81.2" r="3.4" data-lg="BUNDESLIGA" data-c="Bayern Munich" data-l="Bundesliga" data-s="+1.20" data-v="€1.08bn" data-i="€1.53bn" data-g="−30%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LIGAPT" cx="502.9" cy="147.5" r="3.4" data-lg="LIGAPT" data-c="Benfica" data-l="Primeira Liga" data-s="+0.67" data-v="€386m" data-i="€530m" data-g="−27%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LALIGA" cx="438.1" cy="179.4" r="3.4" data-lg="LALIGA" data-c="Real Betis" data-l="La Liga" data-s="+0.41" data-v="€235m" data-i="€246m" data-g="−4%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-EPL" cx="535.1" cy="117.0" r="3.4" data-lg="EPL" data-c="Brighton" data-l="Premier League" data-s="+0.80" data-v="€620m" data-i="€692m" data-g="−10%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="355.9" cy="216.1" r="3.4" data-lg="BUNDESLIGA" data-c="Borussia M&#x27;gladbach" data-l="Bundesliga" data-s="+0.07" data-v="€133m" data-i="€128m" data-g="+3%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-SERIEA" cx="378.1" cy="176.3" r="3.4" data-lg="SERIEA" data-c="Bologna" data-l="Serie A" data-s="+0.16" data-v="€246m" data-i="€150m" data-g="+64%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EPL" cx="509.2" cy="122.0" r="3.4" data-lg="EPL" data-c="Bournemouth" data-l="Premier League" data-s="+0.70" data-v="€573m" data-i="€537m" data-g="+7%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGAPT" cx="349.4" cy="206.1" r="3.4" data-lg="LIGAPT" data-c="SC Braga" data-l="Primeira Liga" data-s="+0.05" data-v="€155m" data-i="€129m" data-g="+20%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="493.2" cy="122.9" r="3.4" data-lg="EPL" data-c="Brentford" data-l="Premier League" data-s="+0.63" data-v="€565m" data-i="€483m" data-g="+17%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGUE1" cx="314.3" cy="265.4" r="3.4" data-lg="LIGUE1" data-c="Brest" data-l="Ligue 1" data-s="-0.10" data-v="€62m" data-i="€92m" data-g="−33%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-SERIEA" cx="276.9" cy="216.2" r="3.4" data-lg="SERIEA" data-c="Cagliari" data-l="Serie A" data-s="-0.25" data-v="€132m" data-i="€71m" data-g="+85%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="80.8" cy="384.3" r="3.4" data-lg="EREDIVISIE" data-c="Cambuur" data-l="Eredivisie" data-s="-1.05" data-v="€10m" data-i="€14m" data-g="−30%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LALIGA" cx="426.7" cy="201.2" r="3.4" data-lg="LALIGA" data-c="Celta Vigo" data-l="La Liga" data-s="+0.36" data-v="€167m" data-i="€226m" data-g="−26%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-EPL" cx="571.8" cy="65.9" r="3.4" data-lg="EPL" data-c="Chelsea" data-l="Premier League" data-s="+0.95" data-v="€1.37bn" data-i="€1.03bn" data-g="+33%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="498.5" cy="129.9" r="3.4" data-lg="SERIEA" data-c="Como" data-l="Serie A" data-s="+0.65" data-v="€506m" data-i="€484m" data-g="+5%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EPL" cx="330.5" cy="175.0" r="3.4" data-lg="EPL" data-c="Coventry" data-l="Premier League" data-s="-0.03" data-v="€251m" data-i="€100m" data-g="+151%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGAPT" cx="115.7" cy="331.2" r="3.4" data-lg="LIGAPT" data-c="Casa Pia" data-l="Primeira Liga" data-s="-0.90" data-v="€22m" data-i="€14m" data-g="+63%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="456.6" cy="130.2" r="3.4" data-lg="EPL" data-c="Crystal Palace" data-l="Premier League" data-s="+0.48" data-v="€505m" data-i="€317m" data-g="+59%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="172.8" cy="370.5" r="3.4" data-lg="EREDIVISIE" data-c="Den Haag" data-l="Eredivisie" data-s="-0.67" data-v="€12m" data-i="€28m" data-g="−57%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="499.6" cy="133.1" r="3.4" data-lg="BUNDESLIGA" data-c="Dortmund" data-l="Bundesliga" data-s="+0.66" data-v="€482m" data-i="€511m" data-g="−6%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="339.4" cy="252.7" r="3.4" data-lg="LALIGA" data-c="Elche" data-l="La Liga" data-s="+0.01" data-v="€75m" data-i="€112m" data-g="−33%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="264.2" cy="276.8" r="3.4" data-lg="BUNDESLIGA" data-c="Elversberg" data-l="Bundesliga" data-s="-0.30" data-v="€52m" data-i="€56m" data-g="−8%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="375.9" cy="225.2" r="3.4" data-lg="LALIGA" data-c="Espanyol" data-l="La Liga" data-s="+0.16" data-v="€115m" data-i="€148m" data-g="−22%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGAPT" cx="190.2" cy="289.7" r="3.4" data-lg="LIGAPT" data-c="Estoril" data-l="Primeira Liga" data-s="-0.60" data-v="€42m" data-i="€30m" data-g="+40%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGAPT" cx="135.8" cy="337.3" r="3.4" data-lg="LIGAPT" data-c="Estrela" data-l="Primeira Liga" data-s="-0.82" data-v="€20m" data-i="€19m" data-g="+6%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="461.8" cy="136.2" r="3.4" data-lg="EPL" data-c="Everton" data-l="Premier League" data-s="+0.50" data-v="€459m" data-i="€335m" data-g="+37%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="165.1" cy="347.5" r="3.4" data-lg="EREDIVISIE" data-c="Excelsior" data-l="Eredivisie" data-s="-0.70" data-v="€17m" data-i="€27m" data-g="−37%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LIGAPT" cx="276.5" cy="270.2" r="3.4" data-lg="LIGAPT" data-c="Famalicao" data-l="Primeira Liga" data-s="-0.25" data-v="€57m" data-i="€74m" data-g="−23%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="378.4" cy="180.5" r="3.4" data-lg="EREDIVISIE" data-c="Feyenoord" data-l="Eredivisie" data-s="+0.17" data-v="€231m" data-i="€160m" data-g="+44%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-EPL" cx="449.0" cy="128.5" r="3.4" data-lg="EPL" data-c="Nottingham Forest" data-l="Premier League" data-s="+0.45" data-v="€518m" data-i="€296m" data-g="+75%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="265.6" cy="262.2" r="3.4" data-lg="SERIEA" data-c="Frosinone" data-l="Serie A" data-s="-0.29" data-v="€65m" data-i="€63m" data-g="+3%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="139.5" cy="354.8" r="3.4" data-lg="EREDIVISIE" data-c="For Sittard" data-l="Eredivisie" data-s="-0.81" data-v="€15m" data-i="€19m" data-g="−17%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-EPL" cx="469.6" cy="157.7" r="3.4" data-lg="EPL" data-c="Fulham" data-l="Premier League" data-s="+0.54" data-v="€329m" data-i="€329m" data-g="−0%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="205.7" cy="330.3" r="3.4" data-lg="EREDIVISIE" data-c="Go Ahead Eagles" data-l="Eredivisie" data-s="-0.54" data-v="€22m" data-i="€35m" data-g="−35%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-SERIEA" cx="304.9" cy="196.8" r="3.4" data-lg="SERIEA" data-c="Genoa" data-l="Serie A" data-s="-0.13" data-v="€179m" data-i="€92m" data-g="+95%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LALIGA" cx="372.6" cy="248.4" r="3.4" data-lg="LALIGA" data-c="Getafe" data-l="La Liga" data-s="+0.14" data-v="€80m" data-i="€140m" data-g="−43%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGAPT" cx="229.7" cy="315.4" r="3.4" data-lg="LIGAPT" data-c="Gil Vicente" data-l="Primeira Liga" data-s="-0.44" data-v="€28m" data-i="€45m" data-g="−37%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGAPT" cx="212.5" cy="285.5" r="3.4" data-lg="LIGAPT" data-c="Vitória Guimarães" data-l="Primeira Liga" data-s="-0.51" data-v="€45m" data-i="€40m" data-g="+12%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGUE1" cx="299.4" cy="276.8" r="3.4" data-lg="LIGUE1" data-c="Le Havre" data-l="Ligue 1" data-s="-0.16" data-v="€52m" data-i="€84m" data-g="−39%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="246.1" cy="278.3" r="3.4" data-lg="EREDIVISIE" data-c="Heerenveen" data-l="Eredivisie" data-s="-0.37" data-v="€50m" data-i="€54m" data-g="−6%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="461.6" cy="163.9" r="3.4" data-lg="BUNDESLIGA" data-c="Hoffenheim" data-l="Bundesliga" data-s="+0.50" data-v="€298m" data-i="€364m" data-g="−18%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="310.9" cy="230.4" r="3.4" data-lg="BUNDESLIGA" data-c="Hamburger SV" data-l="Bundesliga" data-s="-0.11" data-v="€106m" data-i="€93m" data-g="+14%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-EPL" cx="254.4" cy="227.7" r="3.4" data-lg="EPL" data-c="Hull" data-l="Premier League" data-s="-0.34" data-v="€111m" data-i="€47m" data-g="+138%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="562.5" cy="109.7" r="3.4" data-lg="SERIEA" data-c="Inter" data-l="Serie A" data-s="+0.91" data-v="€694m" data-i="€744m" data-g="−7%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EPL" cx="355.8" cy="168.0" r="3.4" data-lg="EPL" data-c="Ipswich" data-l="Premier League" data-s="+0.07" data-v="€280m" data-i="€120m" data-g="+133%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="553.1" cy="125.5" r="3.4" data-lg="SERIEA" data-c="Juventus" data-l="Serie A" data-s="+0.88" data-v="€543m" data-i="€696m" data-g="−22%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="354.9" cy="220.5" r="3.4" data-lg="BUNDESLIGA" data-c="1. FC Köln" data-l="Bundesliga" data-s="+0.07" data-v="€124m" data-i="€133m" data-g="−7%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="317.3" cy="245.4" r="3.4" data-lg="LALIGA" data-c="Deportivo La Coruña" data-l="La Liga" data-s="-0.08" data-v="€84m" data-i="€91m" data-g="−8%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-SERIEA" cx="358.9" cy="187.7" r="3.4" data-lg="SERIEA" data-c="Lazio" data-l="Serie A" data-s="+0.09" data-v="€206m" data-i="€133m" data-g="+55%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-SERIEA" cx="274.4" cy="253.1" r="3.4" data-lg="SERIEA" data-c="Lecce" data-l="Serie A" data-s="-0.26" data-v="€75m" data-i="€69m" data-g="+9%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-EPL" cx="451.1" cy="140.9" r="3.4" data-lg="EPL" data-c="Leeds" data-l="Premier League" data-s="+0.46" data-v="€427m" data-i="€283m" data-g="+51%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGUE1" cx="277.8" cy="335.7" r="3.4" data-lg="LIGUE1" data-c="Le Mans" data-l="Ligue 1" data-s="-0.24" data-v="€21m" data-i="€61m" data-g="−66%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LALIGA" cx="347.2" cy="245.9" r="3.4" data-lg="LALIGA" data-c="Levante" data-l="La Liga" data-s="+0.04" data-v="€84m" data-i="€128m" data-g="−35%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGUE1" cx="464.7" cy="160.0" r="3.4" data-lg="LIGUE1" data-c="Lille" data-l="Ligue 1" data-s="+0.52" data-v="€317m" data-i="€368m" data-g="−14%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EPL" cx="605.4" cy="86.2" r="3.4" data-lg="EPL" data-c="Liverpool" data-l="Premier League" data-s="+1.09" data-v="€1000m" data-i="€1.27bn" data-g="−21%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGUE1" cx="324.2" cy="247.0" r="3.4" data-lg="LIGUE1" data-c="Lorient" data-l="Ligue 1" data-s="-0.06" data-v="€82m" data-i="€100m" data-g="−18%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LIGUE1" cx="450.4" cy="168.2" r="3.4" data-lg="LIGUE1" data-c="Lyon" data-l="Ligue 1" data-s="+0.46" data-v="€279m" data-i="€332m" data-g="−16%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="370.9" cy="200.4" r="3.4" data-lg="BUNDESLIGA" data-c="Mainz 05" data-l="Bundesliga" data-s="+0.13" data-v="€169m" data-i="€133m" data-g="+27%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="267.8" cy="295.4" r="3.4" data-lg="LALIGA" data-c="Malaga" data-l="La Liga" data-s="-0.28" data-v="€39m" data-i="€60m" data-g="−36%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGUE1" cx="467.4" cy="175.9" r="3.4" data-lg="LIGUE1" data-c="Marseille" data-l="Ligue 1" data-s="+0.53" data-v="€248m" data-i="€316m" data-g="−22%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EPL" cx="678.6" cy="61.4" r="3.4" data-lg="EPL" data-c="Manchester City" data-l="Premier League" data-s="+1.39" data-v="€1.47bn" data-i="€2.51bn" data-g="−41%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="502.3" cy="121.5" r="3.4" data-lg="SERIEA" data-c="AC Milan" data-l="Serie A" data-s="+0.67" data-v="€577m" data-i="€492m" data-g="+17%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-SERIEA" cx="256.9" cy="262.4" r="3.4" data-lg="SERIEA" data-c="Monza" data-l="Serie A" data-s="-0.33" data-v="€65m" data-i="€57m" data-g="+14%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LIGAPT" cx="110.0" cy="336.3" r="3.4" data-lg="LIGAPT" data-c="Moreirense" data-l="Primeira Liga" data-s="-0.93" data-v="€20m" data-i="€16m" data-g="+24%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGAPT" cx="174.5" cy="348.6" r="3.4" data-lg="LIGAPT" data-c="Marítimo" data-l="Primeira Liga" data-s="-0.66" data-v="€17m" data-i="€26m" data-g="−35%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="554.1" cy="94.8" r="3.4" data-lg="EPL" data-c="Manchester United" data-l="Premier League" data-s="+0.88" data-v="€874m" data-i="€781m" data-g="+12%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-SERIEA" cx="498.2" cy="137.8" r="3.4" data-lg="SERIEA" data-c="Napoli" data-l="Serie A" data-s="+0.65" data-v="€448m" data-i="€415m" data-g="+8%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LIGAPT" cx="163.2" cy="347.0" r="3.4" data-lg="LIGAPT" data-c="Nacional" data-l="Primeira Liga" data-s="-0.71" data-v="€17m" data-i="€25m" data-g="−30%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EPL" cx="515.6" cy="122.6" r="3.4" data-lg="EPL" data-c="Newcastle" data-l="Premier League" data-s="+0.72" data-v="€568m" data-i="€562m" data-g="+1%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-LIGUE1" cx="349.1" cy="216.5" r="3.4" data-lg="LIGUE1" data-c="Nice" data-l="Ligue 1" data-s="+0.05" data-v="€132m" data-i="€123m" data-g="+7%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="282.6" cy="290.2" r="3.4" data-lg="BUNDESLIGA" data-c="Paderborn" data-l="Bundesliga" data-s="-0.22" data-v="€42m" data-i="€73m" data-g="−43%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LIGUE1" cx="329.8" cy="198.1" r="3.4" data-lg="LIGUE1" data-c="Paris FC" data-l="Ligue 1" data-s="-0.03" data-v="€175m" data-i="€99m" data-g="+78%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LIGAPT" cx="466.3" cy="135.1" r="3.4" data-lg="LIGAPT" data-c="Porto" data-l="Primeira Liga" data-s="+0.52" data-v="€467m" data-i="€360m" data-g="+30%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LIGUE1" cx="615.2" cy="65.0" r="3.4" data-lg="LIGUE1" data-c="Paris SG" data-l="Ligue 1" data-s="+1.13" data-v="€1.39bn" data-i="€1.47bn" data-g="−6%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="398.3" cy="166.9" r="3.4" data-lg="EREDIVISIE" data-c="PSV Eindhoven" data-l="Eredivisie" data-s="+0.25" data-v="€285m" data-i="€197m" data-g="+45%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LALIGA" cx="396.2" cy="240.5" r="3.4" data-lg="LALIGA" data-c="Rayo Vallecano" data-l="La Liga" data-s="+0.24" data-v="€91m" data-i="€160m" data-g="−43%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="480.4" cy="128.9" r="3.4" data-lg="BUNDESLIGA" data-c="RB Leipzig" data-l="Bundesliga" data-s="+0.58" data-v="€515m" data-i="€452m" data-g="+14%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LIGUE1" cx="424.9" cy="169.1" r="3.4" data-lg="LIGUE1" data-c="Rennes" data-l="Ligue 1" data-s="+0.35" data-v="€276m" data-i="€246m" data-g="+12%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LIGAPT" cx="130.4" cy="301.7" r="3.4" data-lg="LIGAPT" data-c="Rio Ave" data-l="Primeira Liga" data-s="-0.84" data-v="€35m" data-i="€18m" data-g="+92%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LALIGA" cx="584.7" cy="61.8" r="3.4" data-lg="LALIGA" data-c="Real Madrid" data-l="La Liga" data-s="+1.00" data-v="€1.46bn" data-i="€1.04bn" data-g="+41%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-SERIEA" cx="495.3" cy="133.9" r="3.4" data-lg="SERIEA" data-c="Roma" data-l="Serie A" data-s="+0.64" data-v="€476m" data-i="€495m" data-g="−4%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LALIGA" cx="414.9" cy="174.7" r="3.4" data-lg="LALIGA" data-c="Real Sociedad" data-l="La Liga" data-s="+0.31" data-v="€252m" data-i="€226m" data-g="+12%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="353.4" cy="259.7" r="3.4" data-lg="BUNDESLIGA" data-c="Schalke 04" data-l="Bundesliga" data-s="+0.06" data-v="€67m" data-i="€119m" data-g="−43%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="305.0" cy="245.5" r="3.4" data-lg="LALIGA" data-c="Santander" data-l="La Liga" data-s="-0.13" data-v="€84m" data-i="€86m" data-g="−2%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-SERIEA" cx="316.2" cy="195.2" r="3.4" data-lg="SERIEA" data-c="Sassuolo" data-l="Serie A" data-s="-0.09" data-v="€184m" data-i="€98m" data-g="+88%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="385.2" cy="177.3" r="3.4" data-lg="BUNDESLIGA" data-c="SC Freiburg" data-l="Bundesliga" data-s="+0.19" data-v="€243m" data-i="€163m" data-g="+49%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LIGAPT" cx="219.9" cy="318.8" r="3.4" data-lg="LIGAPT" data-c="Santa Clara" data-l="Primeira Liga" data-s="-0.48" data-v="€27m" data-i="€40m" data-g="−32%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-LALIGA" cx="387.2" cy="220.2" r="3.4" data-lg="LALIGA" data-c="Sevilla" data-l="La Liga" data-s="+0.20" data-v="€124m" data-i="€166m" data-g="−25%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGAPT" cx="488.5" cy="138.0" r="3.4" data-lg="LIGAPT" data-c="Sporting CP" data-l="Primeira Liga" data-s="+0.61" data-v="€447m" data-i="€474m" data-g="−6%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="207.0" cy="328.9" r="3.4" data-lg="EREDIVISIE" data-c="Sparta Rotterdam" data-l="Eredivisie" data-s="-0.53" data-v="€23m" data-i="€37m" data-g="−37%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LIGUE1" cx="384.6" cy="159.5" r="3.4" data-lg="LIGUE1" data-c="Strasbourg" data-l="Ligue 1" data-s="+0.19" data-v="€320m" data-i="€216m" data-g="+48%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EPL" cx="417.2" cy="146.7" r="3.4" data-lg="EPL" data-c="Sunderland" data-l="Premier League" data-s="+0.32" data-v="€390m" data-i="€223m" data-g="+75%" data-ln="20" data-lm="+25%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="360.5" cy="208.3" r="3.4" data-lg="BUNDESLIGA" data-c="Werder Bremen" data-l="Bundesliga" data-s="+0.09" data-v="€150m" data-i="€145m" data-g="+3%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="178.8" cy="400.6" r="3.4" data-lg="EREDIVISIE" data-c="Telstar" data-l="Eredivisie" data-s="-0.65" data-v="€8m" data-i="€29m" data-g="−74%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-SERIEA" cx="298.9" cy="215.4" r="3.4" data-lg="SERIEA" data-c="Torino" data-l="Serie A" data-s="-0.16" data-v="€134m" data-i="€81m" data-g="+65%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-LIGUE1" cx="365.7" cy="221.3" r="3.4" data-lg="LIGUE1" data-c="Toulouse" data-l="Ligue 1" data-s="+0.11" data-v="€122m" data-i="€172m" data-g="−29%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-LIGUE1" cx="255.9" cy="309.5" r="3.4" data-lg="LIGUE1" data-c="Troyes" data-l="Ligue 1" data-s="-0.33" data-v="€31m" data-i="€54m" data-g="−42%" data-ln="18" data-lm="−17%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="373.3" cy="244.1" r="3.4" data-lg="EREDIVISIE" data-c="Twente" data-l="Eredivisie" data-s="+0.14" data-v="€86m" data-i="€153m" data-g="−44%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="342.9" cy="222.6" r="3.4" data-lg="BUNDESLIGA" data-c="Union Berlin" data-l="Bundesliga" data-s="+0.02" data-v="€120m" data-i="€115m" data-g="+5%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="262.7" cy="268.9" r="3.4" data-lg="EREDIVISIE" data-c="Utrecht" data-l="Eredivisie" data-s="-0.31" data-v="€58m" data-i="€61m" data-g="−4%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-LALIGA" cx="411.0" cy="222.4" r="3.4" data-lg="LALIGA" data-c="Valencia" data-l="La Liga" data-s="+0.30" data-v="€120m" data-i="€191m" data-g="−37%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-SERIEA" cx="265.5" cy="223.5" r="3.4" data-lg="SERIEA" data-c="Venezia" data-l="Serie A" data-s="-0.29" data-v="€118m" data-i="€59m" data-g="+99%" data-ln="20" data-lm="+40%"/>
+<circle class="pt dot lg-BUNDESLIGA" cx="483.6" cy="139.9" r="3.4" data-lg="BUNDESLIGA" data-c="VfB Stuttgart" data-l="Bundesliga" data-s="+0.59" data-v="€434m" data-i="€454m" data-g="−4%" data-ln="18" data-lm="+3%"/>
+<circle class="pt dot lg-LALIGA" cx="445.1" cy="157.5" r="3.4" data-lg="LALIGA" data-c="Villarreal" data-l="La Liga" data-s="+0.44" data-v="€330m" data-i="€295m" data-g="+12%" data-ln="20" data-lm="−25%"/>
+<circle class="pt dot lg-LIGAPT" cx="127.1" cy="353.2" r="3.4" data-lg="LIGAPT" data-c="Academico Viseu" data-l="Primeira Liga" data-s="-0.86" data-v="€16m" data-i="€16m" data-g="−1%" data-ln="18" data-lm="+9%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="92.2" cy="369.9" r="3.4" data-lg="EREDIVISIE" data-c="Willem II" data-l="Eredivisie" data-s="-1.00" data-v="€12m" data-i="€13m" data-g="−6%" data-ln="18" data-lm="−24%"/>
+<circle class="pt dot lg-EREDIVISIE" cx="151.7" cy="343.6" r="3.4" data-lg="EREDIVISIE" data-c="Zwolle" data-l="Eredivisie" data-s="-0.76" data-v="€18m" data-i="€21m" data-g="−14%" data-ln="18" data-lm="−24%"/>
+<text x="492.5" y="82.1" text-anchor="middle" class="lbl">Tottenham</text>
+<text x="382.1" y="142.6" text-anchor="middle" class="lbl">Eintracht Frankfurt</text>
+<line x1="361.1" y1="155.9" x2="361.1" y2="119.9" class="lead"/>
+<text x="361.1" y="115.9" text-anchor="middle" class="lbl">Fiorentina</text>
+<text x="246.9" y="178.1" text-anchor="middle" class="lbl">Parma</text>
+<text x="307.1" y="188.3" text-anchor="middle" class="lbl">Udinese</text>
+<line x1="259.1" y1="306.0" x2="259.1" y2="313.0" class="lead"/>
+<text x="259.1" y="323.0" text-anchor="middle" class="lbl">Groningen</text>
+<line x1="307.8" y1="290.8" x2="307.8" y2="297.8" class="lead"/>
+<text x="307.8" y="307.8" text-anchor="middle" class="lbl">NEC Nijmegen</text>
+<line x1="382.6" y1="256.6" x2="382.6" y2="263.6" class="lead"/>
+<text x="382.6" y="273.6" text-anchor="middle" class="lbl">Deportivo Alavés</text>
+<line x1="409.3" y1="256.3" x2="409.3" y2="293.3" class="lead"/>
+<text x="409.3" y="303.3" text-anchor="middle" class="lbl">Osasuna</text>
+<line x1="467.0" y1="199.2" x2="467.0" y2="206.2" class="lead"/>
+<text x="467.0" y="216.2" text-anchor="middle" class="lbl">RC Lens</text>
+<circle class="pt rich lg-SERIEA" cx="246.9" cy="188.1" r="4.6" data-lg="SERIEA" data-c="Parma" data-l="Serie A" data-s="-0.37" data-v="€205m" data-i="€56m" data-g="+267%" data-ln="20" data-lm="+40%"/>
+<circle class="pt rich lg-SERIEA" cx="361.1" cy="155.9" r="4.6" data-lg="SERIEA" data-c="Fiorentina" data-l="Serie A" data-s="+0.09" data-v="€338m" data-i="€140m" data-g="+141%" data-ln="20" data-lm="+40%"/>
+<circle class="pt rich lg-SERIEA" cx="307.1" cy="198.3" r="4.6" data-lg="SERIEA" data-c="Udinese" data-l="Serie A" data-s="-0.12" data-v="€175m" data-i="€84m" data-g="+108%" data-ln="20" data-lm="+40%"/>
+<circle class="pt rich lg-BUNDESLIGA" cx="382.1" cy="152.6" r="4.6" data-lg="BUNDESLIGA" data-c="Eintracht Frankfurt" data-l="Bundesliga" data-s="+0.18" data-v="€356m" data-i="€173m" data-g="+106%" data-ln="18" data-lm="+3%"/>
+<circle class="pt rich lg-EPL" cx="492.5" cy="92.1" r="4.6" data-lg="EPL" data-c="Tottenham" data-l="Premier League" data-s="+0.63" data-v="€912m" data-i="€453m" data-g="+101%" data-ln="20" data-lm="+25%"/>
+<circle class="pt light lg-LALIGA" cx="409.3" cy="256.3" r="4.6" data-lg="LALIGA" data-c="Osasuna" data-l="La Liga" data-s="+0.29" data-v="€71m" data-i="€184m" data-g="−62%" data-ln="20" data-lm="−25%"/>
+<circle class="pt light lg-LALIGA" cx="382.6" cy="256.6" r="4.6" data-lg="LALIGA" data-c="Deportivo Alavés" data-l="La Liga" data-s="+0.18" data-v="€71m" data-i="€154m" data-g="−54%" data-ln="20" data-lm="−25%"/>
+<circle class="pt light lg-LIGUE1" cx="467.0" cy="199.2" r="4.6" data-lg="LIGUE1" data-c="RC Lens" data-l="Ligue 1" data-s="+0.53" data-v="€172m" data-i="€348m" data-g="−51%" data-ln="18" data-lm="−17%"/>
+<circle class="pt light lg-EREDIVISIE" cx="307.8" cy="290.8" r="4.6" data-lg="EREDIVISIE" data-c="NEC Nijmegen" data-l="Eredivisie" data-s="-0.12" data-v="€42m" data-i="€82m" data-g="−50%" data-ln="18" data-lm="−24%"/>
+<circle class="pt light lg-EREDIVISIE" cx="259.1" cy="306.0" r="4.6" data-lg="EREDIVISIE" data-c="Groningen" data-l="Eredivisie" data-s="-0.32" data-v="€33m" data-i="€64m" data-g="−49%" data-ln="18" data-lm="−24%"/>
+<text x="66" y="462" class="axttl">Market-implied strength (attack + defence) &rarr;</text>
+<text transform="translate(16,231.0) rotate(-90)" text-anchor="middle" class="axttl">Squad market value (log scale)</text>
+<text x="66" y="20" class="src">Strength: bayesfc.com 2026-08-16 &middot; Values: Transfermarkt 2026-08-11</text>
+<text x="66" y="36" class="src">132 clubs, seven leagues &middot; pooled fit R&sup2;=0.87</text>
+</svg>
+<div class="keys"><span><i style="background:var(--ink);opacity:.28"></i>a club</span><span><i style="background:var(--accent)"></i>value looks light for its strength</span><span><i style="background:var(--warn)"></i>value looks rich for its strength</span></div>
+<figcaption>Each dot is a club: horizontal is our market-implied strength, vertical is Transfermarkt&rsquo;s total squad value on a log scale. The dashed line is one pooled fit across all seven leagues (R&sup2;=0.87); the shaded band is its typical spread (&plusmn;57%). Above the line means valued richly for the strength the market reads today; below it, lightly. The labelled clubs sit farthest off it. <span class="hoverhint">Hover any dot on screen for that club&rsquo;s numbers; its league peers light up beside it.</span></figcaption>
+</figure>
+
+<script>
+/* Hover layer for the valuation scatter (#156). Progressive enhancement: the
+   figure is complete without it, and print never sees it. */
+(function(){
+  var svg=document.querySelector('svg.vs'); if(!svg) return;
+  var pts=svg.querySelectorAll('circle.pt'); if(!pts.length) return;
+  var tip=document.createElement('div'); tip.className='vs-tip';
+  tip.innerHTML='<strong></strong><span class="sub"></span>'+
+                '<span class="val"></span><span class="peers"></span>';
+  document.body.appendChild(tip);
+  var nm=tip.querySelector('strong'), sub=tip.querySelector('.sub'),
+      val=tip.querySelector('.val'), peers=tip.querySelector('.peers');
+  function move(e){
+    var x=e.clientX+16, y=e.clientY+16;
+    if(x+tip.offsetWidth>window.innerWidth-8) x=e.clientX-tip.offsetWidth-16;
+    if(y+tip.offsetHeight>window.innerHeight-8) y=e.clientY-tip.offsetHeight-16;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  function enter(e){
+    var d=this.dataset, self=this;
+    nm.textContent=d.c;
+    sub.textContent=d.l+' \u00b7 strength '+d.s;
+    val.textContent=d.v+' listed \u00b7 '+d.i+' implied \u00b7 '+d.g;
+    peers.textContent=d.l+': '+d.ln+' clubs, median gap '+d.lm;
+    svg.setAttribute('data-hl',d.lg);
+    pts.forEach(function(p){
+      p.classList.toggle('peer', p.dataset.lg===d.lg);
+      p.classList.toggle('me', p===self);
+    });
+    tip.style.opacity='1'; move(e);
+  }
+  function leave(){
+    tip.style.opacity='0'; svg.removeAttribute('data-hl');
+    pts.forEach(function(p){ p.classList.remove('peer','me'); });
+  }
+  pts.forEach(function(p){
+    p.addEventListener('mouseenter',enter);
+    p.addEventListener('mousemove',move);
+    p.addEventListener('mouseleave',leave);
+  });
+})();
+</script>
+
+<p>The cloud rises: stronger squads are worth more, and a single line fits all seven
+leagues. The fit is the boring part. The clubs sitting well off it are the
+question.</p>
+<p>Leagues sit at different heights against that line. Serie A squads run about
++40% above it as a group, La Liga about −25% below. Hover a dot to light up its
+league and see this. It matters, so we checked it: each of the ten clubs below is
+an outlier against its own league as well as against the pooled line.</p>
+<h2>It is not age</h2>
+<p>A young squad can carry value its results have not shown yet. So we added
+Transfermarkt's average squad age as a second term.</p>
+<p>It barely moves. R² goes from 0.871 to 0.875. Each extra year of squad age is
+worth about −6% of value at equal strength. Every gap below survives the control.</p>
+<table class="gaps">
+<thead><tr><th class="l">Club</th><th>&Oslash; age</th><th>TM squad value</th><th>Strength + age imply</th><th>Gap, strength only</th><th>Gap, age-adjusted</th></tr></thead>
+<tbody>
+<tr><td class="l club">Osasuna<span class="lg">La Liga</span></td><td>28.0</td><td>€71m</td><td>€184m</td><td>−67%</td><td class="gap">−62%</td></tr>
+<tr><td class="l club">Deportivo Alavés<span class="lg">La Liga</span></td><td>27.0</td><td>€71m</td><td>€154m</td><td>−58%</td><td class="gap">−54%</td></tr>
+<tr><td class="l club">RC Lens<span class="lg">Ligue 1</span></td><td>26.2</td><td>€172m</td><td>€348m</td><td>−52%</td><td class="gap">−51%</td></tr>
+<tr><td class="l club">NEC Nijmegen<span class="lg">Eredivisie</span></td><td>26.2</td><td>€42m</td><td>€82m</td><td>−52%</td><td class="gap">−50%</td></tr>
+<tr><td class="l club">Groningen<span class="lg">Eredivisie</span></td><td>23.1</td><td>€33m</td><td>€64m</td><td>−42%</td><td class="gap">−49%</td></tr>
+<tr><td class="l club">Tottenham<span class="lg">Premier League</span></td><td>25.7</td><td>€912m</td><td>€453m</td><td>+104%</td><td class="gap">+101%</td></tr>
+<tr><td class="l club">Eintracht Frankfurt<span class="lg">Bundesliga</span></td><td>25.1</td><td>€356m</td><td>€173m</td><td>+111%</td><td class="gap">+106%</td></tr>
+<tr><td class="l club">Udinese<span class="lg">Serie A</span></td><td>25.8</td><td>€175m</td><td>€84m</td><td>+102%</td><td class="gap">+108%</td></tr>
+<tr><td class="l club">Fiorentina<span class="lg">Serie A</span></td><td>25.4</td><td>€338m</td><td>€140m</td><td>+142%</td><td class="gap">+141%</td></tr>
+<tr><td class="l club">Parma<span class="lg">Serie A</span></td><td>23.6</td><td>€205m</td><td>€56m</td><td>+303%</td><td class="gap">+267%</td></tr>
+</tbody>
+<caption>&ldquo;Strength + age imply&rdquo; is the squad value the pooled fit predicts from the club&rsquo;s current strength and squad age. A negative gap means Transfermarkt&rsquo;s value sits below that; positive, above. Ordered lightest to richest. Strength as of 2026-08-16; Transfermarkt values 2026-08-11. Thin-record and newly promoted clubs are held out.</caption>
+</table>
+
+<p>Two of the rich rows deserve a name. <strong>Fiorentina</strong> looks like a lag: the results
+collapsed, the valuation still carries the old name. <strong>Parma</strong> and <strong>Eintracht
+Frankfurt</strong> are selling clubs, where a premium is expected. But +267% and +106%
+after the age control is more than resale explains.</p>
+<h2>What it is for</h2>
+<p>Values are crowd-sourced, and each league gets a full pass roughly twice a
+season. The hard part is not changing a number. It is knowing which of a
+hundred-plus squads moved between passes.</p>
+<p>This ranks them, every day.</p>
+<p>We also keep both sides over time. A squad whose market strength has climbed for
+a month while its published value held flat is a staleness alarm.</p>
+<h2>Limits</h2>
+<ul>
+<li><strong>Value is not strength.</strong> Contract length, one marquee asset, an academy
+pipeline: a team-level rating cannot see them. These are clubs to look at, not
+verdicts.</li>
+<li><strong>This is one snapshot.</strong> Strength 2026-08-16, values 2026-08-11. The trend
+over weeks is the sturdier signal.</li>
+<li><strong>Strength has its own error bars.</strong> Thin-record and newly promoted clubs are
+held out of the shortlist.</li>
+<li><strong>Age is a team mean.</strong> A minutes-weighted age would sharpen the control.</li>
+<li><strong>The pooled line carries a league offset.</strong> Read a club's gap against its
+league's as well as against the line. The chart shows both on hover.</li>
+</ul>
+<hr />
+<p>Happy to run this against your live valuations and compare notes. No strings
+either way.</p>
+<p><strong>Belkacem</strong> · <a href="https://bayesfc.com">bayesfc.com</a> ·
+<a href="mailto:b.berchiche@gmail.com">b.berchiche@gmail.com</a></p>
+<p><em>Strength: Bayes FC market-implied ratings, 2026-08-16. Squad values and squad
+age: Transfermarkt, 2026-08-11. Method:
+<a href="../../blog/how-we-turn-betting-odds-into-team-strength.html">how we turn betting odds into team strength</a>.</em></p>
+<p class="print-only">https://bayesfc.com/reports/squad-value-divergence-8fa2c1/ &middot; prepared 2026-08-18 for the Transfermarkt data desk &middot; Ratings: Bayes FC (bayesfc.com)</p></article>
+<section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
+<footer class="site">
+  <div>Market-implied team ratings · rebuilt daily.<br>
+    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
+    all rights reserved.</span></div>
+  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
+    made with <span class="heart">&#9829;</span> by
+    <a href="https://belkacem.xyz">Belkacem</a></div>
+</footer>
+</div>
+
+<script>
+(function(){
+  function cmp(a, b, key, dir, text){
+    var x=a.dataset[key], y=b.dataset[key];
+    var xm=(x===undefined||x===''), ym=(y===undefined||y==='');
+    if(xm||ym) return xm&&ym ? 0 : (xm?1:-1);          // blanks last, always
+    if(text) return dir==='asc' ? x.localeCompare(y) : y.localeCompare(x);
+    var d=parseFloat(x)-parseFloat(y);
+    return dir==='asc' ? d : -d;
+  }
+  function sortTable(t, th, dir){
+    var key=th.dataset.sort, text=th.dataset.type==='text';
+    var ties=(th.dataset.tie||'').split(',').filter(Boolean);
+    var body=t.querySelector('tbody');
+    var rows=[].slice.call(body.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var r=cmp(a,b,key,dir,text);
+      for(var i=0;i<ties.length && r===0;i++) r=cmp(a,b,ties[i],dir,false);
+      return r;
+    });
+    rows.forEach(function(r){ body.appendChild(r); });
+    t.querySelectorAll('th.sortable').forEach(function(o){
+      var on=o===th;
+      o.classList.toggle('sorted', on);
+      o.setAttribute('aria-sort', on ? (dir==='asc'?'ascending':'descending') : 'none');
+      var c=o.querySelector('.caret');
+      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
+    });
+  }
+  document.querySelectorAll('table.ladder, table.proj').forEach(function(t){
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      th.setAttribute('tabindex','0');
+      th.setAttribute('role','button');
+      function go(){
+        var dir = th.classList.contains('sorted')
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc')
+          : (th.dataset.dir || 'desc');
+        t.dataset.dir=dir;
+        sortTable(t, th, dir);
+      }
+      th.addEventListener('click', go);
+      th.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
+      });
+    });
+  });
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "762e95ac6c554a9aa575ff1d8cc88013"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

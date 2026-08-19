@@ -283,6 +283,14 @@ svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
 .prose { font-size:15px; }
 .prose p { margin:14px 0; }
 .prose a { color:var(--accent); }
+/* Framed inline-SVG chart. Authored prose (blog posts, reports) hand-builds its
+   own SVG in the Markdown body; this is the frame around it. Shared rather than
+   per-surface: the same figure has to look the same wherever it is published. */
+figure.chart { margin:28px 0; padding:14px 14px 6px; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; }
+figure.chart svg { display:block; width:100%; height:auto; }
+figure.chart figcaption { color:var(--muted); font-size:13px; line-height:1.5;
+  margin:8px 2px 4px; }
 footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
   color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
   justify-content:space-between; gap:8px 20px; }
@@ -339,11 +347,6 @@ body.js .tab-panel.active { display:block; }
 .postlist a.pl-title:hover{color:var(--accent);}
 .postlist .pl-date{color:var(--muted);font-size:12px;margin:3px 0 0;}
 .postlist .pl-desc{color:var(--muted);font-size:14px;margin:6px 0 0;}
-figure.chart{margin:28px 0;padding:14px 14px 6px;background:var(--surface);
-  border:1px solid var(--line);border-radius:12px;}
-figure.chart svg{display:block;width:100%;height:auto;}
-figure.chart figcaption{color:var(--muted);font-size:13px;line-height:1.5;
-  margin:8px 2px 4px;}
 </style><h2>Writing</h2><p class="note">Notes on how these ratings are built and what they mean. <a href="feed.xml">RSS</a>.</p><ul class="postlist"><li><a class="pl-title" href="fixture-difficulty-opening-five.html">Who got the easy start? First five games in England, Spain and Germany</a><div class="pl-date"><time datetime="2026-08-11">August 11, 2026</time></div><div class="pl-desc">Every club&#x27;s first five league games in the Premier League, La Liga and the Bundesliga, ranked from the hardest opening to the easiest.</div></li><li><a class="pl-title" href="what-a-wage-bill-buys.html">What a wage bill buys</a><div class="pl-date"><time datetime="2026-08-05">August 5, 2026</time></div><div class="pl-desc">Across Europe&#x27;s top seven leagues, pay explains most of team strength — but the clubs off the line are the interesting ones.</div></li><li><a class="pl-title" href="how-we-turn-betting-odds-into-team-strength.html">How we turn betting odds into team strength</a><div class="pl-date"><time datetime="2026-07-29">July 29, 2026</time></div><div class="pl-desc">Why betting odds tell you more about a team than results or xG — and how we read team strength straight out of them.</div></li></ul>
 <section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
 <footer class="site">
