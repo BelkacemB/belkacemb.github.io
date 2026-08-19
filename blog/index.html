@@ -10,17 +10,13 @@
 :root {
   /* --muted is secondary text everywhere (headers, notes, footer, the rank and
      Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
-     lands on, not just the page: at #6b7280 it was 4.51 on --bg but 4.06 over
-     --band and 4.22 over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
+     lands on, not just the page: at #6b7280 it was 4.51 on --bg but only 4.22
+     over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
   --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
   --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
   --stale-ink:#92400e;
   --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
   --heat:15,118,110; --hot-ink:#ffffff;
-  /* Neutral wash behind the projection table's results group (and its hover
-     step). Deliberately hueless: the heat ramp is the only colour carrying a
-     value in that table, so the grouping must not read as data. */
-  --band:#edebe7; --band-h:#f2f0ec;
   /* Gridline on the distribution strip: recessive by construction — a neutral
      at low alpha, so it never competes with the heat ramp carrying the value. */
   --grid:rgba(0,0,0,0.16);
@@ -35,7 +31,7 @@
     --stale-ink:#fbbf24;
     --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
     --heat:45,212,191; --hot-ink:#0c0a09;
-    --band:#1c1917; --band-h:#242020; --grid:rgba(255,255,255,0.18);
+    --grid:rgba(255,255,255,0.18);
   }
 }
 * { box-sizing:border-box; }
@@ -104,7 +100,7 @@ table.proj thead th {
 }
 table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
 table.proj th.team, table.proj td.team { text-align:left; }
-table.proj th.rank, table.proj td.rank { text-align:right; width:26px; color:var(--muted); }
+table.proj th.rank, table.proj td.rank { text-align:right; width:34px; color:var(--muted); }
 table.proj td.rank, table.proj td.num {
   font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
 }
@@ -117,26 +113,17 @@ table.proj td.num.rat { color:var(--muted); }
 table.proj th.pfin, table.proj td.pfin { width:62px; white-space:nowrap; }
 td.pfin .pmv { margin-left:4px; font-size:10.5px; color:var(--muted);
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-/* Pts/GF/GA — the real table so far, on a started league. Narrower than the
-   rating columns (two digits, not a signed decimal) so the five extra columns
-   don't squeeze the position strip. */
-table.proj th.tbl, table.proj td.tbl { text-align:right; width:30px; }
-table.proj td.tbl { font-family:ui-monospace,"SF Mono",Menlo,monospace; }
-/* What happened vs what the market implies. The heat ramp owns colour here, so
-   the separation is structural: a banded header naming each group, a rule at
-   every boundary, and a recessive neutral wash behind the results — no second
-   hue competing with the probability scale. The wash is re-asserted on hover
-   (as the heat cells are) so the row highlight can't erase the grouping. */
+/* A rule at a group boundary — the projection's opening column, and the Rating
+   that closes the league-table view. The heat ramp owns colour in these tables,
+   so grouping has to be structural: a hairline, never a second hue. */
 table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
-table.proj tr.grp th {
-  font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
-  color:var(--muted); text-align:left; padding:2px 6px 3px; white-space:nowrap;
-  border-bottom:none; }
-table.proj th.tbl, table.proj td.tbl, table.proj tr.grp th.band {
-  background:var(--band); }
 table.proj td.num.tot { font-weight:600; }
 table.proj tbody tr:hover td { background:var(--surface); }
-table.proj tbody tr:hover td.tbl { background:var(--band-h); }
+/* The league-table view: the same table chrome, narrower numeric columns (two
+   digits and a sign, not a signed decimal) so ten of them still fit the prose
+   column without the horizontal scroll the projection needs. */
+table.ltab { margin-bottom:4px; }
+table.ltab th.num, table.ltab td.num { width:40px; }
 th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
   color:var(--muted); text-align:center; }
 td.pcell { padding:0; width:11px; min-width:11px; position:relative;
@@ -322,6 +309,28 @@ footer.site .cite { font-size:12px; opacity:0.85; }
 .subscribe .fine a { color:var(--muted); }
 body.js .tab-panel { display:none; }
 body.js .tab-panel.active { display:block; }
+/* The started-league view switch: what happened, or what the market implies.
+   A joined segmented control, deliberately not the gapped pills above it — the
+   league tabs pick a subject, this picks a question about it, and two identical
+   controls stacked would read as one two-row set of tabs. Without JS neither
+   `.view` is hidden and both tables render, so the switch is an enhancement and
+   never the only way to reach a number. */
+.viewsw { margin:10px 0 0; }
+.viewsw .seg { display:inline-flex; }
+.viewsw button {
+  font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:5px 13px;
+}
+.viewsw button:first-child { border-radius:8px 0 0 8px; }
+.viewsw button:last-child { border-radius:0 8px 8px 0; margin-left:-1px; }
+.viewsw button:hover { color:var(--ink); }
+.viewsw button.active { color:var(--accent); border-color:var(--accent); z-index:1; }
+body.js .tab-panel .view { display:none; }
+body.js .tab-panel .view.on { display:block; }
+/* The league-table view is narrow enough for the prose column, so it scrolls in
+   place rather than breaking out of it the way `.wide` does. */
+.scroll { overflow-x:auto; }
 :root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "Blog", "@id": "https://bayesfc.com/blog/#blog", "name": "Bayes FC — Writing", "url": "https://bayesfc.com/blog/", "description": "Notes on how Bayes FC turns football betting-market prices into daily team strength ratings — the methodology behind the numbers, in plain language.", "publisher": {"@id": "https://bayesfc.com/#org"}, "blogPost": [{"@type": "BlogPosting", "@id": "https://bayesfc.com/blog/fixture-difficulty-opening-five.html#post", "headline": "Who got the easy start? First five games in England, Spain and Germany", "url": "https://bayesfc.com/blog/fixture-difficulty-opening-five.html", "datePublished": "2026-08-11"}, {"@type": "BlogPosting", "@id": "https://bayesfc.com/blog/what-a-wage-bill-buys.html#post", "headline": "What a wage bill buys", "url": "https://bayesfc.com/blog/what-a-wage-bill-buys.html", "datePublished": "2026-08-05"}, {"@type": "BlogPosting", "@id": "https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html#post", "headline": "How we turn betting odds into team strength", "url": "https://bayesfc.com/blog/how-we-turn-betting-odds-into-team-strength.html", "datePublished": "2026-07-29"}]}]}</script>
 </head>
