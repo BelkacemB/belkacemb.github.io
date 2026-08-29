@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<title>Leeds — ratings, form and projection | Bayes FC</title>
+<meta name="description" content="Leeds market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Premier League season projection. Rebuilt daily."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/club/leeds.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Leeds — ratings, form and projection | Bayes FC"><meta property="og:description" content="Leeds market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Premier League season projection. Rebuilt daily."><meta property="og:url" content="https://bayesfc.com/club/leeds.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Leeds — ratings, form and projection | Bayes FC"><meta name="twitter:description" content="Leeds market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Premier League season projection. Rebuilt daily.">
+<style>
+:root {
+  /* --muted is secondary text everywhere (headers, notes, footer, the rank and
+     Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
+     lands on, not just the page: at #6b7280 it was 4.51 on --bg but only 4.22
+     over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
+  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
+  --stale-ink:#92400e;
+  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
+  /* Gridline on the distribution strip: recessive by construction — a neutral
+     at low alpha, so it never competes with the heat ramp carrying the value. */
+  --grid:rgba(0,0,0,0.16);
+  /* Status warning: fixed, not themed — a caution glyph must read the same
+     regardless of light/dark, unlike the series/ink tokens above. */
+  --warn:#fab219; --warn-ink:#1a1206;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
+    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
+    --stale-ink:#fbbf24;
+    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
+    --grid:rgba(255,255,255,0.18);
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
+header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
+   read as one word. --accent carries the theme, so it inverts with the page. */
+.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
+  color:var(--accent); }
+.brand h1 span { color:var(--ink); }
+.brand .tag { color:var(--muted); font-size:14px; }
+nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
+nav.site a {
+  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
+  padding:6px 12px; border-radius:8px;
+}
+nav.site a:hover { color:var(--ink); background:var(--surface); }
+nav.site a.active { color:var(--accent); background:var(--surface); }
+.stamp {
+  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+  font-size:13px; color:var(--muted);
+}
+.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
+.dot.stale { background:var(--stale-ink); }
+h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
+.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
+.tabs button {
+  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:6px 12px; border-radius:8px;
+}
+.tabs button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
+table.ladder thead th {
+  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
+}
+table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
+table.ladder th.team, table.ladder td.team { text-align:left; }
+table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.ladder td.rank, table.ladder td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
+}
+table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
+table.ladder td.total { font-weight:600; }
+table.ladder td.pos { color:var(--pos); }
+table.ladder td.neg { color:var(--neg); }
+table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:34px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:46px; }
+/* A number and its trajectory share one cell (PR #199): the ticker is a
+   fixed-width inline block, so the digits still line up down the column even
+   where a club has no line to draw. Smaller than the ladder's sparkline — this
+   one sits inside a table row, not in a column of its own. */
+table.proj th.trk, table.proj td.trk { width:112px; white-space:nowrap; }
+td.trk .tick { display:inline-block; width:54px; margin-left:7px;
+  text-align:right; vertical-align:middle; }
+td.trk .tick svg.spark { width:54px; height:15px; }
+/* A rule at a group boundary — the projection's opening column, and the Rating
+   that closes the league-table view. The heat ramp owns colour in these tables,
+   so grouping has to be structural: a hairline, never a second hue. */
+table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
+table.proj td.num.tot { font-weight:600; }
+table.proj tbody tr:hover td { background:var(--surface); }
+/* The league-table view: the same table chrome, narrower numeric columns (two
+   digits and a sign, not a signed decimal) so ten of them still fit the prose
+   column without the horizontal scroll the projection needs. */
+table.ltab { margin-bottom:4px; }
+table.ltab th.num, table.ltab td.num { width:40px; }
+table.ltab th.trk, table.ltab td.trk { width:112px; }
+th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:11px; min-width:11px; position:relative;
+  background:rgba(var(--heat), var(--a, 0)); }
+/* Alignment gridlines under the sparse ticks, centred on the tick label so a
+   cell reads back to its position without counting across an 18-wide strip.
+   Drawn over the heat as a hairline neutral — recessive, and never a value. */
+td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
+  width:1px; background:var(--grid); pointer-events:none; }
+/* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
+body.js td.pcell { cursor:crosshair; }
+body.js td.pcell:hover, body.js td.pcell:focus-visible {
+  outline:2px solid var(--accent); outline-offset:-2px; z-index:1; }
+#tip {
+  position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .08s;
+  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.45;
+  padding:6px 9px; border-radius:7px; max-width:220px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+#tip.on { opacity:1; }
+#tip b { font-size:13px; }
+#tip span { color:var(--bg); opacity:0.72; }
+td.heat { text-align:right; width:46px; padding:6px 5px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
+/* Sortable headers, shared by the ladders and the projection tables. A header
+   carrying a tooltip gets a dotted underline so the explanation is discoverable
+   rather than hidden; the tooltip only ever restates what the column is, never
+   a value the table doesn't already print. */
+body.js th.sortable { cursor:pointer; user-select:none; }
+body.js th.sortable:hover { color:var(--ink); }
+body.js th.sortable:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+th.sortable.sorted { color:var(--accent); }
+th.sortable.sorted .caret { opacity:1; }
+body.js table.proj thead th[title] { text-decoration:underline dotted;
+  text-decoration-color:var(--line); text-underline-offset:3px; }
+body.js table.proj thead th[title]:hover { text-decoration-color:var(--accent); }
+table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+td.delta .dup { color:var(--pos); }
+td.delta .ddn { color:var(--neg); }
+td.delta .dmut { color:var(--muted); }
+.lookback {
+  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
+  font-size:13px; color:var(--muted);
+}
+.lookback .seg { display:inline-flex; gap:4px; }
+.lookback button {
+  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:4px 10px; border-radius:8px;
+}
+.lookback button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder th.spark, table.ladder td.spark { text-align:right; width:88px; }
+svg.spark { display:inline-block; vertical-align:middle; }
+svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
+  stroke-linejoin:round; stroke-linecap:round; }
+svg.spark circle.sup { fill:var(--pos); }
+svg.spark circle.sdn { fill:var(--neg); }
+.sparknull { color:var(--muted); }
+/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
+   name, shown only when its rating is materially less certain than the ladder's
+   typical club (wide margin, or too little recent data for one at all). Fixed
+   warning color (not themed) so it reads the same in light and dark — the
+   tooltip carries the specifics. */
+.ubadge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; margin-left:6px; border-radius:50%;
+  background:var(--warn); color:var(--warn-ink);
+  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
+  cursor:default;
+}
+.movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
+.mvcol { flex:1; min-width:240px; }
+.mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.mv { display:inline-flex; align-items:baseline; gap:7px; padding:4px 10px;
+  margin:0 6px 6px 0; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); font-size:13px; }
+.mv .mvd { font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-variant-numeric:tabular-nums; font-size:12px; }
+.mv.up .mvd { color:var(--pos); }
+.mv.down .mvd { color:var(--neg); }
+svg.scatter { display:block; width:100%; height:auto; max-width:640px; margin:6px auto 0; }
+svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
+  stroke:var(--surface); stroke-width:0.8; }
+body.js svg.scatter circle { cursor:pointer; }
+svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
+svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
+svg.scatter rect.quad { opacity:0.09; }
+svg.scatter rect.q-all { fill:var(--q-all); }
+svg.scatter rect.q-def { fill:var(--q-def); }
+svg.scatter rect.q-att { fill:var(--q-att); }
+svg.scatter rect.q-weak { fill:var(--q-weak); }
+svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
+  fill-opacity:0.9; }
+svg.scatter text.ql.q-all { fill:var(--q-all); }
+svg.scatter text.ql.q-def { fill:var(--q-def); }
+svg.scatter text.ql.q-att { fill:var(--q-att); }
+svg.scatter text.ql.q-weak { fill:var(--q-weak); }
+svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
+  letter-spacing:0.03em; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
+  max-width:640px; margin:12px auto 0; font-size:12px; color:var(--muted); }
+.legend .k { display:inline-flex; align-items:center; gap:6px; }
+.legend i.sw { width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
+.sc-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; line-height:1.35; padding:6px 9px; border-radius:8px;
+  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+.sc-tip .t-sub { color:var(--muted); }
+.wide { overflow-x:auto; }
+/* The projection table used to break out of the 880px prose column and re-centre
+   at up to 1240px, because a started league carried results *and* strength *and*
+   18-20 position cells *and* three summary columns, and scrolling it sideways
+   hid Title / Top 4 / Rel — the columns people come for. Issue #199 cut that
+   table to two numbers and the strip, and #182 moved the results to their own
+   view, so the natural width is now about 770px for a 20-team league: it fits
+   the column, and the breakout only spent the slack stretching the strip's cells
+   away from each other. It sits in the wrap like everything else now, and .wide
+   still scrolls it on a narrow viewport. */
+.prose { font-size:15px; }
+.prose p { margin:14px 0; }
+.prose a { color:var(--accent); }
+/* Framed inline-SVG chart. Authored prose (blog posts, reports) hand-builds its
+   own SVG in the Markdown body; this is the frame around it. Shared rather than
+   per-surface: the same figure has to look the same wherever it is published. */
+figure.chart { margin:28px 0; padding:14px 14px 6px; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; }
+figure.chart svg { display:block; width:100%; height:auto; }
+figure.chart figcaption { color:var(--muted); font-size:13px; line-height:1.5;
+  margin:8px 2px 4px; }
+footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
+  justify-content:space-between; gap:8px 20px; }
+footer.site .made a { color:var(--muted); text-decoration:none;
+  border-bottom:1px solid var(--line); }
+footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+footer.site .heart { color:var(--neg); }
+footer.site .cite { font-size:12px; opacity:0.85; }
+.faq { margin:20px 0 0; }
+.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
+.faq p { margin:0 0 4px; }
+.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
+  padding-top:16px; border-top:1px solid var(--line); }
+.about a { color:var(--accent); }
+.subscribe { margin:44px 0 0; padding:20px 22px; border:1px solid var(--line);
+  background:var(--surface); border-radius:12px; }
+.subscribe h2 { font-size:16px; margin:0 0 4px; }
+.subscribe p { color:var(--muted); font-size:13.5px; margin:0 0 12px; }
+.subscribe form { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0; }
+.subscribe input[type=email] { flex:1 1 220px; min-width:0; padding:9px 12px;
+  font-size:14px; color:var(--ink); background:var(--bg);
+  border:1px solid var(--line); border-radius:8px; }
+.subscribe input[type=email]:focus { outline:none; border-color:var(--accent); }
+.subscribe button { padding:9px 18px; font-size:14px; font-weight:600;
+  color:#fff; background:var(--accent); border:none; border-radius:8px;
+  cursor:pointer; }
+.subscribe button:hover { opacity:0.9; }
+.subscribe .fine { font-size:12px; margin:10px 0 0; }
+.subscribe .fine a { color:var(--muted); }
+body.js .tab-panel { display:none; }
+body.js .tab-panel.active { display:block; }
+/* The started-league view switch: what happened, or what the market implies.
+   A joined segmented control, deliberately not the gapped pills above it — the
+   league tabs pick a subject, this picks a question about it, and two identical
+   controls stacked would read as one two-row set of tabs. Without JS neither
+   `.view` is hidden and both tables render, so the switch is an enhancement and
+   never the only way to reach a number. */
+.viewsw { margin:10px 0 0; }
+.viewsw .seg { display:inline-flex; }
+.viewsw button {
+  font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:5px 13px;
+}
+.viewsw button:first-child { border-radius:8px 0 0 8px; }
+.viewsw button:last-child { border-radius:0 8px 8px 0; margin-left:-1px; }
+.viewsw button:hover { color:var(--ink); }
+.viewsw button.active { color:var(--accent); border-color:var(--accent); z-index:1; }
+body.js .tab-panel .view { display:none; }
+body.js .tab-panel .view.on { display:block; }
+/* The league-table view is narrow enough for the prose column, so it scrolls in
+   place rather than breaking out of it the way `.wide` does. */
+.scroll { overflow-x:auto; }
+/* ---- club page (one per rated club) ---------------------------------------
+   The rating chart. Every colour is a site token, so light/dark comes free, and
+   the three series are told apart by weight and dash as well as tint — the same
+   rule the scatter follows: colour is never the only cue. */
+svg.rchart line.gl { stroke:var(--line); stroke-width:1; }
+svg.rchart line.gz { stroke:var(--muted); stroke-width:1; stroke-dasharray:4 4;
+  opacity:0.6; }
+svg.rchart text.gt, svg.rchart text.gd { fill:var(--muted); font-size:10.5px;
+  font-variant-numeric:tabular-nums; }
+svg.rchart polyline.rl { fill:none; stroke-linejoin:round; stroke-linecap:round; }
+svg.rchart polyline.r-tot { stroke:var(--accent); stroke-width:2.1; }
+svg.rchart polyline.r-att { stroke:var(--q-att); stroke-width:1.2;
+  stroke-dasharray:5 3; opacity:0.85; }
+svg.rchart polyline.r-def { stroke:var(--q-def); stroke-width:1.2;
+  stroke-dasharray:1.5 3; opacity:0.85; }
+svg.rchart circle.rend { fill:var(--accent); }
+svg.rchart circle.rmk { stroke:var(--surface); stroke-width:1.5; }
+svg.rchart circle.rmk.rw { fill:var(--pos); }
+svg.rchart circle.rmk.rd { fill:var(--muted); }
+svg.rchart circle.rmk.rl2 { fill:var(--neg); }
+svg.rchart text.rmt { fill:#fff; font-size:7.5px; font-weight:700;
+  pointer-events:none; }
+svg.rchart circle.emk { fill:var(--q-weak); stroke:var(--surface); stroke-width:1; }
+svg.rchart line.erule { stroke:var(--line); stroke-width:1; }
+body.js svg.rchart [data-tip] { cursor:crosshair; }
+figure.chart figcaption .key { display:inline-flex; align-items:center; gap:6px;
+  margin-right:16px; }
+figure.chart figcaption i.sw { width:16px; height:0; border-top-width:2px;
+  border-top-style:solid; display:inline-block; flex:none; }
+figure.chart figcaption i.sw.k-tot { border-color:var(--accent); }
+figure.chart figcaption i.sw.k-att { border-color:var(--q-att);
+  border-top-style:dashed; }
+figure.chart figcaption i.sw.k-def { border-color:var(--q-def);
+  border-top-style:dotted; }
+figure.chart figcaption i.sw.k-w, figure.chart figcaption i.sw.k-d,
+figure.chart figcaption i.sw.k-l, figure.chart figcaption i.sw.k-ev {
+  width:9px; height:9px; border-radius:50%; border:0; }
+figure.chart figcaption i.sw.k-w { background:var(--pos); }
+figure.chart figcaption i.sw.k-d { background:var(--muted); }
+figure.chart figcaption i.sw.k-l { background:var(--neg); }
+figure.chart figcaption i.sw.k-ev { background:var(--q-weak); }
+figure.chart figcaption .key i.sw + i.sw { margin-left:2px; }
+/* The club header: the numbers a reader wants before any table. */
+.chead { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  margin:28px 0 2px; }
+.chead h2 { margin:0; font-size:22px; letter-spacing:-0.02em; }
+.chead .clg { color:var(--muted); font-size:13px; }
+.chead .clg a { color:var(--muted); }
+.cstats { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; }
+.cstat { background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  padding:8px 13px; min-width:88px; }
+.cstat .k { display:block; color:var(--muted); font-size:10.5px; font-weight:600;
+  letter-spacing:0.05em; text-transform:uppercase; }
+.cstat .v { display:block; font-size:17px; font-weight:650; margin-top:2px;
+  font-variant-numeric:tabular-nums; }
+.cstat .v.pos { color:var(--pos); }
+.cstat .v.neg { color:var(--neg); }
+.cstat .sub { color:var(--muted); font-size:11.5px; font-weight:400; margin-left:4px; }
+/* Club tables (results, upcoming, news) share table.proj's frame; only the
+   column widths differ, so they carry .ctab and add nothing else. */
+table.ctab td.date, table.ctab th.date { width:74px; white-space:nowrap; }
+table.ctab td.comp, table.ctab th.comp { width:112px; color:var(--muted);
+  font-size:12.5px; }
+table.ctab td.va, table.ctab th.va { width:26px; color:var(--muted); text-align:center; }
+table.ctab td.opp, table.ctab th.opp { text-align:left; }
+table.ctab td.sc, table.ctab th.sc { width:52px; text-align:center;
+  font-variant-numeric:tabular-nums; font-weight:600; }
+table.ctab td.hl { text-align:left; }
+.fm { display:inline-block; width:18px; height:18px; line-height:18px;
+  border-radius:50%; text-align:center; font-size:10.5px; font-weight:700;
+  color:#fff; }
+.fm.W { background:var(--pos); }
+.fm.D { background:var(--muted); }
+.fm.L { background:var(--neg); }
+/* An unpriced result: the score is on record but no closing price has landed, so
+   the rating has not seen it yet. Marked rather than hidden — it is the most
+   interesting row on the page, being next week's move seen a week early. */
+.unp { color:var(--muted); font-size:11px; margin-left:6px; white-space:nowrap; }
+.ebadge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border:1px solid var(--line);
+  border-radius:5px; padding:1px 5px; }
+.etype { color:var(--muted); font-size:12.5px; white-space:nowrap; }
+.caveat { color:var(--muted); font-size:12.5px; line-height:1.55; margin:10px 0 0;
+  padding:11px 13px; background:var(--surface); border:1px solid var(--line);
+  border-radius:10px; }
+/* The "back to the list" footer link. Shared rather than blog-local: a post and
+   a club page both end with one, and they should end with the same one. */
+.post-back { margin-top:36px; padding-top:16px; border-top:1px solid var(--line); }
+.post-back a { color:var(--accent); text-decoration:none; }
+/* The club directory. */
+.cdir { columns:3 190px; column-gap:26px; margin:8px 0 0; }
+.cdir .cg { break-inside:avoid; margin:0 0 18px; }
+.cdir h3 { font-size:12px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
+.cdir ul { list-style:none; padding:0; margin:0; }
+.cdir li { padding:2px 0; font-size:14px; }
+.cdir a, a.clink { color:var(--ink); text-decoration:none; }
+.cdir a:hover, a.clink:hover { color:var(--accent); text-decoration:underline; }
+:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "SportsTeam", "@id": "https://bayesfc.com/club/leeds.html#team", "name": "Leeds", "sport": "Association football", "url": "https://bayesfc.com/club/leeds.html", "memberOf": {"@type": "SportsOrganization", "name": "Premier League"}, "subjectOf": {"@id": "https://bayesfc.com/#dataset"}, "creditText": "Ratings: Bayes FC (bayesfc.com)"}]}</script>
+</head>
+<body>
+<script>document.body.className="js";</script>
+<div class="wrap">
+<header class="site">
+  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
+    <span class="tag">team ratings from the betting market</span></div>
+  <nav class="site"><a href="../index.html">Global</a><a href="../leagues.html">Leagues</a><a href="../club/index.html" class="active">Clubs</a><a href="../blog/index.html">Blog</a><a href="../methodology.html">Methodology</a></nav>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-29">2026-08-29</time> · last rebuilt <time datetime="2026-08-29T05:46:14.092326+00:00">2026-08-29 05:46 UTC</time></div>
+</header>
+<div class="chead"><h2>Leeds</h2><span class="clg"><a href="../leagues.html">Premier League</a></span></div><div class="cstats"><div class="cstat"><span class="k">Rating</span><span class="v pos">+0.50</span></div><div class="cstat"><span class="k">Attack</span><span class="v">+0.19</span></div><div class="cstat"><span class="k">Defence</span><span class="v">+0.30</span></div><div class="cstat"><span class="k">Global rank</span><span class="v">36<span class="sub">of 132 &middot; &#9650;3 this week</span></span></div><div class="cstat"><span class="k">League rank</span><span class="v">15<span class="sub">of 20</span></span></div><div class="cstat"><span class="k">Games priced</span><span class="v">77</span></div></div><h2>Strength over time</h2><p class="note">The club&rsquo;s rating (attack + defence) after every daily fit, with attack and defence shown separately underneath it. Dots on the line are results, placed on the fit that first could have seen them. The markers along the foot are club news, and they sit off the line on purpose: the news feed reaches no part of the model, so an event never moved this rating. What it can do is precede a move that no result explains &mdash; a club repriced by the market before it has played.</p><figure class="chart"><svg class="rchart" viewBox="0 0 720 310" width="100%" role="img" aria-label="Rating over time, 222 daily fits from 1 Feb to 29 Aug"><line class="gl" x1="44" y1="213.3" x2="706" y2="213.3"/><text class="gt" x="37" y="216.8" text-anchor="end">+0.2</text><line class="gl" x1="44" y1="114.2" x2="706" y2="114.2"/><text class="gt" x="37" y="117.7" text-anchor="end">+0.4</text><line class="gl" x1="44" y1="15.0" x2="706" y2="15.0"/><text class="gt" x="37" y="18.5" text-anchor="end">+0.6</text><text class="gd" x="44.0" y="270" text-anchor="start">1 Feb</text><text class="gd" x="376.5" y="270" text-anchor="middle">23 May</text><text class="gd" x="706.0" y="270" text-anchor="end">29 Aug</text><polyline class="rl r-att" points="44.0,209.4 47.0,209.1 50.0,209.1 53.0,209.1 56.0,209.2 59.0,209.2 62.0,204.4 65.0,204.6 68.0,204.1 71.0,203.8 74.0,204.9 77.0,205.6 79.9,205.8 82.9,206.1 85.9,206.2 88.9,207.0 91.9,207.1 94.9,206.6 97.9,206.8 100.9,206.9 103.9,207.3 106.9,204.8 109.9,204.4 112.9,204.7 115.9,204.8 118.9,203.4 121.9,203.5 124.9,203.0 127.9,203.7 130.9,203.5 133.9,203.6 136.9,198.8 139.9,197.8 142.9,197.7 145.8,198.7 148.8,198.6 151.8,198.9 154.8,199.1 157.8,214.9 160.8,211.6 163.8,215.8 166.8,215.5 169.8,216.0 172.8,209.2 175.8,209.0 178.8,202.1 181.8,202.6 184.8,204.2 187.8,204.3 190.8,201.3 193.8,201.0 196.8,201.1 199.8,201.1 202.8,201.2 205.8,201.2 208.8,201.3 211.7,201.3 214.7,201.3 217.7,201.4 220.7,201.4 223.7,201.5 226.7,201.5 229.7,201.8 232.7,202.3 235.7,202.6 238.7,201.5 241.7,208.0 244.7,212.4 247.7,211.0 250.7,211.3 253.7,212.2 256.7,213.6 259.7,213.0 262.7,213.6 265.7,216.7 268.7,212.4 271.7,212.6 274.7,205.5 277.6,202.9 280.6,202.9 283.6,202.5 286.6,203.1 289.6,202.8 292.6,202.7 295.6,205.7 298.6,206.1 301.6,206.4 304.6,207.1 307.6,211.3 310.6,212.3 313.6,206.2 316.6,208.3 319.6,208.0 322.6,208.4 325.6,210.0 328.6,210.0 331.6,209.0 334.6,209.1 337.6,210.3 340.6,212.2 343.5,216.8 346.5,217.4 349.5,218.8 352.5,218.9 355.5,218.1 358.5,217.8 361.5,223.4 364.5,224.3 367.5,223.5 370.5,217.3 373.5,217.3 376.5,217.3 379.5,217.2 382.5,222.5 385.5,222.5 388.5,222.6 391.5,225.4 394.5,225.4 397.5,225.5 400.5,228.4 403.5,228.5 406.5,228.5 409.4,228.6 412.4,228.6 415.4,228.7 418.4,228.7 421.4,228.8 424.4,228.8 427.4,228.9 430.4,228.9 433.4,229.0 436.4,229.0 439.4,229.1 442.4,229.1 445.4,229.2 448.4,229.2 451.4,229.3 454.4,229.3 457.4,229.4 460.4,229.4 463.4,229.5 466.4,229.5 469.4,229.6 472.4,229.6 475.3,229.7 478.3,229.7 481.3,229.8 484.3,229.8 487.3,229.9 490.3,229.9 493.3,230.0 496.3,230.1 499.3,230.1 502.3,230.2 505.3,230.2 508.3,230.3 511.3,230.3 514.3,230.4 517.3,230.4 520.3,230.5 523.3,230.5 526.3,230.6 529.3,230.7 532.3,230.7 535.3,230.8 538.3,230.8 541.2,230.9 544.2,230.9 547.2,231.0 550.2,231.0 553.2,231.1 556.2,231.2 559.2,231.2 562.2,231.3 565.2,231.3 568.2,231.3 571.2,231.4 574.2,231.5 577.2,231.5 580.2,231.6 583.2,231.6 586.2,231.7 589.2,231.7 592.2,231.8 595.2,231.8 598.2,231.8 601.2,225.3 604.2,225.3 607.1,224.8 610.1,225.0 613.1,224.1 616.1,224.5 619.1,225.2 622.1,224.4 625.1,224.9 628.1,225.4 631.1,225.4 634.1,225.0 637.1,223.3 640.1,222.6 643.1,223.9 646.1,224.1 649.1,223.0 652.1,223.5 655.1,223.5 658.1,223.0 661.1,222.5 664.1,222.9 667.1,222.1 670.1,221.4 673.0,220.9 676.0,220.5 679.0,220.9 682.0,219.3 685.0,217.6 688.0,220.2 691.0,218.5 694.0,218.3 697.0,218.6 700.0,221.0 703.0,214.2 706.0,215.9"/><polyline class="rl r-def" points="44.0,174.4 47.0,173.9 50.0,173.4 53.0,173.4 56.0,173.4 59.0,173.5 62.0,174.6 65.0,172.4 68.0,171.2 71.0,171.4 74.0,172.7 77.0,171.3 79.9,171.1 82.9,172.0 85.9,172.7 88.9,173.6 91.9,173.8 94.9,173.8 97.9,174.1 100.9,174.2 103.9,174.3 106.9,176.3 109.9,175.3 112.9,175.4 115.9,175.5 118.9,175.3 121.9,175.3 124.9,175.6 127.9,173.2 130.9,172.1 133.9,172.6 136.9,172.5 139.9,173.0 142.9,172.3 145.8,172.5 148.8,172.2 151.8,172.2 154.8,172.1 157.8,166.0 160.8,157.8 163.8,152.4 166.8,152.9 169.8,153.8 172.8,148.6 175.8,148.9 178.8,145.1 181.8,144.6 184.8,144.0 187.8,143.9 190.8,145.9 193.8,145.6 196.8,145.7 199.8,145.7 202.8,145.8 205.8,145.8 208.8,145.9 211.7,145.9 214.7,146.0 217.7,146.0 220.7,146.1 223.7,146.1 226.7,146.2 229.7,146.5 232.7,146.8 235.7,147.0 238.7,147.7 241.7,150.9 244.7,155.2 247.7,150.9 250.7,151.2 253.7,152.0 256.7,151.0 259.7,152.2 262.7,154.2 265.7,156.4 268.7,157.1 271.7,157.1 274.7,151.1 277.6,150.4 280.6,150.1 283.6,150.2 286.6,156.4 289.6,156.4 292.6,156.6 295.6,157.6 298.6,157.6 301.6,157.5 304.6,157.1 307.6,159.8 310.6,159.0 313.6,156.0 316.6,158.5 319.6,157.7 322.6,158.2 325.6,159.1 328.6,159.2 331.6,160.6 334.6,160.4 337.6,160.6 340.6,160.8 343.5,167.1 346.5,167.6 349.5,168.3 352.5,168.3 355.5,169.3 358.5,168.7 361.5,174.5 364.5,175.3 367.5,176.0 370.5,169.2 373.5,169.2 376.5,169.2 379.5,169.3 382.5,175.4 385.5,175.4 388.5,175.5 391.5,176.6 394.5,176.7 397.5,176.7 400.5,177.2 403.5,177.3 406.5,177.3 409.4,177.4 412.4,177.5 415.4,177.5 418.4,177.6 421.4,177.6 424.4,177.7 427.4,177.7 430.4,177.8 433.4,177.8 436.4,177.9 439.4,177.9 442.4,178.0 445.4,178.0 448.4,178.1 451.4,178.2 454.4,178.2 457.4,178.3 460.4,178.3 463.4,178.4 466.4,178.4 469.4,178.5 472.4,178.5 475.3,178.6 478.3,178.7 481.3,178.7 484.3,178.8 487.3,178.8 490.3,178.9 493.3,178.9 496.3,179.0 499.3,179.1 502.3,179.1 505.3,179.2 508.3,179.2 511.3,179.3 514.3,179.4 517.3,179.4 520.3,179.5 523.3,179.5 526.3,179.6 529.3,179.7 532.3,179.7 535.3,179.8 538.3,179.8 541.2,179.9 544.2,180.0 547.2,180.0 550.2,180.1 553.2,180.2 556.2,180.2 559.2,180.3 562.2,180.3 565.2,180.3 568.2,180.4 571.2,180.5 574.2,180.5 577.2,180.6 580.2,180.6 583.2,180.7 586.2,180.8 589.2,180.8 592.2,180.8 595.2,180.8 598.2,180.9 601.2,176.4 604.2,176.4 607.1,176.9 610.1,177.2 613.1,175.7 616.1,175.8 619.1,177.3 622.1,175.7 625.1,175.9 628.1,176.2 631.1,176.2 634.1,176.3 637.1,175.5 640.1,175.1 643.1,174.5 646.1,174.5 649.1,173.4 652.1,174.1 655.1,174.1 658.1,173.2 661.1,173.0 664.1,173.5 667.1,172.3 670.1,172.2 673.0,173.4 676.0,173.8 679.0,173.9 682.0,171.9 685.0,172.2 688.0,171.9 691.0,168.2 694.0,168.3 697.0,173.9 700.0,169.6 703.0,164.6 706.0,162.1"/><polyline class="rl r-tot" points="44.0,71.3 47.0,70.5 50.0,69.9 53.0,70.0 56.0,70.1 59.0,70.2 62.0,66.5 65.0,64.4 68.0,62.8 71.0,62.8 74.0,65.2 77.0,64.4 79.9,64.5 82.9,65.7 85.9,66.4 88.9,68.1 91.9,68.4 94.9,67.9 97.9,68.5 100.9,68.6 103.9,69.0 106.9,68.6 109.9,67.3 112.9,67.7 115.9,67.8 118.9,66.3 121.9,66.4 124.9,66.1 127.9,64.4 130.9,63.0 133.9,63.7 136.9,58.8 139.9,58.3 142.9,57.5 145.8,58.7 148.8,58.3 151.8,58.7 154.8,58.8 157.8,68.5 160.8,57.0 163.8,55.7 166.8,55.8 169.8,57.3 172.8,45.2 175.8,45.4 178.8,34.8 181.8,34.6 184.8,35.6 187.8,35.6 190.8,34.7 193.8,34.2 196.8,34.3 199.8,34.4 202.8,34.5 205.8,34.6 208.8,34.6 211.7,34.7 214.7,34.8 217.7,34.9 220.7,35.0 223.7,35.1 226.7,35.2 229.7,35.8 232.7,36.6 235.7,37.2 238.7,36.8 241.7,46.3 244.7,55.2 247.7,49.6 250.7,50.1 253.7,51.7 256.7,52.1 259.7,52.8 262.7,55.4 265.7,60.6 268.7,57.0 271.7,57.3 274.7,44.1 277.6,40.8 280.6,40.5 283.6,40.2 286.6,46.9 289.6,46.7 292.6,46.7 295.6,50.8 298.6,51.2 301.6,51.4 304.6,51.8 307.6,58.6 310.6,58.8 313.6,49.7 316.6,54.4 319.6,53.3 322.6,54.1 325.6,56.6 328.6,56.6 331.6,57.0 334.6,57.0 337.6,58.3 340.6,60.6 343.5,71.4 346.5,72.5 349.5,74.5 352.5,74.8 355.5,74.9 358.5,74.0 361.5,85.4 364.5,87.2 367.5,87.0 370.5,73.9 373.5,74.0 376.5,74.0 379.5,74.0 382.5,85.4 385.5,85.5 388.5,85.6 391.5,89.5 394.5,89.6 397.5,89.7 400.5,93.2 403.5,93.3 406.5,93.4 409.4,93.5 412.4,93.6 415.4,93.7 418.4,93.8 421.4,93.9 424.4,94.0 427.4,94.1 430.4,94.2 433.4,94.3 436.4,94.4 439.4,94.5 442.4,94.6 445.4,94.7 448.4,94.8 451.4,94.9 454.4,95.0 457.4,95.2 460.4,95.3 463.4,95.4 466.4,95.5 469.4,95.6 472.4,95.7 475.3,95.8 478.3,95.9 481.3,96.0 484.3,96.1 487.3,96.2 490.3,96.4 493.3,96.5 496.3,96.6 499.3,96.7 502.3,96.8 505.3,96.9 508.3,97.0 511.3,97.1 514.3,97.3 517.3,97.3 520.3,97.4 523.3,97.6 526.3,97.7 529.3,97.8 532.3,97.9 535.3,98.0 538.3,98.1 541.2,98.3 544.2,98.4 547.2,98.5 550.2,98.6 553.2,98.7 556.2,98.9 559.2,99.0 562.2,99.1 565.2,99.1 568.2,99.2 571.2,99.3 574.2,99.5 577.2,99.6 580.2,99.7 583.2,99.8 586.2,100.0 589.2,100.0 592.2,100.1 595.2,100.1 598.2,100.2 601.2,89.2 604.2,89.2 607.1,89.2 610.1,89.7 613.1,87.3 616.1,87.8 619.1,90.0 622.1,87.6 625.1,88.4 628.1,89.1 631.1,89.1 634.1,88.8 637.1,86.3 640.1,85.3 643.1,85.8 646.1,86.1 649.1,83.9 652.1,85.1 655.1,85.1 658.1,83.7 661.1,83.0 664.1,84.0 667.1,81.9 670.1,81.1 673.0,81.8 676.0,81.8 679.0,82.3 682.0,78.7 685.0,77.4 688.0,79.5 691.0,74.2 694.0,74.0 697.0,80.0 700.0,78.1 703.0,66.3 706.0,65.5"/><circle class="rend" cx="706.0" cy="65.5" r="3"/><circle class="rmk rw" cx="682.0" cy="78.7" r="5.5" data-tip="2026-08-22 · Nottingham Forest 0–1 Leeds"/><text class="rmt" x="682.0" y="81.9" text-anchor="middle">W</text><circle class="rmk rl2" cx="379.5" cy="74.0" r="5.5" data-tip="2026-05-24 · West Ham 3–0 Leeds"/><text class="rmt" x="379.5" y="77.2" text-anchor="middle">L</text><circle class="rmk rw" cx="358.5" cy="74.0" r="5.5" data-tip="2026-05-17 · Leeds 1–0 Brighton"/><text class="rmt" x="358.5" y="77.2" text-anchor="middle">W</text><circle class="rmk rd" cx="340.6" cy="60.6" r="5.5" data-tip="2026-05-11 · Tottenham 1–1 Leeds"/><text class="rmt" x="340.6" y="63.8" text-anchor="middle">D</text><circle class="rmk rw" cx="310.6" cy="58.8" r="5.5" data-tip="2026-05-01 · Leeds 3–1 Burnley"/><text class="rmt" x="310.6" y="62.0" text-anchor="middle">W</text><circle class="rmk rd" cx="283.6" cy="40.2" r="5.5" data-tip="2026-04-22 · Bournemouth 2–2 Leeds"/><text class="rmt" x="283.6" y="43.4" text-anchor="middle">D</text><circle class="rmk rw" cx="271.7" cy="57.3" r="5.5" data-tip="2026-04-18 · Leeds 3–0 Wolves"/><text class="rmt" x="271.7" y="60.5" text-anchor="middle">W</text><circle class="rmk rw" cx="256.7" cy="52.1" r="5.5" data-tip="2026-04-13 · Manchester Utd 1–2 Leeds"/><text class="rmt" x="256.7" y="55.3" text-anchor="middle">W</text><circle class="rmk rd" cx="187.8" cy="35.6" r="5.5" data-tip="2026-03-21 · Leeds 0–0 Brentford"/><text class="rmt" x="187.8" y="38.8" text-anchor="middle">D</text><circle class="rmk rd" cx="169.8" cy="57.3" r="5.5" data-tip="2026-03-15 · Crystal Palace 0–0 Leeds"/><text class="rmt" x="169.8" y="60.5" text-anchor="middle">D</text><circle class="rmk rl2" cx="133.9" cy="63.7" r="5.5" data-tip="2026-03-03 · Leeds 0–1 Sunderland"/><text class="rmt" x="133.9" y="66.9" text-anchor="middle">L</text><circle class="rmk rl2" cx="124.9" cy="66.1" r="5.5" data-tip="2026-02-28 · Leeds 0–1 Manchester City"/><text class="rmt" x="124.9" y="69.3" text-anchor="middle">L</text><circle class="rmk rd" cx="103.9" cy="69.0" r="5.5" data-tip="2026-02-21 · Aston Villa 1–1 Leeds"/><text class="rmt" x="103.9" y="72.2" text-anchor="middle">D</text><circle class="rmk rd" cx="71.0" cy="62.8" r="5.5" data-tip="2026-02-10 · Chelsea 2–2 Leeds"/><text class="rmt" x="71.0" y="66.0" text-anchor="middle">D</text><circle class="rmk rw" cx="59.0" cy="70.2" r="5.5" data-tip="2026-02-06 · Leeds 3–1 Nottingham Forest"/><text class="rmt" x="59.0" y="73.4" text-anchor="middle">W</text><line class="erule" x1="44" y1="307.0" x2="706" y2="307.0"/><circle class="emk" cx="676.0" cy="301.0" r="3.2" data-tip="2026-08-20 · Injury · Wilfried Gnonto
+Wilfried Gnonto is ruled out with an injury."/><circle class="emk" cx="676.0" cy="294.0" r="3.2" data-tip="2026-08-20 · Injury · Albert Guðmundsson
+Albert Guðmundsson is ruled out with an injury."/></svg><figcaption><span class="key"><i class="sw k-tot"></i>Rating</span><span class="key"><i class="sw k-att"></i>Attack</span><span class="key"><i class="sw k-def"></i>Defence</span><span class="key"><i class="sw k-w"></i><i class="sw k-d"></i><i class="sw k-l"></i>Win / draw / loss</span><span class="key"><i class="sw k-ev"></i>Club news</span></figcaption></figure><h2>Season projection <span class="wip">beta</span></h2><p class="note">Where the club is likely to finish, from a Monte Carlo simulation of every remaining fixture on the market-implied ratings. The strip is the full finishing-position distribution, 1st on the left, darker = more likely. <strong>Experimental and not yet independently validated</strong> &mdash; see <a href="../methodology.html">methodology</a>.</p><div class="cstats"><div class="cstat"><span class="k">xPos</span><span class="v">12.2</span></div><div class="cstat"><span class="k">Title</span><span class="v">&ndash;</span></div><div class="cstat"><span class="k">Top 4</span><span class="v">2%</span></div><div class="cstat"><span class="k">Relegation</span><span class="v">7%</span></div><div class="cstat"><span class="k">Played</span><span class="v">1</span></div><div class="cstat"><span class="k">Points</span><span class="v">3</span></div><div class="cstat"><span class="k">Goals</span><span class="v">1&ndash;0<span class="sub">+1</span></span></div></div><div class="wide"><table class="proj"><thead><tr><th class="phead tick">1</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">5</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">10</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">15</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">20</th></tr></thead><tbody><tr><td class="pcell tick" tabindex="0" style="--a:0.050" data-pos="1" data-p="0.0" title="Finish 1: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.050" data-pos="2" data-p="0.1" title="Finish 2: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.051" data-pos="3" data-p="0.4" title="Finish 3: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.095" data-pos="4" data-p="1.2" title="Finish 4: 1%"></td><td class="pcell tick" tabindex="0" style="--a:0.135" data-pos="5" data-p="2.1" title="Finish 5: 2%"></td><td class="pcell" tabindex="0" style="--a:0.179" data-pos="6" data-p="3.4" title="Finish 6: 3%"></td><td class="pcell" tabindex="0" style="--a:0.214" data-pos="7" data-p="4.6" title="Finish 7: 5%"></td><td class="pcell" tabindex="0" style="--a:0.248" data-pos="8" data-p="5.9" title="Finish 8: 6%"></td><td class="pcell" tabindex="0" style="--a:0.280" data-pos="9" data-p="7.3" title="Finish 9: 7%"></td><td class="pcell tick" tabindex="0" style="--a:0.305" data-pos="10" data-p="8.4" title="Finish 10: 8%"></td><td class="pcell" tabindex="0" style="--a:0.316" data-pos="11" data-p="8.9" title="Finish 11: 9%"></td><td class="pcell" tabindex="0" style="--a:0.324" data-pos="12" data-p="9.3" title="Finish 12: 9%"></td><td class="pcell" tabindex="0" style="--a:0.331" data-pos="13" data-p="9.6" title="Finish 13: 10%"></td><td class="pcell" tabindex="0" style="--a:0.325" data-pos="14" data-p="9.3" title="Finish 14: 9%"></td><td class="pcell tick" tabindex="0" style="--a:0.315" data-pos="15" data-p="8.8" title="Finish 15: 9%"></td><td class="pcell" tabindex="0" style="--a:0.285" data-pos="16" data-p="7.5" title="Finish 16: 7%"></td><td class="pcell" tabindex="0" style="--a:0.245" data-pos="17" data-p="5.8" title="Finish 17: 6%"></td><td class="pcell" tabindex="0" style="--a:0.204" data-pos="18" data-p="4.3" title="Finish 18: 4%"></td><td class="pcell" tabindex="0" style="--a:0.139" data-pos="19" data-p="2.3" title="Finish 19: 2%"></td><td class="pcell tick" tabindex="0" style="--a:0.069" data-pos="20" data-p="0.7" title="Finish 20: 1%"></td></tr></tbody></table></div><h2>Recent results</h2><p class="note">Every played match on record, from either feed. A match marked <em>not priced yet</em> has a scoreline but no closing price, so the rating above has not seen it &mdash; the score arrives within a day, the price a few days later.</p><div class="scroll"><table class="proj ctab"><thead><tr><th class="date">Date</th><th class="comp">Competition</th><th class="va"></th><th class="opp">Opponent</th><th class="sc">Score</th><th class="va"></th></tr></thead><tbody><tr><td class="date">08-22</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="nottingham-forest.html">Nottingham Forest</a></td><td class="sc">0&ndash;1</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">05-24</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp">West Ham</td><td class="sc">3&ndash;0</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">05-17</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="brighton.html">Brighton</a></td><td class="sc">1&ndash;0</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">05-11</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="tottenham.html">Tottenham</a></td><td class="sc">1&ndash;1</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">05-01</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp">Burnley</td><td class="sc">3&ndash;1</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">04-22</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="bournemouth.html">Bournemouth</a></td><td class="sc">2&ndash;2</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">04-18</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp">Wolves</td><td class="sc">3&ndash;0</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">04-13</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="manchester-utd.html">Manchester Utd</a></td><td class="sc">1&ndash;2</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">03-21</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="brentford.html">Brentford</a></td><td class="sc">0&ndash;0</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">03-15</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="crystal-palace.html">Crystal Palace</a></td><td class="sc">0&ndash;0</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">03-03</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="sunderland.html">Sunderland</a></td><td class="sc">0&ndash;1</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">02-28</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="manchester-city.html">Manchester City</a></td><td class="sc">0&ndash;1</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">02-21</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="aston-villa.html">Aston Villa</a></td><td class="sc">1&ndash;1</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">02-10</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="chelsea.html">Chelsea</a></td><td class="sc">2&ndash;2</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">02-06</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="nottingham-forest.html">Nottingham Forest</a></td><td class="sc">3&ndash;1</td><td class="va"><span class="fm W">W</span></td></tr></tbody></table></div><p class="note" style="margin-top:8px">Showing the most recent 15 of 37 on record.</p><h2>Upcoming</h2><p class="note">The next fixtures on the schedule, each shaded by how strong the opponent is &mdash; a darker cell is a harder game. The shading runs on one scale across every league, so two clubs&rsquo; runs can be compared directly. An opponent with no published rating (a lower-division cup side) prints a dash.</p><div class="scroll"><table class="proj ctab"><thead><tr><th class="date">Date</th><th class="comp">Competition</th><th class="va"></th><th class="opp">Opponent</th><th class="sc">Opp rating</th></tr></thead><tbody><tr><td class="date">08-30</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="brentford.html">Brentford</a></td><td class="sc heat" style="--a:0.653">+0.70</td></tr><tr><td class="date">09-05</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="brighton.html">Brighton</a></td><td class="sc heat" style="--a:0.706">+0.81</td></tr><tr><td class="date">09-14</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="newcastle.html">Newcastle</a></td><td class="sc heat" style="--a:0.653">+0.70</td></tr><tr><td class="date">09-19</td><td class="comp">Premier League</td><td class="va">H</td><td class="opp"><a class="clink" href="crystal-palace.html">Crystal Palace</a></td><td class="sc heat" style="--a:0.567">+0.52</td></tr><tr><td class="date">10-10</td><td class="comp">Premier League</td><td class="va">A</td><td class="opp"><a class="clink" href="arsenal.html">Arsenal</a></td><td class="sc heat" style="--a:1.000">+1.45</td></tr></tbody></table></div><h2>Club news</h2><p class="note">What the daily news sweep recorded about this club.</p><div class="scroll"><table class="proj ctab"><thead><tr><th class="date">Date</th><th class="comp">Type</th><th class="hl">Headline</th></tr></thead><tbody><tr><td class="date">08-20 </td><td class="comp etype">Injury</td><td class="hl"><strong>Wilfried Gnonto</strong> &mdash; Wilfried Gnonto is ruled out with an injury.</td></tr><tr><td class="date">08-20 </td><td class="comp etype">Injury</td><td class="hl"><strong>Albert Guðmundsson</strong> &mdash; Albert Guðmundsson is ruled out with an injury.</td></tr></tbody></table></div><p class="caveat">Club news is assembled automatically once a day by a language model reading public reporting. It is <strong>descriptive only</strong> &mdash; nothing here moves a rating &mdash; and it is <strong>unverified</strong>: read an item as a lead, not a fact. A date marked <em>learned</em> is the day we picked the item up, not necessarily the day it happened. What news can explain is why the <em>market</em> repriced a club, which is upstream of the number.</p><p class="post-back"><a href="index.html">&larr; All clubs</a> &middot; <a href="../index.html">Global ladder</a></p>
+<script>
+(function(){
+  var svg=document.querySelector('svg.rchart'); if(!svg) return;
+  var tip=document.createElement('div'); tip.className='sc-tip';
+  tip.appendChild(document.createElement('strong'));
+  document.body.appendChild(tip);
+  var box=tip.querySelector('strong');
+  function move(e){
+    var x=e.clientX+14, y=e.clientY+14;
+    if(x+tip.offsetWidth>window.innerWidth-8) x=e.clientX-tip.offsetWidth-14;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  svg.querySelectorAll('[data-tip]').forEach(function(c){
+    c.addEventListener('mouseenter',function(e){
+      box.textContent=c.dataset.tip; tip.style.opacity='1'; move(e);
+    });
+    c.addEventListener('mousemove',move);
+    c.addEventListener('mouseleave',function(){ tip.style.opacity='0'; });
+  });
+})();
+</script>
+<section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
+<footer class="site">
+  <div>Market-implied team ratings · rebuilt daily.<br>
+    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
+    all rights reserved.</span></div>
+  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
+    made with <span class="heart">&#9829;</span> by
+    <a href="https://belkacem.xyz">Belkacem</a></div>
+</footer>
+</div>
+
+<script>
+(function(){
+  function cmp(a, b, key, dir, text){
+    var x=a.dataset[key], y=b.dataset[key];
+    var xm=(x===undefined||x===''), ym=(y===undefined||y==='');
+    if(xm||ym) return xm&&ym ? 0 : (xm?1:-1);          // blanks last, always
+    if(text) return dir==='asc' ? x.localeCompare(y) : y.localeCompare(x);
+    var d=parseFloat(x)-parseFloat(y);
+    return dir==='asc' ? d : -d;
+  }
+  function sortTable(t, th, dir){
+    var key=th.dataset.sort, text=th.dataset.type==='text';
+    var ties=(th.dataset.tie||'').split(',').filter(Boolean);
+    var body=t.querySelector('tbody');
+    var rows=[].slice.call(body.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var r=cmp(a,b,key,dir,text);
+      for(var i=0;i<ties.length && r===0;i++) r=cmp(a,b,ties[i],dir,false);
+      return r;
+    });
+    rows.forEach(function(r){ body.appendChild(r); });
+    t.querySelectorAll('th.sortable').forEach(function(o){
+      var on=o===th;
+      o.classList.toggle('sorted', on);
+      o.setAttribute('aria-sort', on ? (dir==='asc'?'ascending':'descending') : 'none');
+      var c=o.querySelector('.caret');
+      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
+    });
+  }
+  document.querySelectorAll('table.ladder, table.proj').forEach(function(t){
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      th.setAttribute('tabindex','0');
+      th.setAttribute('role','button');
+      function go(){
+        var dir = th.classList.contains('sorted')
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc')
+          : (th.dataset.dir || 'desc');
+        t.dataset.dir=dir;
+        sortTable(t, th, dir);
+      }
+      th.addEventListener('click', go);
+      th.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
+      });
+    });
+  });
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "762e95ac6c554a9aa575ff1d8cc88013"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

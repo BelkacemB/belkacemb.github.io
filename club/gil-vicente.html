@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
+<title>Gil Vicente — ratings, form and projection | Bayes FC</title>
+<meta name="description" content="Gil Vicente market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Primeira Liga season projection. Rebuilt daily."><meta name="robots" content="index,follow"><link rel="canonical" href="https://bayesfc.com/club/gil-vicente.html"><meta property="og:type" content="website"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Gil Vicente — ratings, form and projection | Bayes FC"><meta property="og:description" content="Gil Vicente market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Primeira Liga season projection. Rebuilt daily."><meta property="og:url" content="https://bayesfc.com/club/gil-vicente.html"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Gil Vicente — ratings, form and projection | Bayes FC"><meta name="twitter:description" content="Gil Vicente market-implied strength ratings: attack, defence and overall rating from betting-market closing prices, with recent results, upcoming fixtures and a Primeira Liga season projection. Rebuilt daily.">
+<style>
+:root {
+  /* --muted is secondary text everywhere (headers, notes, footer, the rank and
+     Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
+     lands on, not just the page: at #6b7280 it was 4.51 on --bg but only 4.22
+     over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
+  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
+  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
+  --stale-ink:#92400e;
+  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
+  --heat:15,118,110; --hot-ink:#ffffff;
+  /* Gridline on the distribution strip: recessive by construction — a neutral
+     at low alpha, so it never competes with the heat ramp carrying the value. */
+  --grid:rgba(0,0,0,0.16);
+  /* Status warning: fixed, not themed — a caution glyph must read the same
+     regardless of light/dark, unlike the series/ink tokens above. */
+  --warn:#fab219; --warn-ink:#1a1206;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
+    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
+    --stale-ink:#fbbf24;
+    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
+    --heat:45,212,191; --hot-ink:#0c0a09;
+    --grid:rgba(255,255,255,0.18);
+  }
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
+header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
+   read as one word. --accent carries the theme, so it inverts with the page. */
+.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
+  color:var(--accent); }
+.brand h1 span { color:var(--ink); }
+.brand .tag { color:var(--muted); font-size:14px; }
+nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
+nav.site a {
+  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
+  padding:6px 12px; border-radius:8px;
+}
+nav.site a:hover { color:var(--ink); background:var(--surface); }
+nav.site a.active { color:var(--accent); background:var(--surface); }
+.stamp {
+  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+  font-size:13px; color:var(--muted);
+}
+.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
+.dot.stale { background:var(--stale-ink); }
+h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
+.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
+.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
+.tabs button {
+  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:6px 12px; border-radius:8px;
+}
+.tabs button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
+table.ladder thead th {
+  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
+}
+table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
+table.ladder th.team, table.ladder td.team { text-align:left; }
+table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.ladder td.rank, table.ladder td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
+}
+table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
+table.ladder td.total { font-weight:600; }
+table.ladder td.pos { color:var(--pos); }
+table.ladder td.neg { color:var(--neg); }
+table.ladder tbody tr:hover { background:var(--surface); }
+/* Season-projection heatmap table (issue #114/#116). Cells shade a single
+   sequential hue (--heat, the brand accent) by probability via opacity, so the
+   band adapts to light/dark automatically; text always prints, flipping to
+   --hot-ink past a threshold so it never relies on colour alone. */
+table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
+table.proj th, table.proj td { border-bottom:1px solid var(--line); }
+table.proj thead th {
+  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
+  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
+}
+table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
+table.proj th.team, table.proj td.team { text-align:left; }
+table.proj th.rank, table.proj td.rank { text-align:right; width:34px; color:var(--muted); }
+table.proj td.rank, table.proj td.num {
+  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
+}
+table.proj th.num, table.proj td.num { text-align:right; width:46px; }
+/* A number and its trajectory share one cell (PR #199): the ticker is a
+   fixed-width inline block, so the digits still line up down the column even
+   where a club has no line to draw. Smaller than the ladder's sparkline — this
+   one sits inside a table row, not in a column of its own. */
+table.proj th.trk, table.proj td.trk { width:112px; white-space:nowrap; }
+td.trk .tick { display:inline-block; width:54px; margin-left:7px;
+  text-align:right; vertical-align:middle; }
+td.trk .tick svg.spark { width:54px; height:15px; }
+/* A rule at a group boundary — the projection's opening column, and the Rating
+   that closes the league-table view. The heat ramp owns colour in these tables,
+   so grouping has to be structural: a hairline, never a second hue. */
+table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
+table.proj td.num.tot { font-weight:600; }
+table.proj tbody tr:hover td { background:var(--surface); }
+/* The league-table view: the same table chrome, narrower numeric columns (two
+   digits and a sign, not a signed decimal) so ten of them still fit the prose
+   column without the horizontal scroll the projection needs. */
+table.ltab { margin-bottom:4px; }
+table.ltab th.num, table.ltab td.num { width:40px; }
+table.ltab th.trk, table.ltab td.trk { width:112px; }
+th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
+  color:var(--muted); text-align:center; }
+td.pcell { padding:0; width:11px; min-width:11px; position:relative;
+  background:rgba(var(--heat), var(--a, 0)); }
+/* Alignment gridlines under the sparse ticks, centred on the tick label so a
+   cell reads back to its position without counting across an 18-wide strip.
+   Drawn over the heat as a hairline neutral — recessive, and never a value. */
+td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
+  width:1px; background:var(--grid); pointer-events:none; }
+/* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
+body.js td.pcell { cursor:crosshair; }
+body.js td.pcell:hover, body.js td.pcell:focus-visible {
+  outline:2px solid var(--accent); outline-offset:-2px; z-index:1; }
+#tip {
+  position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .08s;
+  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.45;
+  padding:6px 9px; border-radius:7px; max-width:220px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+#tip.on { opacity:1; }
+#tip b { font-size:13px; }
+#tip span { color:var(--bg); opacity:0.72; }
+td.heat { text-align:right; width:46px; padding:6px 5px;
+  background:rgba(var(--heat), var(--a, 0)); }
+table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
+  background:rgba(var(--heat), var(--a, 0)); }
+td.heat.hot { color:var(--hot-ink); }
+td.heat.mut { color:var(--muted); }
+.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
+  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
+  vertical-align:middle; }
+/* Sortable headers, shared by the ladders and the projection tables. A header
+   carrying a tooltip gets a dotted underline so the explanation is discoverable
+   rather than hidden; the tooltip only ever restates what the column is, never
+   a value the table doesn't already print. */
+body.js th.sortable { cursor:pointer; user-select:none; }
+body.js th.sortable:hover { color:var(--ink); }
+body.js th.sortable:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
+th.sortable.sorted { color:var(--accent); }
+th.sortable.sorted .caret { opacity:1; }
+body.js table.proj thead th[title] { text-decoration:underline dotted;
+  text-decoration-color:var(--line); text-underline-offset:3px; }
+body.js table.proj thead th[title]:hover { text-decoration-color:var(--accent); }
+table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
+td.delta .dup { color:var(--pos); }
+td.delta .ddn { color:var(--neg); }
+td.delta .dmut { color:var(--muted); }
+.lookback {
+  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
+  font-size:13px; color:var(--muted);
+}
+.lookback .seg { display:inline-flex; gap:4px; }
+.lookback button {
+  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:4px 10px; border-radius:8px;
+}
+.lookback button.active { color:var(--accent); border-color:var(--accent); }
+table.ladder th.spark, table.ladder td.spark { text-align:right; width:88px; }
+svg.spark { display:inline-block; vertical-align:middle; }
+svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
+  stroke-linejoin:round; stroke-linecap:round; }
+svg.spark circle.sup { fill:var(--pos); }
+svg.spark circle.sdn { fill:var(--neg); }
+.sparknull { color:var(--muted); }
+/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
+   name, shown only when its rating is materially less certain than the ladder's
+   typical club (wide margin, or too little recent data for one at all). Fixed
+   warning color (not themed) so it reads the same in light and dark — the
+   tooltip carries the specifics. */
+.ubadge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:14px; height:14px; margin-left:6px; border-radius:50%;
+  background:var(--warn); color:var(--warn-ink);
+  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
+  cursor:default;
+}
+.movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
+.mvcol { flex:1; min-width:240px; }
+.mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
+.mv { display:inline-flex; align-items:baseline; gap:7px; padding:4px 10px;
+  margin:0 6px 6px 0; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); font-size:13px; }
+.mv .mvd { font-family:ui-monospace,"SF Mono",Menlo,monospace;
+  font-variant-numeric:tabular-nums; font-size:12px; }
+.mv.up .mvd { color:var(--pos); }
+.mv.down .mvd { color:var(--neg); }
+svg.scatter { display:block; width:100%; height:auto; max-width:640px; margin:6px auto 0; }
+svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
+  stroke:var(--surface); stroke-width:0.8; }
+body.js svg.scatter circle { cursor:pointer; }
+svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
+svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
+svg.scatter rect.quad { opacity:0.09; }
+svg.scatter rect.q-all { fill:var(--q-all); }
+svg.scatter rect.q-def { fill:var(--q-def); }
+svg.scatter rect.q-att { fill:var(--q-att); }
+svg.scatter rect.q-weak { fill:var(--q-weak); }
+svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
+  fill-opacity:0.9; }
+svg.scatter text.ql.q-all { fill:var(--q-all); }
+svg.scatter text.ql.q-def { fill:var(--q-def); }
+svg.scatter text.ql.q-att { fill:var(--q-att); }
+svg.scatter text.ql.q-weak { fill:var(--q-weak); }
+svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
+  letter-spacing:0.03em; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
+  max-width:640px; margin:12px auto 0; font-size:12px; color:var(--muted); }
+.legend .k { display:inline-flex; align-items:center; gap:6px; }
+.legend i.sw { width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
+.sc-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
+  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
+  font-size:12px; line-height:1.35; padding:6px 9px; border-radius:8px;
+  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
+.sc-tip .t-sub { color:var(--muted); }
+.wide { overflow-x:auto; }
+/* The projection table used to break out of the 880px prose column and re-centre
+   at up to 1240px, because a started league carried results *and* strength *and*
+   18-20 position cells *and* three summary columns, and scrolling it sideways
+   hid Title / Top 4 / Rel — the columns people come for. Issue #199 cut that
+   table to two numbers and the strip, and #182 moved the results to their own
+   view, so the natural width is now about 770px for a 20-team league: it fits
+   the column, and the breakout only spent the slack stretching the strip's cells
+   away from each other. It sits in the wrap like everything else now, and .wide
+   still scrolls it on a narrow viewport. */
+.prose { font-size:15px; }
+.prose p { margin:14px 0; }
+.prose a { color:var(--accent); }
+/* Framed inline-SVG chart. Authored prose (blog posts, reports) hand-builds its
+   own SVG in the Markdown body; this is the frame around it. Shared rather than
+   per-surface: the same figure has to look the same wherever it is published. */
+figure.chart { margin:28px 0; padding:14px 14px 6px; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; }
+figure.chart svg { display:block; width:100%; height:auto; }
+figure.chart figcaption { color:var(--muted); font-size:13px; line-height:1.5;
+  margin:8px 2px 4px; }
+footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
+  justify-content:space-between; gap:8px 20px; }
+footer.site .made a { color:var(--muted); text-decoration:none;
+  border-bottom:1px solid var(--line); }
+footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
+footer.site .heart { color:var(--neg); }
+footer.site .cite { font-size:12px; opacity:0.85; }
+.faq { margin:20px 0 0; }
+.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
+.faq p { margin:0 0 4px; }
+.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
+  padding-top:16px; border-top:1px solid var(--line); }
+.about a { color:var(--accent); }
+.subscribe { margin:44px 0 0; padding:20px 22px; border:1px solid var(--line);
+  background:var(--surface); border-radius:12px; }
+.subscribe h2 { font-size:16px; margin:0 0 4px; }
+.subscribe p { color:var(--muted); font-size:13.5px; margin:0 0 12px; }
+.subscribe form { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0; }
+.subscribe input[type=email] { flex:1 1 220px; min-width:0; padding:9px 12px;
+  font-size:14px; color:var(--ink); background:var(--bg);
+  border:1px solid var(--line); border-radius:8px; }
+.subscribe input[type=email]:focus { outline:none; border-color:var(--accent); }
+.subscribe button { padding:9px 18px; font-size:14px; font-weight:600;
+  color:#fff; background:var(--accent); border:none; border-radius:8px;
+  cursor:pointer; }
+.subscribe button:hover { opacity:0.9; }
+.subscribe .fine { font-size:12px; margin:10px 0 0; }
+.subscribe .fine a { color:var(--muted); }
+body.js .tab-panel { display:none; }
+body.js .tab-panel.active { display:block; }
+/* The started-league view switch: what happened, or what the market implies.
+   A joined segmented control, deliberately not the gapped pills above it — the
+   league tabs pick a subject, this picks a question about it, and two identical
+   controls stacked would read as one two-row set of tabs. Without JS neither
+   `.view` is hidden and both tables render, so the switch is an enhancement and
+   never the only way to reach a number. */
+.viewsw { margin:10px 0 0; }
+.viewsw .seg { display:inline-flex; }
+.viewsw button {
+  font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted);
+  padding:5px 13px;
+}
+.viewsw button:first-child { border-radius:8px 0 0 8px; }
+.viewsw button:last-child { border-radius:0 8px 8px 0; margin-left:-1px; }
+.viewsw button:hover { color:var(--ink); }
+.viewsw button.active { color:var(--accent); border-color:var(--accent); z-index:1; }
+body.js .tab-panel .view { display:none; }
+body.js .tab-panel .view.on { display:block; }
+/* The league-table view is narrow enough for the prose column, so it scrolls in
+   place rather than breaking out of it the way `.wide` does. */
+.scroll { overflow-x:auto; }
+/* ---- club page (one per rated club) ---------------------------------------
+   The rating chart. Every colour is a site token, so light/dark comes free, and
+   the three series are told apart by weight and dash as well as tint — the same
+   rule the scatter follows: colour is never the only cue. */
+svg.rchart line.gl { stroke:var(--line); stroke-width:1; }
+svg.rchart line.gz { stroke:var(--muted); stroke-width:1; stroke-dasharray:4 4;
+  opacity:0.6; }
+svg.rchart text.gt, svg.rchart text.gd { fill:var(--muted); font-size:10.5px;
+  font-variant-numeric:tabular-nums; }
+svg.rchart polyline.rl { fill:none; stroke-linejoin:round; stroke-linecap:round; }
+svg.rchart polyline.r-tot { stroke:var(--accent); stroke-width:2.1; }
+svg.rchart polyline.r-att { stroke:var(--q-att); stroke-width:1.2;
+  stroke-dasharray:5 3; opacity:0.85; }
+svg.rchart polyline.r-def { stroke:var(--q-def); stroke-width:1.2;
+  stroke-dasharray:1.5 3; opacity:0.85; }
+svg.rchart circle.rend { fill:var(--accent); }
+svg.rchart circle.rmk { stroke:var(--surface); stroke-width:1.5; }
+svg.rchart circle.rmk.rw { fill:var(--pos); }
+svg.rchart circle.rmk.rd { fill:var(--muted); }
+svg.rchart circle.rmk.rl2 { fill:var(--neg); }
+svg.rchart text.rmt { fill:#fff; font-size:7.5px; font-weight:700;
+  pointer-events:none; }
+svg.rchart circle.emk { fill:var(--q-weak); stroke:var(--surface); stroke-width:1; }
+svg.rchart line.erule { stroke:var(--line); stroke-width:1; }
+body.js svg.rchart [data-tip] { cursor:crosshair; }
+figure.chart figcaption .key { display:inline-flex; align-items:center; gap:6px;
+  margin-right:16px; }
+figure.chart figcaption i.sw { width:16px; height:0; border-top-width:2px;
+  border-top-style:solid; display:inline-block; flex:none; }
+figure.chart figcaption i.sw.k-tot { border-color:var(--accent); }
+figure.chart figcaption i.sw.k-att { border-color:var(--q-att);
+  border-top-style:dashed; }
+figure.chart figcaption i.sw.k-def { border-color:var(--q-def);
+  border-top-style:dotted; }
+figure.chart figcaption i.sw.k-w, figure.chart figcaption i.sw.k-d,
+figure.chart figcaption i.sw.k-l, figure.chart figcaption i.sw.k-ev {
+  width:9px; height:9px; border-radius:50%; border:0; }
+figure.chart figcaption i.sw.k-w { background:var(--pos); }
+figure.chart figcaption i.sw.k-d { background:var(--muted); }
+figure.chart figcaption i.sw.k-l { background:var(--neg); }
+figure.chart figcaption i.sw.k-ev { background:var(--q-weak); }
+figure.chart figcaption .key i.sw + i.sw { margin-left:2px; }
+/* The club header: the numbers a reader wants before any table. */
+.chead { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  margin:28px 0 2px; }
+.chead h2 { margin:0; font-size:22px; letter-spacing:-0.02em; }
+.chead .clg { color:var(--muted); font-size:13px; }
+.chead .clg a { color:var(--muted); }
+.cstats { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; }
+.cstat { background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  padding:8px 13px; min-width:88px; }
+.cstat .k { display:block; color:var(--muted); font-size:10.5px; font-weight:600;
+  letter-spacing:0.05em; text-transform:uppercase; }
+.cstat .v { display:block; font-size:17px; font-weight:650; margin-top:2px;
+  font-variant-numeric:tabular-nums; }
+.cstat .v.pos { color:var(--pos); }
+.cstat .v.neg { color:var(--neg); }
+.cstat .sub { color:var(--muted); font-size:11.5px; font-weight:400; margin-left:4px; }
+/* Club tables (results, upcoming, news) share table.proj's frame; only the
+   column widths differ, so they carry .ctab and add nothing else. */
+table.ctab td.date, table.ctab th.date { width:74px; white-space:nowrap; }
+table.ctab td.comp, table.ctab th.comp { width:112px; color:var(--muted);
+  font-size:12.5px; }
+table.ctab td.va, table.ctab th.va { width:26px; color:var(--muted); text-align:center; }
+table.ctab td.opp, table.ctab th.opp { text-align:left; }
+table.ctab td.sc, table.ctab th.sc { width:52px; text-align:center;
+  font-variant-numeric:tabular-nums; font-weight:600; }
+table.ctab td.hl { text-align:left; }
+.fm { display:inline-block; width:18px; height:18px; line-height:18px;
+  border-radius:50%; text-align:center; font-size:10.5px; font-weight:700;
+  color:#fff; }
+.fm.W { background:var(--pos); }
+.fm.D { background:var(--muted); }
+.fm.L { background:var(--neg); }
+/* An unpriced result: the score is on record but no closing price has landed, so
+   the rating has not seen it yet. Marked rather than hidden — it is the most
+   interesting row on the page, being next week's move seen a week early. */
+.unp { color:var(--muted); font-size:11px; margin-left:6px; white-space:nowrap; }
+.ebadge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); border:1px solid var(--line);
+  border-radius:5px; padding:1px 5px; }
+.etype { color:var(--muted); font-size:12.5px; white-space:nowrap; }
+.caveat { color:var(--muted); font-size:12.5px; line-height:1.55; margin:10px 0 0;
+  padding:11px 13px; background:var(--surface); border:1px solid var(--line);
+  border-radius:10px; }
+/* The "back to the list" footer link. Shared rather than blog-local: a post and
+   a club page both end with one, and they should end with the same one. */
+.post-back { margin-top:36px; padding-top:16px; border-top:1px solid var(--line); }
+.post-back a { color:var(--accent); text-decoration:none; }
+/* The club directory. */
+.cdir { columns:3 190px; column-gap:26px; margin:8px 0 0; }
+.cdir .cg { break-inside:avoid; margin:0 0 18px; }
+.cdir h3 { font-size:12px; font-weight:600; letter-spacing:0.04em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
+.cdir ul { list-style:none; padding:0; margin:0; }
+.cdir li { padding:2px 0; font-size:14px; }
+.cdir a, a.clink { color:var(--ink); text-decoration:none; }
+.cdir a:hover, a.clink:hover { color:var(--accent); text-decoration:underline; }
+:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}, {"@type": "SportsTeam", "@id": "https://bayesfc.com/club/gil-vicente.html#team", "name": "Gil Vicente", "sport": "Association football", "url": "https://bayesfc.com/club/gil-vicente.html", "memberOf": {"@type": "SportsOrganization", "name": "Primeira Liga"}, "subjectOf": {"@id": "https://bayesfc.com/#dataset"}, "creditText": "Ratings: Bayes FC (bayesfc.com)"}]}</script>
+</head>
+<body>
+<script>document.body.className="js";</script>
+<div class="wrap">
+<header class="site">
+  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
+    <span class="tag">team ratings from the betting market</span></div>
+  <nav class="site"><a href="../index.html">Global</a><a href="../leagues.html">Leagues</a><a href="../club/index.html" class="active">Clubs</a><a href="../blog/index.html">Blog</a><a href="../methodology.html">Methodology</a></nav>
+  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-08-29">2026-08-29</time> · last rebuilt <time datetime="2026-08-29T05:46:14.092326+00:00">2026-08-29 05:46 UTC</time></div>
+</header>
+<div class="chead"><h2>Gil Vicente</h2><span class="clg"><a href="../leagues.html">Primeira Liga</a></span></div><div class="cstats"><div class="cstat"><span class="k">Rating</span><span class="v neg">-0.40</span></div><div class="cstat"><span class="k">Attack</span><span class="v">-0.32</span></div><div class="cstat"><span class="k">Defence</span><span class="v">-0.08</span></div><div class="cstat"><span class="k">Global rank</span><span class="v">109<span class="sub">of 132 &middot; &#9650;1 this week</span></span></div><div class="cstat"><span class="k">League rank</span><span class="v">7<span class="sub">of 18</span></span></div><div class="cstat"><span class="k">Games priced</span><span class="v">138</span></div></div><h2>Strength over time</h2><p class="note">The club&rsquo;s rating (attack + defence) after every daily fit, with attack and defence shown separately underneath it. Dots on the line are results, placed on the fit that first could have seen them. The markers along the foot are club news, and they sit off the line on purpose: the news feed reaches no part of the model, so an event never moved this rating. What it can do is precede a move that no result explains &mdash; a club repriced by the market before it has played.</p><figure class="chart"><svg class="rchart" viewBox="0 0 720 310" width="100%" role="img" aria-label="Rating over time, 222 daily fits from 1 Feb to 29 Aug"><line class="gl" x1="44" y1="185.5" x2="706" y2="185.5"/><text class="gt" x="37" y="189.0" text-anchor="end">-0.4</text><line class="gl" x1="44" y1="91.2" x2="706" y2="91.2"/><text class="gt" x="37" y="94.7" text-anchor="end">-0.2</text><text class="gd" x="44.0" y="270" text-anchor="start">1 Feb</text><text class="gd" x="376.5" y="270" text-anchor="middle">23 May</text><text class="gd" x="706.0" y="270" text-anchor="end">29 Aug</text><polyline class="rl r-att" points="44.0,119.2 47.0,121.1 50.0,122.2 53.0,122.2 56.0,122.2 59.0,122.2 62.0,123.2 65.0,118.2 68.0,120.9 71.0,122.8 74.0,122.4 77.0,122.8 79.9,122.7 82.9,123.8 85.9,126.4 88.9,126.5 91.9,126.0 94.9,125.0 97.9,125.4 100.9,125.4 103.9,125.5 106.9,128.7 109.9,122.7 112.9,122.8 115.9,122.8 118.9,120.8 121.9,120.8 124.9,120.9 127.9,121.5 130.9,121.9 133.9,122.4 136.9,122.4 139.9,122.3 142.9,122.2 145.8,124.4 148.8,124.9 151.8,121.5 154.8,121.6 157.8,113.3 160.8,111.4 163.8,128.7 166.8,128.5 169.8,127.6 172.8,128.8 175.8,128.8 178.8,130.9 181.8,131.6 184.8,133.6 187.8,134.0 190.8,138.1 193.8,139.7 196.8,139.7 199.8,139.8 202.8,139.8 205.8,139.8 208.8,139.8 211.7,139.8 214.7,139.8 217.7,139.8 220.7,139.8 223.7,139.8 226.7,139.8 229.7,136.2 232.7,138.0 235.7,137.6 238.7,140.2 241.7,133.1 244.7,137.0 247.7,128.0 250.7,128.8 253.7,130.7 256.7,128.4 259.7,121.5 262.7,122.9 265.7,120.7 268.7,127.5 271.7,128.0 274.7,123.9 277.6,124.5 280.6,124.4 283.6,125.2 286.6,125.2 289.6,124.4 292.6,125.0 295.6,124.8 298.6,122.9 301.6,124.3 304.6,124.3 307.6,124.8 310.6,128.8 313.6,128.8 316.6,130.7 319.6,124.6 322.6,125.3 325.6,125.2 328.6,125.2 331.6,135.3 334.6,135.2 337.6,134.2 340.6,133.8 343.5,130.9 346.5,130.7 349.5,130.6 352.5,130.8 355.5,131.3 358.5,130.8 361.5,132.3 364.5,132.0 367.5,132.0 370.5,133.1 373.5,133.1 376.5,133.1 379.5,134.8 382.5,136.0 385.5,136.1 388.5,136.1 391.5,136.0 394.5,136.0 397.5,136.0 400.5,136.2 403.5,136.2 406.5,136.2 409.4,136.3 412.4,136.3 415.4,136.3 418.4,136.3 421.4,136.3 424.4,136.3 427.4,136.4 430.4,136.4 433.4,136.4 436.4,136.4 439.4,136.4 442.4,136.4 445.4,136.5 448.4,136.5 451.4,136.5 454.4,136.5 457.4,136.5 460.4,136.5 463.4,136.6 466.4,136.6 469.4,136.6 472.4,136.6 475.3,136.6 478.3,136.6 481.3,136.6 484.3,136.7 487.3,136.7 490.3,136.7 493.3,136.7 496.3,136.7 499.3,136.7 502.3,136.7 505.3,136.7 508.3,136.7 511.3,136.7 514.3,136.7 517.3,136.7 520.3,136.7 523.3,136.7 526.3,136.8 529.3,136.8 532.3,136.8 535.3,136.8 538.3,136.8 541.2,136.8 544.2,136.8 547.2,136.8 550.2,136.8 553.2,136.8 556.2,136.8 559.2,136.8 562.2,136.8 565.2,136.8 568.2,136.8 571.2,136.8 574.2,136.9 577.2,136.9 580.2,136.9 583.2,136.9 586.2,136.9 589.2,136.9 592.2,136.9 595.2,136.9 598.2,136.9 601.2,128.2 604.2,128.2 607.1,128.3 610.1,128.2 613.1,127.2 616.1,127.1 619.1,128.1 622.1,127.3 625.1,128.2 628.1,127.2 631.1,127.2 634.1,126.9 637.1,143.3 640.1,143.9 643.1,143.9 646.1,143.2 649.1,143.2 652.1,141.4 655.1,141.4 658.1,142.6 661.1,145.1 664.1,144.7 667.1,143.0 670.1,146.3 673.0,143.3 676.0,144.4 679.0,146.6 682.0,144.8 685.0,143.4 688.0,143.2 691.0,142.0 694.0,140.6 697.0,143.2 700.0,142.4 703.0,143.4 706.0,146.0"/><polyline class="rl r-def" points="44.0,57.8 47.0,59.9 50.0,60.5 53.0,60.5 56.0,60.6 59.0,60.6 62.0,60.2 65.0,55.6 68.0,57.3 71.0,57.0 74.0,57.3 77.0,56.7 79.9,56.8 82.9,55.9 85.9,57.6 88.9,58.3 91.9,57.8 94.9,57.9 97.9,57.4 100.9,57.4 103.9,57.4 106.9,60.2 109.9,61.3 112.9,61.2 115.9,61.2 118.9,48.6 121.9,48.6 124.9,46.4 127.9,47.9 130.9,48.3 133.9,53.5 136.9,53.4 139.9,53.5 142.9,53.5 145.8,56.5 148.8,55.7 151.8,59.0 154.8,58.9 157.8,64.4 160.8,72.2 163.8,79.7 166.8,80.0 169.8,79.2 172.8,79.6 175.8,79.7 178.8,82.8 181.8,82.5 184.8,88.4 187.8,88.3 190.8,90.0 193.8,89.2 196.8,89.2 199.8,89.2 202.8,89.2 205.8,89.2 208.8,89.2 211.7,89.3 214.7,89.3 217.7,89.3 220.7,89.3 223.7,89.3 226.7,89.3 229.7,87.3 232.7,87.7 235.7,87.3 238.7,86.6 241.7,74.8 244.7,63.8 247.7,58.6 250.7,58.6 253.7,57.4 256.7,53.2 259.7,51.2 262.7,50.2 265.7,44.4 268.7,43.0 271.7,43.3 274.7,44.6 277.6,43.7 280.6,43.4 283.6,42.8 286.6,43.0 289.6,42.3 292.6,42.1 295.6,43.7 298.6,38.7 301.6,44.9 304.6,44.9 307.6,46.5 310.6,43.8 313.6,43.9 316.6,43.7 319.6,43.2 322.6,42.9 325.6,43.4 328.6,43.4 331.6,48.5 334.6,48.5 337.6,48.7 340.6,45.8 343.5,41.2 346.5,41.4 349.5,41.6 352.5,41.6 355.5,41.1 358.5,40.7 361.5,41.6 364.5,41.2 367.5,41.0 370.5,42.7 373.5,42.7 376.5,42.8 379.5,43.0 382.5,44.6 385.5,44.6 388.5,44.6 391.5,44.7 394.5,44.7 397.5,44.8 400.5,46.5 403.5,46.5 406.5,46.5 409.4,46.6 412.4,46.6 415.4,46.6 418.4,46.7 421.4,46.7 424.4,46.7 427.4,46.7 430.4,46.7 433.4,46.8 436.4,46.8 439.4,46.8 442.4,46.9 445.4,46.9 448.4,46.9 451.4,47.0 454.4,47.0 457.4,47.0 460.4,47.1 463.4,47.1 466.4,47.1 469.4,47.2 472.4,47.2 475.3,47.2 478.3,47.3 481.3,47.3 484.3,47.3 487.3,47.4 490.3,47.4 493.3,47.4 496.3,47.5 499.3,47.5 502.3,47.5 505.3,47.5 508.3,47.5 511.3,47.6 514.3,47.6 517.3,47.6 520.3,47.7 523.3,47.7 526.3,47.7 529.3,47.7 532.3,47.8 535.3,47.8 538.3,47.8 541.2,47.9 544.2,47.9 547.2,47.9 550.2,48.0 553.2,48.0 556.2,48.0 559.2,48.1 562.2,48.1 565.2,48.1 568.2,48.1 571.2,48.1 574.2,48.2 577.2,48.2 580.2,48.2 583.2,48.3 586.2,48.3 589.2,48.3 592.2,48.3 595.2,48.3 598.2,48.3 601.2,44.3 604.2,44.3 607.1,44.1 610.1,44.1 613.1,42.6 616.1,42.2 619.1,44.1 622.1,42.6 625.1,43.6 628.1,41.7 631.1,41.7 634.1,41.8 637.1,56.5 640.1,56.1 643.1,57.0 646.1,57.4 649.1,53.6 652.1,55.6 655.1,55.6 658.1,54.7 661.1,57.4 664.1,56.3 667.1,55.5 670.1,55.1 673.0,52.4 676.0,54.3 679.0,51.4 682.0,48.2 685.0,46.2 688.0,43.7 691.0,41.4 694.0,37.6 697.0,40.8 700.0,42.3 703.0,33.8 706.0,35.2"/><polyline class="rl r-tot" points="44.0,180.0 47.0,184.0 50.0,185.8 53.0,185.8 56.0,185.8 59.0,185.8 62.0,186.4 65.0,176.8 68.0,181.2 71.0,182.8 74.0,182.7 77.0,182.5 79.9,182.5 82.9,182.7 85.9,187.0 88.9,187.8 91.9,186.7 94.9,185.9 97.9,185.8 100.9,185.9 103.9,186.0 106.9,191.9 109.9,186.9 112.9,186.9 115.9,186.9 118.9,172.5 121.9,172.5 124.9,170.3 127.9,172.4 130.9,173.3 133.9,178.9 136.9,178.8 139.9,178.8 142.9,178.7 145.8,183.9 148.8,183.7 151.8,183.6 154.8,183.6 157.8,180.7 160.8,186.6 163.8,211.5 166.8,211.5 169.8,209.8 172.8,211.4 175.8,211.5 178.8,216.7 181.8,217.1 184.8,225.0 187.8,225.3 190.8,231.1 193.8,231.9 196.8,232.0 199.8,232.0 202.8,232.0 205.8,232.0 208.8,232.1 211.7,232.1 214.7,232.1 217.7,232.1 220.7,232.2 223.7,232.2 226.7,232.2 229.7,226.6 232.7,228.7 235.7,227.9 238.7,229.8 241.7,210.9 244.7,203.9 247.7,189.7 250.7,190.4 253.7,191.1 256.7,184.5 259.7,175.7 262.7,176.2 265.7,168.1 268.7,173.5 271.7,174.3 274.7,171.5 277.6,171.2 280.6,170.7 283.6,171.0 286.6,171.3 289.6,169.8 292.6,170.1 295.6,171.5 298.6,164.6 301.6,172.2 304.6,172.2 307.6,174.2 310.6,175.7 313.6,175.7 316.6,177.4 319.6,170.8 322.6,171.2 325.6,171.6 328.6,171.7 331.6,186.9 334.6,186.7 337.6,185.9 340.6,182.7 343.5,175.1 346.5,175.1 349.5,175.2 352.5,175.4 355.5,175.5 358.5,174.5 361.5,176.9 364.5,176.3 367.5,176.1 370.5,178.8 373.5,178.9 376.5,178.9 379.5,180.7 382.5,183.6 385.5,183.7 388.5,183.7 391.5,183.7 394.5,183.8 397.5,183.8 400.5,185.7 403.5,185.7 406.5,185.8 409.4,185.8 412.4,185.8 415.4,185.9 418.4,185.9 421.4,186.0 424.4,186.0 427.4,186.1 430.4,186.1 433.4,186.2 436.4,186.2 439.4,186.3 442.4,186.3 445.4,186.4 448.4,186.4 451.4,186.5 454.4,186.5 457.4,186.6 460.4,186.6 463.4,186.6 466.4,186.7 469.4,186.7 472.4,186.8 475.3,186.8 478.3,186.9 481.3,186.9 484.3,187.0 487.3,187.0 490.3,187.0 493.3,187.1 496.3,187.1 499.3,187.2 502.3,187.2 505.3,187.3 508.3,187.3 511.3,187.3 514.3,187.4 517.3,187.4 520.3,187.4 523.3,187.5 526.3,187.5 529.3,187.5 532.3,187.6 535.3,187.6 538.3,187.7 541.2,187.7 544.2,187.7 547.2,187.8 550.2,187.8 553.2,187.8 556.2,187.9 559.2,187.9 562.2,188.0 565.2,188.0 568.2,188.0 571.2,188.0 574.2,188.1 577.2,188.1 580.2,188.1 583.2,188.2 586.2,188.2 589.2,188.2 592.2,188.2 595.2,188.2 598.2,188.2 601.2,175.5 604.2,175.5 607.1,175.3 610.1,175.2 613.1,172.9 616.1,172.3 619.1,175.2 622.1,173.0 625.1,174.8 628.1,172.0 631.1,172.0 634.1,171.7 637.1,202.8 640.1,203.0 643.1,203.8 646.1,203.6 649.1,199.8 652.1,200.0 655.1,200.0 658.1,200.3 661.1,205.5 664.1,204.0 667.1,201.5 670.1,204.5 673.0,198.8 676.0,201.7 679.0,201.1 682.0,196.0 685.0,192.7 688.0,189.9 691.0,186.3 694.0,181.2 697.0,187.0 700.0,187.8 703.0,180.2 706.0,184.2"/><circle class="rend" cx="706.0" cy="184.2" r="3"/><circle class="rmk rw" cx="688.0" cy="189.9" r="5.5" data-tip="2026-08-24 · Gil Vicente 2–0 Casa Pia"/><text class="rmt" x="688.0" y="193.1" text-anchor="middle">W</text><circle class="rmk rd" cx="664.1" cy="204.0" r="5.5" data-tip="2026-08-16 · Sp Braga 0–0 Gil Vicente (not priced yet)"/><text class="rmt" x="664.1" y="207.2" text-anchor="middle">D</text><circle class="rmk rw" cx="625.1" cy="174.8" r="5.5" data-tip="2026-08-09 · Gil Vicente 1–0 Rio Ave"/><text class="rmt" x="625.1" y="178.0" text-anchor="middle">W</text><circle class="rmk rl2" cx="355.5" cy="175.5" r="5.5" data-tip="2026-05-16 · Sp Lisbon 3–0 Gil Vicente"/><text class="rmt" x="355.5" y="178.7" text-anchor="middle">L</text><circle class="rmk rl2" cx="340.6" cy="182.7" r="5.5" data-tip="2026-05-11 · Gil Vicente 1–3 Arouca"/><text class="rmt" x="340.6" y="185.9" text-anchor="middle">L</text><circle class="rmk rd" cx="316.6" cy="177.4" r="5.5" data-tip="2026-05-03 · Rio Ave 0–0 Gil Vicente"/><text class="rmt" x="316.6" y="180.6" text-anchor="middle">D</text><circle class="rmk rw" cx="298.6" cy="164.6" r="5.5" data-tip="2026-04-27 · Gil Vicente 2–1 Casa Pia"/><text class="rmt" x="298.6" y="167.8" text-anchor="middle">W</text><circle class="rmk rl2" cx="271.7" cy="174.3" r="5.5" data-tip="2026-04-18 · Gil Vicente 0–1 Guimaraes"/><text class="rmt" x="271.7" y="177.5" text-anchor="middle">L</text><circle class="rmk rd" cx="256.7" cy="184.5" r="5.5" data-tip="2026-04-13 · Tondela 2–2 Gil Vicente"/><text class="rmt" x="256.7" y="187.7" text-anchor="middle">D</text><circle class="rmk rw" cx="226.7" cy="232.2" r="5.5" data-tip="2026-04-03 · Gil Vicente 3–0 AVS"/><text class="rmt" x="226.7" y="235.4" text-anchor="middle">W</text><circle class="rmk rl2" cx="187.8" cy="225.3" r="5.5" data-tip="2026-03-21 · Santa Clara 1–0 Gil Vicente"/><text class="rmt" x="187.8" y="228.5" text-anchor="middle">L</text><circle class="rmk rd" cx="166.8" cy="211.5" r="5.5" data-tip="2026-03-14 · Gil Vicente 2–2 Alverca"/><text class="rmt" x="166.8" y="214.7" text-anchor="middle">D</text><circle class="rmk rd" cx="148.8" cy="183.7" r="5.5" data-tip="2026-03-08 · Estrela 2–2 Gil Vicente"/><text class="rmt" x="148.8" y="186.9" text-anchor="middle">D</text><circle class="rmk rl2" cx="130.9" cy="173.3" r="5.5" data-tip="2026-03-02 · Gil Vicente 1–2 Benfica"/><text class="rmt" x="130.9" y="176.5" text-anchor="middle">L</text><circle class="rmk rl2" cx="106.9" cy="191.9" r="5.5" data-tip="2026-02-22 · Estoril 3–1 Gil Vicente"/><text class="rmt" x="106.9" y="195.1" text-anchor="middle">L</text><circle class="rmk rw" cx="82.9" cy="182.7" r="5.5" data-tip="2026-02-14 · Gil Vicente 2–1 Sp Braga"/><text class="rmt" x="82.9" y="185.9" text-anchor="middle">W</text><circle class="rmk rw" cx="62.0" cy="186.4" r="5.5" data-tip="2026-02-07 · Moreirense 1–2 Gil Vicente"/><text class="rmt" x="62.0" y="189.6" text-anchor="middle">W</text><circle class="rmk rw" cx="44.0" cy="180.0" r="5.5" data-tip="2026-02-01 · Gil Vicente 5–0 Famalicao"/><text class="rmt" x="44.0" y="183.2" text-anchor="middle">W</text></svg><figcaption><span class="key"><i class="sw k-tot"></i>Rating</span><span class="key"><i class="sw k-att"></i>Attack</span><span class="key"><i class="sw k-def"></i>Defence</span><span class="key"><i class="sw k-w"></i><i class="sw k-d"></i><i class="sw k-l"></i>Win / draw / loss</span><span class="key"><i class="sw k-ev"></i>Club news</span></figcaption></figure><h2>Season projection <span class="wip">beta</span></h2><p class="note">Where the club is likely to finish, from a Monte Carlo simulation of every remaining fixture on the market-implied ratings. The strip is the full finishing-position distribution, 1st on the left, darker = more likely. <strong>Experimental and not yet independently validated</strong> &mdash; see <a href="../methodology.html">methodology</a>.</p><div class="cstats"><div class="cstat"><span class="k">xPos</span><span class="v">7.2</span></div><div class="cstat"><span class="k">Title</span><span class="v">&ndash;</span></div><div class="cstat"><span class="k">Top 4</span><span class="v">11%</span></div><div class="cstat"><span class="k">Relegation</span><span class="v">&ndash;</span></div><div class="cstat"><span class="k">Played</span><span class="v">3</span></div><div class="cstat"><span class="k">Points</span><span class="v">7</span></div><div class="cstat"><span class="k">Goals</span><span class="v">3&ndash;0<span class="sub">+3</span></span></div></div><div class="wide"><table class="proj"><thead><tr><th class="phead tick">1</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">5</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">10</th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead"></th><th class="phead tick">15</th><th class="phead"></th><th class="phead"></th><th class="phead tick">18</th></tr></thead><tbody><tr><td class="pcell tick" tabindex="0" style="--a:0.000" data-pos="1" data-p="0.0" title="Finish 1: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.050" data-pos="2" data-p="0.1" title="Finish 2: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.050" data-pos="3" data-p="0.4" title="Finish 3: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.344" data-pos="4" data-p="10.2" title="Finish 4: 10%"></td><td class="pcell tick" tabindex="0" style="--a:0.519" data-pos="5" data-p="20.3" title="Finish 5: 20%"></td><td class="pcell" tabindex="0" style="--a:0.476" data-pos="6" data-p="17.6" title="Finish 6: 18%"></td><td class="pcell" tabindex="0" style="--a:0.417" data-pos="7" data-p="14.1" title="Finish 7: 14%"></td><td class="pcell" tabindex="0" style="--a:0.359" data-pos="8" data-p="11.0" title="Finish 8: 11%"></td><td class="pcell" tabindex="0" style="--a:0.301" data-pos="9" data-p="8.2" title="Finish 9: 8%"></td><td class="pcell tick" tabindex="0" style="--a:0.244" data-pos="10" data-p="5.8" title="Finish 10: 6%"></td><td class="pcell" tabindex="0" style="--a:0.207" data-pos="11" data-p="4.4" title="Finish 11: 4%"></td><td class="pcell" tabindex="0" style="--a:0.161" data-pos="12" data-p="2.9" title="Finish 12: 3%"></td><td class="pcell" tabindex="0" style="--a:0.133" data-pos="13" data-p="2.1" title="Finish 13: 2%"></td><td class="pcell" tabindex="0" style="--a:0.103" data-pos="14" data-p="1.4" title="Finish 14: 1%"></td><td class="pcell tick" tabindex="0" style="--a:0.075" data-pos="15" data-p="0.8" title="Finish 15: 1%"></td><td class="pcell" tabindex="0" style="--a:0.056" data-pos="16" data-p="0.5" title="Finish 16: &ndash;"></td><td class="pcell" tabindex="0" style="--a:0.050" data-pos="17" data-p="0.2" title="Finish 17: &ndash;"></td><td class="pcell tick" tabindex="0" style="--a:0.050" data-pos="18" data-p="0.1" title="Finish 18: &ndash;"></td></tr></tbody></table></div><h2>Recent results</h2><p class="note">Every played match on record, from either feed. A match marked <em>not priced yet</em> has a scoreline but no closing price, so the rating above has not seen it &mdash; the score arrives within a day, the price a few days later.</p><div class="scroll"><table class="proj ctab"><thead><tr><th class="date">Date</th><th class="comp">Competition</th><th class="va"></th><th class="opp">Opponent</th><th class="sc">Score</th><th class="va"></th></tr></thead><tbody><tr><td class="date">08-24</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="casa-pia.html">Casa Pia</a></td><td class="sc">2&ndash;0</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">08-16</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="sp-braga.html">Sp Braga</a><span class="unp">not priced yet</span></td><td class="sc">0&ndash;0</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">08-09</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="rio-ave.html">Rio Ave</a></td><td class="sc">1&ndash;0</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">05-16</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="sp-lisbon.html">Sp Lisbon</a></td><td class="sc">3&ndash;0</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">05-11</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="arouca.html">Arouca</a></td><td class="sc">1&ndash;3</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">05-03</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="rio-ave.html">Rio Ave</a></td><td class="sc">0&ndash;0</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">04-27</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="casa-pia.html">Casa Pia</a></td><td class="sc">2&ndash;1</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">04-18</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="guimaraes.html">Guimaraes</a></td><td class="sc">0&ndash;1</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">04-13</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp">Tondela</td><td class="sc">2&ndash;2</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">04-03</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp">AVS</td><td class="sc">3&ndash;0</td><td class="va"><span class="fm W">W</span></td></tr><tr><td class="date">03-21</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="santa-clara.html">Santa Clara</a></td><td class="sc">1&ndash;0</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">03-14</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="alverca.html">Alverca</a></td><td class="sc">2&ndash;2</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">03-08</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="estrela.html">Estrela</a></td><td class="sc">2&ndash;2</td><td class="va"><span class="fm D">D</span></td></tr><tr><td class="date">03-02</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="benfica.html">Benfica</a></td><td class="sc">1&ndash;2</td><td class="va"><span class="fm L">L</span></td></tr><tr><td class="date">02-22</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="estoril.html">Estoril</a></td><td class="sc">3&ndash;1</td><td class="va"><span class="fm L">L</span></td></tr></tbody></table></div><p class="note" style="margin-top:8px">Showing the most recent 15 of 34 on record.</p><h2>Upcoming</h2><p class="note">The next fixtures on the schedule, each shaded by how strong the opponent is &mdash; a darker cell is a harder game. The shading runs on one scale across every league, so two clubs&rsquo; runs can be compared directly. An opponent with no published rating (a lower-division cup side) prints a dash.</p><div class="scroll"><table class="proj ctab"><thead><tr><th class="date">Date</th><th class="comp">Competition</th><th class="va"></th><th class="opp">Opponent</th><th class="sc">Opp rating</th></tr></thead><tbody><tr><td class="date">08-30</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="famalicao.html">Famalicao</a></td><td class="sc heat" style="--a:0.197">-0.22</td></tr><tr><td class="date">09-06</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="academico-viseu.html">Academico Viseu</a></td><td class="sc heat" style="--a:0.060">-0.82</td></tr><tr><td class="date">09-13</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="benfica.html">Benfica</a></td><td class="sc heat" style="--a:0.657">+0.71</td></tr><tr><td class="date">09-20</td><td class="comp">Primeira Liga</td><td class="va">H</td><td class="opp"><a class="clink" href="maritimo.html">Maritimo</a></td><td class="sc heat" style="--a:0.060">-0.68</td></tr><tr><td class="date">10-11</td><td class="comp">Primeira Liga</td><td class="va">A</td><td class="opp"><a class="clink" href="moreirense.html">Moreirense</a></td><td class="sc heat" style="--a:0.060">-0.91</td></tr></tbody></table></div><h2>Club news</h2><p class="note">Nothing recorded for Gil Vicente in the last 365 days. The feed has been collecting since <time datetime="2026-08-21">2026-08-21</time>; before that we were not looking, which is not the same as a quiet club.</p><p class="post-back"><a href="index.html">&larr; All clubs</a> &middot; <a href="../index.html">Global ladder</a></p>
+<script>
+(function(){
+  var svg=document.querySelector('svg.rchart'); if(!svg) return;
+  var tip=document.createElement('div'); tip.className='sc-tip';
+  tip.appendChild(document.createElement('strong'));
+  document.body.appendChild(tip);
+  var box=tip.querySelector('strong');
+  function move(e){
+    var x=e.clientX+14, y=e.clientY+14;
+    if(x+tip.offsetWidth>window.innerWidth-8) x=e.clientX-tip.offsetWidth-14;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  }
+  svg.querySelectorAll('[data-tip]').forEach(function(c){
+    c.addEventListener('mouseenter',function(e){
+      box.textContent=c.dataset.tip; tip.style.opacity='1'; move(e);
+    });
+    c.addEventListener('mousemove',move);
+    c.addEventListener('mouseleave',function(){ tip.style.opacity='0'; });
+  });
+})();
+</script>
+<section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
+<footer class="site">
+  <div>Market-implied team ratings · rebuilt daily.<br>
+    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
+    all rights reserved.</span></div>
+  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
+    made with <span class="heart">&#9829;</span> by
+    <a href="https://belkacem.xyz">Belkacem</a></div>
+</footer>
+</div>
+
+<script>
+(function(){
+  function cmp(a, b, key, dir, text){
+    var x=a.dataset[key], y=b.dataset[key];
+    var xm=(x===undefined||x===''), ym=(y===undefined||y==='');
+    if(xm||ym) return xm&&ym ? 0 : (xm?1:-1);          // blanks last, always
+    if(text) return dir==='asc' ? x.localeCompare(y) : y.localeCompare(x);
+    var d=parseFloat(x)-parseFloat(y);
+    return dir==='asc' ? d : -d;
+  }
+  function sortTable(t, th, dir){
+    var key=th.dataset.sort, text=th.dataset.type==='text';
+    var ties=(th.dataset.tie||'').split(',').filter(Boolean);
+    var body=t.querySelector('tbody');
+    var rows=[].slice.call(body.querySelectorAll('tr'));
+    rows.sort(function(a,b){
+      var r=cmp(a,b,key,dir,text);
+      for(var i=0;i<ties.length && r===0;i++) r=cmp(a,b,ties[i],dir,false);
+      return r;
+    });
+    rows.forEach(function(r){ body.appendChild(r); });
+    t.querySelectorAll('th.sortable').forEach(function(o){
+      var on=o===th;
+      o.classList.toggle('sorted', on);
+      o.setAttribute('aria-sort', on ? (dir==='asc'?'ascending':'descending') : 'none');
+      var c=o.querySelector('.caret');
+      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
+    });
+  }
+  document.querySelectorAll('table.ladder, table.proj').forEach(function(t){
+    t.querySelectorAll('th.sortable').forEach(function(th){
+      th.setAttribute('tabindex','0');
+      th.setAttribute('role','button');
+      function go(){
+        var dir = th.classList.contains('sorted')
+          ? (t.dataset.dir==='asc' ? 'desc' : 'asc')
+          : (th.dataset.dir || 'desc');
+        t.dataset.dir=dir;
+        sortTable(t, th, dir);
+      }
+      th.addEventListener('click', go);
+      th.addEventListener('keydown', function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
+      });
+    });
+  });
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "762e95ac6c554a9aa575ff1d8cc88013"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

@@ -6,6 +6,7 @@
 
 - [Global cross-league ladder](https://bayesfc.com/): A cross-league ladder placing every European club on one comparable strength scale, rebuilt daily from betting-market closing prices.
 - [League ladders](https://bayesfc.com/leagues.html): Daily attack, defence, and overall strength ratings for every club in Europe's top football leagues, derived from closing betting-market prices and comparable within each league.
+- [Club pages](https://bayesfc.com/club/): one page per rated club — its rating over time, recent results, upcoming fixtures and season projection (132 clubs).
 
 ## Writing
 
