@@ -123,6 +123,15 @@ table.proj tbody tr:hover td { background:var(--surface); }
    digits and a sign, not a signed decimal) so ten of them still fit the prose
    column without the horizontal scroll the projection needs. */
 table.ltab { margin-bottom:4px; }
+/* League strength (under every league table): a 7-row table of where each
+   league sits on the global scale, the panel's own league picked out. */
+.lstr-h { margin:26px 0 0; font-size:15px; }
+table.lstr { max-width:420px; }
+table.lstr td.team { white-space:nowrap; }
+table.lstr td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
+table.lstr tr.cur td { background:var(--surface); font-weight:600; }
+table.lstr tr.cur td.team::before { content:"\25B8"; color:var(--accent);
+  margin-right:6px; }
 table.ltab th.num, table.ltab td.num { width:40px; }
 table.ltab th.trk, table.ltab td.trk { width:112px; }
 th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
