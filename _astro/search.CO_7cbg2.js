@@ -1,0 +1,1 @@
+function e(e){return e.normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).toLowerCase().replace(/[^a-z0-9]+/g,` `).trim()}function t(e,t){return e.startsWith(t)?3:e.includes(` ${t}`)?2:+!!e.includes(t)}function n(n,r,i=8){let a=e(r);return a?n.map((n,r)=>({e:n,i:r,s:t(e(n.n),a)})).filter(e=>e.s>0).sort((e,t)=>t.s-e.s||e.i-t.i).slice(0,i).map(e=>e.e):n.slice(0,i)}export{n,e as t};
