@@ -1,467 +1,5 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E">
-<title>Ten squad valuations the betting market disagrees with — Bayes FC</title>
-<meta name="description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta property="og:type" content="article"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta property="og:description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta property="og:url" content="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta name="twitter:description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps.">
-<style>
-:root {
-  /* --muted is secondary text everywhere (headers, notes, footer, the rank and
-     Att/Def columns). It has to clear WCAG AA 4.5:1 on the *worst* surface it
-     lands on, not just the page: at #6b7280 it was 4.51 on --bg but only 4.22
-     over a floor-alpha heat cell. #5f636b is 5.06 worst-case. */
-  --bg:#f7f7f5; --surface:#ffffff; --ink:#18181b; --muted:#5f636b;
-  --line:#e7e5e4; --accent:#0f766e; --pos:#15803d; --neg:#b91c1c;
-  --stale-ink:#92400e;
-  --q-all:#0f766e; --q-def:#2563eb; --q-att:#d95926; --q-weak:#78716c;
-  --heat:15,118,110; --hot-ink:#ffffff;
-  /* Gridline on the distribution strip: recessive by construction — a neutral
-     at low alpha, so it never competes with the heat ramp carrying the value. */
-  --grid:rgba(0,0,0,0.16);
-  /* Status warning: fixed, not themed — a caution glyph must read the same
-     regardless of light/dark, unlike the series/ink tokens above. */
-  --warn:#fab219; --warn-ink:#1a1206;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg:#0c0a09; --surface:#171513; --ink:#f5f5f4; --muted:#a1a1aa;
-    --line:#292524; --accent:#2dd4bf; --pos:#4ade80; --neg:#f87171;
-    --stale-ink:#fbbf24;
-    --q-all:#2dd4bf; --q-def:#60a5fa; --q-att:#fb7c4c; --q-weak:#a8a29e;
-    --heat:45,212,191; --hot-ink:#0c0a09;
-    --grid:rgba(255,255,255,0.18);
-  }
-}
-* { box-sizing:border-box; }
-body {
-  margin:0; background:var(--bg); color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  line-height:1.55; -webkit-font-smoothing:antialiased;
-}
-.wrap { max-width:880px; margin:0 auto; padding:0 24px 72px; }
-header.site { padding:40px 0 24px; border-bottom:1px solid var(--line); margin-bottom:8px; }
-.brand { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
-/* Wordmark: accent "Bayes" + ink "FC", split on a hair space so the two halves
-   read as one word. --accent carries the theme, so it inverts with the page. */
-.brand h1 { font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0;
-  color:var(--accent); }
-.brand h1 span { color:var(--ink); }
-.brand .tag { color:var(--muted); font-size:14px; }
-nav.site { display:flex; gap:4px; margin-top:20px; flex-wrap:wrap; }
-nav.site a {
-  text-decoration:none; color:var(--muted); font-size:14px; font-weight:500;
-  padding:6px 12px; border-radius:8px;
-}
-nav.site a:hover { color:var(--ink); background:var(--surface); }
-nav.site a.active { color:var(--accent); background:var(--surface); }
-.stamp {
-  display:inline-flex; align-items:center; gap:8px; margin-top:16px;
-  font-size:13px; color:var(--muted);
-}
-.dot { width:8px; height:8px; border-radius:50%; background:var(--pos); flex:none; }
-.dot.stale { background:var(--stale-ink); }
-h2 { font-size:16px; font-weight:600; letter-spacing:-0.01em; margin:36px 0 4px; }
-.note { color:var(--muted); font-size:13px; margin:0 0 16px; }
-.tabs { display:flex; gap:4px; flex-wrap:wrap; margin:8px 0 4px; }
-.tabs button {
-  font:inherit; font-size:13px; font-weight:500; cursor:pointer;
-  border:1px solid var(--line); background:var(--surface); color:var(--muted);
-  padding:6px 12px; border-radius:8px;
-}
-.tabs button.active { color:var(--accent); border-color:var(--accent); }
-table.ladder { width:100%; border-collapse:collapse; margin:8px 0 0; }
-table.ladder th, table.ladder td { padding:9px 8px; border-bottom:1px solid var(--line); }
-table.ladder thead th {
-  text-align:right; font-size:11px; font-weight:600; letter-spacing:0.04em;
-  text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line);
-}
-table.ladder th.rank, table.ladder td.rank { text-align:right; width:36px; color:var(--muted); }
-table.ladder th.team, table.ladder td.team { text-align:left; }
-table.ladder td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
-table.ladder td.rank, table.ladder td.num {
-  font-family:ui-monospace,"SF Mono",Menlo,monospace; font-variant-numeric:tabular-nums;
-}
-table.ladder th.num, table.ladder td.num { text-align:right; width:78px; }
-table.ladder td.total { font-weight:600; }
-table.ladder td.pos { color:var(--pos); }
-table.ladder td.neg { color:var(--neg); }
-table.ladder tbody tr:hover { background:var(--surface); }
-/* Season-projection heatmap table (issue #114/#116). Cells shade a single
-   sequential hue (--heat, the brand accent) by probability via opacity, so the
-   band adapts to light/dark automatically; text always prints, flipping to
-   --hot-ink past a threshold so it never relies on colour alone. */
-table.proj { width:100%; border-collapse:collapse; margin:8px 0 0; }
-table.proj th, table.proj td { border-bottom:1px solid var(--line); }
-table.proj thead th {
-  font-size:11px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
-  color:var(--muted); padding:6px 5px; text-align:right; white-space:nowrap;
-}
-table.proj tbody td { padding:6px 4px; font-variant-numeric:tabular-nums; }
-table.proj th.team, table.proj td.team { text-align:left; }
-table.proj th.rank, table.proj td.rank { text-align:right; width:34px; color:var(--muted); }
-table.proj td.rank, table.proj td.num {
-  font-family:ui-monospace,"SF Mono",Menlo,monospace; text-align:right;
-}
-table.proj th.num, table.proj td.num { text-align:right; width:46px; }
-/* A number and its trajectory share one cell (PR #199): the ticker is a
-   fixed-width inline block, so the digits still line up down the column even
-   where a club has no line to draw. Smaller than the ladder's sparkline — this
-   one sits inside a table row, not in a column of its own. */
-table.proj th.trk, table.proj td.trk { width:112px; white-space:nowrap; }
-td.trk .tick { display:inline-block; width:54px; margin-left:7px;
-  text-align:right; vertical-align:middle; }
-td.trk .tick svg.spark { width:54px; height:15px; }
-/* A rule at a group boundary — the projection's opening column, and the Rating
-   that closes the league-table view. The heat ramp owns colour in these tables,
-   so grouping has to be structural: a hairline, never a second hue. */
-table.proj tbody td.sep, table.proj thead th.sep { border-left:1px solid var(--line); }
-table.proj td.num.tot { font-weight:600; }
-table.proj tbody tr:hover td { background:var(--surface); }
-/* The league-table view: the same table chrome, narrower numeric columns (two
-   digits and a sign, not a signed decimal) so ten of them still fit the prose
-   column without the horizontal scroll the projection needs. */
-table.ltab { margin-bottom:4px; }
-/* League strength (under every league table): a 7-row table of where each
-   league sits on the global scale, the panel's own league picked out. */
-.lstr-h { margin:26px 0 0; font-size:15px; }
-table.lstr { max-width:420px; }
-table.lstr td.team { white-space:nowrap; }
-table.lstr td.team .lg { color:var(--muted); font-size:12px; margin-left:8px; }
-table.lstr tr.cur td { background:var(--surface); font-weight:600; }
-table.lstr tr.cur td.team::before { content:"\25B8"; color:var(--accent);
-  margin-right:6px; }
-table.ltab th.num, table.ltab td.num { width:40px; }
-table.ltab th.trk, table.ltab td.trk { width:112px; }
-th.phead { padding:6px 0; width:11px; font-size:10px; font-weight:500;
-  color:var(--muted); text-align:center; }
-td.pcell { padding:0; width:11px; min-width:11px; position:relative;
-  background:rgba(var(--heat), var(--a, 0)); }
-/* Alignment gridlines under the sparse ticks, centred on the tick label so a
-   cell reads back to its position without counting across an 18-wide strip.
-   Drawn over the heat as a hairline neutral — recessive, and never a value. */
-td.pcell.tick::after { content:""; position:absolute; top:0; bottom:0; left:50%;
-  width:1px; background:var(--grid); pointer-events:none; }
-/* Hover/focus lift, so the cell the tooltip is describing is unambiguous. */
-body.js td.pcell { cursor:crosshair; }
-body.js td.pcell:hover, body.js td.pcell:focus-visible {
-  outline:2px solid var(--accent); outline-offset:-2px; z-index:1; }
-#tip {
-  position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .08s;
-  background:var(--ink); color:var(--bg); font-size:12px; line-height:1.45;
-  padding:6px 9px; border-radius:7px; max-width:220px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.22); }
-#tip.on { opacity:1; }
-#tip b { font-size:13px; }
-#tip span { color:var(--bg); opacity:0.72; }
-td.heat { text-align:right; width:46px; padding:6px 5px;
-  background:rgba(var(--heat), var(--a, 0)); }
-table.proj tbody tr:hover td.pcell, table.proj tbody tr:hover td.heat {
-  background:rgba(var(--heat), var(--a, 0)); }
-td.heat.hot { color:var(--hot-ink); }
-td.heat.mut { color:var(--muted); }
-.wip { display:inline-block; margin-left:8px; font-size:10px; font-weight:700;
-  letter-spacing:0.06em; text-transform:uppercase; color:var(--accent);
-  border:1px solid var(--accent); border-radius:6px; padding:1px 6px;
-  vertical-align:middle; }
-/* Sortable headers, shared by the ladders and the projection tables. A header
-   carrying a tooltip gets a dotted underline so the explanation is discoverable
-   rather than hidden; the tooltip only ever restates what the column is, never
-   a value the table doesn't already print. */
-body.js th.sortable { cursor:pointer; user-select:none; }
-body.js th.sortable:hover { color:var(--ink); }
-body.js th.sortable:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
-th.sortable .caret { opacity:0; margin-left:3px; font-size:9px; }
-th.sortable.sorted { color:var(--accent); }
-th.sortable.sorted .caret { opacity:1; }
-body.js table.proj thead th[title] { text-decoration:underline dotted;
-  text-decoration-color:var(--line); text-underline-offset:3px; }
-body.js table.proj thead th[title]:hover { text-decoration-color:var(--accent); }
-table.ladder th.delta, table.ladder td.delta { text-align:right; width:64px; }
-td.delta .dup { color:var(--pos); }
-td.delta .ddn { color:var(--neg); }
-td.delta .dmut { color:var(--muted); }
-.lookback {
-  display:flex; align-items:center; gap:10px; margin:8px 0 4px;
-  font-size:13px; color:var(--muted);
-}
-.lookback .seg { display:inline-flex; gap:4px; }
-.lookback button {
-  font:inherit; font-size:12px; font-weight:600; cursor:pointer;
-  border:1px solid var(--line); background:var(--surface); color:var(--muted);
-  padding:4px 10px; border-radius:8px;
-}
-.lookback button.active { color:var(--accent); border-color:var(--accent); }
-table.ladder th.spark, table.ladder td.spark { text-align:right; width:88px; }
-svg.spark { display:inline-block; vertical-align:middle; }
-svg.spark polyline { fill:none; stroke:var(--muted); stroke-width:1.25;
-  stroke-linejoin:round; stroke-linecap:round; }
-svg.spark circle.sup { fill:var(--pos); }
-svg.spark circle.sdn { fill:var(--neg); }
-.sparknull { color:var(--muted); }
-/* Rating-uncertainty badge (issue #130): a small warning mark next to a club's
-   name, shown only when its rating is materially less certain than the ladder's
-   typical club (wide margin, or too little recent data for one at all). Fixed
-   warning color (not themed) so it reads the same in light and dark — the
-   tooltip carries the specifics. */
-.ubadge {
-  display:inline-flex; align-items:center; justify-content:center;
-  width:14px; height:14px; margin-left:6px; border-radius:50%;
-  background:var(--warn); color:var(--warn-ink);
-  font-size:10px; font-weight:800; line-height:1; vertical-align:middle;
-  cursor:default;
-}
-.movers { display:flex; gap:20px; flex-wrap:wrap; margin:18px 0 8px; }
-.mvcol { flex:1; min-width:240px; }
-.mvhd { display:block; font-size:11px; font-weight:600; letter-spacing:0.04em;
-  text-transform:uppercase; color:var(--muted); margin-bottom:10px; }
-.mv { display:inline-flex; align-items:baseline; gap:7px; padding:4px 10px;
-  margin:0 6px 6px 0; border:1px solid var(--line); border-radius:8px;
-  background:var(--surface); font-size:13px; }
-.mv .mvd { font-family:ui-monospace,"SF Mono",Menlo,monospace;
-  font-variant-numeric:tabular-nums; font-size:12px; }
-.mv.up .mvd { color:var(--pos); }
-.mv.down .mvd { color:var(--neg); }
-svg.scatter { display:block; width:100%; height:auto; max-width:640px; margin:6px auto 0; }
-svg.scatter circle { fill:var(--accent); fill-opacity:0.8;
-  stroke:var(--surface); stroke-width:0.8; }
-body.js svg.scatter circle { cursor:pointer; }
-svg.scatter circle:hover { fill-opacity:1; stroke-width:1.5; }
-svg.scatter line.qg { stroke:var(--line); stroke-width:1; stroke-dasharray:3 4; }
-svg.scatter rect.quad { opacity:0.09; }
-svg.scatter rect.q-all { fill:var(--q-all); }
-svg.scatter rect.q-def { fill:var(--q-def); }
-svg.scatter rect.q-att { fill:var(--q-att); }
-svg.scatter rect.q-weak { fill:var(--q-weak); }
-svg.scatter text.ql { font-size:10px; font-weight:700; letter-spacing:0.06em;
-  fill-opacity:0.9; }
-svg.scatter text.ql.q-all { fill:var(--q-all); }
-svg.scatter text.ql.q-def { fill:var(--q-def); }
-svg.scatter text.ql.q-att { fill:var(--q-att); }
-svg.scatter text.ql.q-weak { fill:var(--q-weak); }
-svg.scatter text.axl { fill:var(--muted); font-size:11px; font-weight:600;
-  letter-spacing:0.03em; }
-.legend { display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
-  max-width:640px; margin:12px auto 0; font-size:12px; color:var(--muted); }
-.legend .k { display:inline-flex; align-items:center; gap:6px; }
-.legend i.sw { width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
-.sc-tip { position:fixed; z-index:30; pointer-events:none; opacity:0;
-  transition:opacity .06s ease; background:var(--ink); color:var(--bg);
-  font-size:12px; line-height:1.35; padding:6px 9px; border-radius:8px;
-  white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.22); }
-.sc-tip .t-sub { color:var(--muted); }
-.wide { overflow-x:auto; }
-/* The projection table used to break out of the 880px prose column and re-centre
-   at up to 1240px, because a started league carried results *and* strength *and*
-   18-20 position cells *and* three summary columns, and scrolling it sideways
-   hid Title / Top 4 / Rel — the columns people come for. Issue #199 cut that
-   table to two numbers and the strip, and #182 moved the results to their own
-   view, so the natural width is now about 770px for a 20-team league: it fits
-   the column, and the breakout only spent the slack stretching the strip's cells
-   away from each other. It sits in the wrap like everything else now, and .wide
-   still scrolls it on a narrow viewport. */
-.prose { font-size:15px; }
-.prose p { margin:14px 0; }
-.prose a { color:var(--accent); }
-/* Framed inline-SVG chart. Authored prose (blog posts, reports) hand-builds its
-   own SVG in the Markdown body; this is the frame around it. Shared rather than
-   per-surface: the same figure has to look the same wherever it is published. */
-figure.chart { margin:28px 0; padding:14px 14px 6px; background:var(--surface);
-  border:1px solid var(--line); border-radius:12px; }
-figure.chart svg { display:block; width:100%; height:auto; }
-figure.chart figcaption { color:var(--muted); font-size:13px; line-height:1.5;
-  margin:8px 2px 4px; }
-footer.site { margin-top:48px; padding-top:20px; border-top:1px solid var(--line);
-  color:var(--muted); font-size:13px; display:flex; flex-wrap:wrap;
-  justify-content:space-between; gap:8px 20px; }
-footer.site .made a { color:var(--muted); text-decoration:none;
-  border-bottom:1px solid var(--line); }
-footer.site .made a:hover { color:var(--ink); border-bottom-color:var(--ink); }
-footer.site .heart { color:var(--neg); }
-footer.site .cite { font-size:12px; opacity:0.85; }
-.faq { margin:20px 0 0; }
-.faq h3 { font-size:15px; font-weight:600; margin:22px 0 4px; }
-.faq p { margin:0 0 4px; }
-.about { color:var(--muted); font-size:13.5px; margin:26px 0 0;
-  padding-top:16px; border-top:1px solid var(--line); }
-.about a { color:var(--accent); }
-.subscribe { margin:44px 0 0; padding:20px 22px; border:1px solid var(--line);
-  background:var(--surface); border-radius:12px; }
-.subscribe h2 { font-size:16px; margin:0 0 4px; }
-.subscribe p { color:var(--muted); font-size:13.5px; margin:0 0 12px; }
-.subscribe form { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0; }
-.subscribe input[type=email] { flex:1 1 220px; min-width:0; padding:9px 12px;
-  font-size:14px; color:var(--ink); background:var(--bg);
-  border:1px solid var(--line); border-radius:8px; }
-.subscribe input[type=email]:focus { outline:none; border-color:var(--accent); }
-.subscribe button { padding:9px 18px; font-size:14px; font-weight:600;
-  color:#fff; background:var(--accent); border:none; border-radius:8px;
-  cursor:pointer; }
-.subscribe button:hover { opacity:0.9; }
-.subscribe .fine { font-size:12px; margin:10px 0 0; }
-.subscribe .fine a { color:var(--muted); }
-body.js .tab-panel { display:none; }
-body.js .tab-panel.active { display:block; }
-/* The started-league view switch: what happened, or what the market implies.
-   A joined segmented control, deliberately not the gapped pills above it — the
-   league tabs pick a subject, this picks a question about it, and two identical
-   controls stacked would read as one two-row set of tabs. Without JS neither
-   `.view` is hidden and both tables render, so the switch is an enhancement and
-   never the only way to reach a number. */
-.viewsw { margin:10px 0 0; }
-.viewsw .seg { display:inline-flex; }
-.viewsw button {
-  font:inherit; font-size:12.5px; font-weight:600; cursor:pointer;
-  border:1px solid var(--line); background:var(--surface); color:var(--muted);
-  padding:5px 13px;
-}
-.viewsw button:first-child { border-radius:8px 0 0 8px; }
-.viewsw button:last-child { border-radius:0 8px 8px 0; margin-left:-1px; }
-.viewsw button:hover { color:var(--ink); }
-.viewsw button.active { color:var(--accent); border-color:var(--accent); z-index:1; }
-body.js .tab-panel .view { display:none; }
-body.js .tab-panel .view.on { display:block; }
-/* The league-table view is narrow enough for the prose column, so it scrolls in
-   place rather than breaking out of it the way `.wide` does. */
-.scroll { overflow-x:auto; }
-/* ---- club page (one per rated club) ---------------------------------------
-   The rating chart. Every colour is a site token, so light/dark comes free, and
-   the three series are told apart by weight and dash as well as tint — the same
-   rule the scatter follows: colour is never the only cue. */
-svg.rchart line.gl { stroke:var(--line); stroke-width:1; }
-svg.rchart line.gz { stroke:var(--muted); stroke-width:1; stroke-dasharray:4 4;
-  opacity:0.6; }
-svg.rchart text.gt, svg.rchart text.gd { fill:var(--muted); font-size:10.5px;
-  font-variant-numeric:tabular-nums; }
-svg.rchart polyline.rl { fill:none; stroke-linejoin:round; stroke-linecap:round; }
-svg.rchart polyline.r-tot { stroke:var(--accent); stroke-width:2.1; }
-svg.rchart polyline.r-att { stroke:var(--q-att); stroke-width:1.2;
-  stroke-dasharray:5 3; opacity:0.85; }
-svg.rchart polyline.r-def { stroke:var(--q-def); stroke-width:1.2;
-  stroke-dasharray:1.5 3; opacity:0.85; }
-svg.rchart circle.rend { fill:var(--accent); }
-svg.rchart circle.rmk { stroke:var(--surface); stroke-width:1.5; }
-svg.rchart circle.rmk.rw { fill:var(--pos); }
-svg.rchart circle.rmk.rd { fill:var(--muted); }
-svg.rchart circle.rmk.rl2 { fill:var(--neg); }
-svg.rchart text.rmt { fill:#fff; font-size:7.5px; font-weight:700;
-  pointer-events:none; }
-svg.rchart circle.emk { fill:var(--q-weak); stroke:var(--surface); stroke-width:1; }
-svg.rchart line.erule { stroke:var(--line); stroke-width:1; }
-body.js svg.rchart [data-tip] { cursor:crosshair; }
-figure.chart figcaption .key { display:inline-flex; align-items:center; gap:6px;
-  margin-right:16px; }
-figure.chart figcaption i.sw { width:16px; height:0; border-top-width:2px;
-  border-top-style:solid; display:inline-block; flex:none; }
-figure.chart figcaption i.sw.k-tot { border-color:var(--accent); }
-figure.chart figcaption i.sw.k-att { border-color:var(--q-att);
-  border-top-style:dashed; }
-figure.chart figcaption i.sw.k-def { border-color:var(--q-def);
-  border-top-style:dotted; }
-figure.chart figcaption i.sw.k-w, figure.chart figcaption i.sw.k-d,
-figure.chart figcaption i.sw.k-l, figure.chart figcaption i.sw.k-ev {
-  width:9px; height:9px; border-radius:50%; border:0; }
-figure.chart figcaption i.sw.k-w { background:var(--pos); }
-figure.chart figcaption i.sw.k-d { background:var(--muted); }
-figure.chart figcaption i.sw.k-l { background:var(--neg); }
-figure.chart figcaption i.sw.k-ev { background:var(--q-weak); }
-figure.chart figcaption .key i.sw + i.sw { margin-left:2px; }
-/* The club header: the numbers a reader wants before any table. */
-.chead { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
-  margin:28px 0 2px; }
-.chead h2 { margin:0; font-size:22px; letter-spacing:-0.02em; }
-.chead .clg { color:var(--muted); font-size:13px; }
-.chead .clg a { color:var(--muted); }
-.cstats { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px; }
-.cstat { background:var(--surface); border:1px solid var(--line); border-radius:10px;
-  padding:8px 13px; min-width:88px; }
-.cstat .k { display:block; color:var(--muted); font-size:10.5px; font-weight:600;
-  letter-spacing:0.05em; text-transform:uppercase; }
-.cstat .v { display:block; font-size:17px; font-weight:650; margin-top:2px;
-  font-variant-numeric:tabular-nums; }
-.cstat .v.pos { color:var(--pos); }
-.cstat .v.neg { color:var(--neg); }
-.cstat .sub { color:var(--muted); font-size:11.5px; font-weight:400; margin-left:4px; }
-/* Club tables (results, upcoming, news) share table.proj's frame; only the
-   column widths differ, so they carry .ctab and add nothing else. */
-table.ctab td.date, table.ctab th.date { width:74px; white-space:nowrap; }
-table.ctab td.comp, table.ctab th.comp { width:112px; color:var(--muted);
-  font-size:12.5px; }
-table.ctab td.va, table.ctab th.va { width:26px; color:var(--muted); text-align:center; }
-table.ctab td.opp, table.ctab th.opp { text-align:left; }
-table.ctab td.sc, table.ctab th.sc { width:52px; text-align:center;
-  font-variant-numeric:tabular-nums; font-weight:600; }
-table.ctab td.hl { text-align:left; }
-.fm { display:inline-block; width:18px; height:18px; line-height:18px;
-  border-radius:50%; text-align:center; font-size:10.5px; font-weight:700;
-  color:#fff; }
-.fm.W { background:var(--pos); }
-.fm.D { background:var(--muted); }
-.fm.L { background:var(--neg); }
-/* An unpriced result: the score is on record but no closing price has landed, so
-   the rating has not seen it yet. Marked rather than hidden — it is the most
-   interesting row on the page, being next week's move seen a week early. */
-.unp { color:var(--muted); font-size:11px; margin-left:6px; white-space:nowrap; }
-.ebadge { display:inline-block; font-size:10px; font-weight:600; letter-spacing:0.04em;
-  text-transform:uppercase; color:var(--muted); border:1px solid var(--line);
-  border-radius:5px; padding:1px 5px; }
-.etype { color:var(--muted); font-size:12.5px; white-space:nowrap; }
-.caveat { color:var(--muted); font-size:12.5px; line-height:1.55; margin:10px 0 0;
-  padding:11px 13px; background:var(--surface); border:1px solid var(--line);
-  border-radius:10px; }
-/* The "back to the list" footer link. Shared rather than blog-local: a post and
-   a club page both end with one, and they should end with the same one. */
-.post-back { margin-top:36px; padding-top:16px; border-top:1px solid var(--line); }
-.post-back a { color:var(--accent); text-decoration:none; }
-/* The club directory. */
-.cdir { columns:3 190px; column-gap:26px; margin:8px 0 0; }
-.cdir .cg { break-inside:avoid; margin:0 0 18px; }
-.cdir h3 { font-size:12px; font-weight:600; letter-spacing:0.04em;
-  text-transform:uppercase; color:var(--muted); margin:0 0 6px; }
-.cdir ul { list-style:none; padding:0; margin:0; }
-.cdir li { padding:2px 0; font-size:14px; }
-.cdir a, a.clink { color:var(--ink); text-decoration:none; }
-.cdir a:hover, a.clink:hover { color:var(--accent); text-decoration:underline; }
-:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://bayesfc.com/#org", "name": "Bayes FC", "url": "https://bayesfc.com/", "description": "Bayes FC — team ratings from the betting market.", "founder": {"@id": "https://bayesfc.com/#person"}}, {"@type": "WebSite", "@id": "https://bayesfc.com/#website", "url": "https://bayesfc.com/", "name": "Bayes FC", "publisher": {"@id": "https://bayesfc.com/#org"}}, {"@type": "Person", "@id": "https://bayesfc.com/#person", "name": "Belkacem", "url": "https://belkacem.xyz", "sameAs": ["https://belkacem.xyz"]}]}</script>
-</head>
-<body>
-<script>document.body.className="js";</script>
-<div class="wrap">
-<header class="site">
-  <div class="brand"><h1>Bayes<span>&#8202;FC</span></h1>
-    <span class="tag">team ratings from the betting market</span></div>
-  <nav class="site"><a href="../../index.html">Global</a><a href="../../leagues.html">Leagues</a><a href="../../club/index.html">Clubs</a><a href="../../blog/index.html">Blog</a><a href="../../methodology.html">Methodology</a></nav>
-  <div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-09-12">2026-09-12</time> · last rebuilt <time datetime="2026-09-12T05:45:27.762856+00:00">2026-09-12 05:45 UTC</time></div>
-</header>
-<style>
-.report-for{font-size:12px;font-weight:650;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--accent);margin:26px 0 8px;}
-.report-title{font-size:28px;font-weight:680;letter-spacing:-0.02em;
-  line-height:1.18;margin:0 0 6px;}
-.report-date{color:var(--muted);font-size:13px;margin:0 0 4px;}
-.report-lede{font-size:16.5px;line-height:1.6;color:var(--muted);
-  margin:14px 0 4px;}
-.print-only{display:none;}
-@media print{
-  :root{--bg:#ffffff;--surface:#ffffff;--ink:#18181b;--muted:#5f636b;
-    --line:#e7e5e4;--accent:#0f766e;--pos:#15803d;--neg:#b91c1c;
-    --heat:15,118,110;--hot-ink:#ffffff;
-    --grid:rgba(0,0,0,0.16);}
-  @page{size:A4;margin:18mm 16mm;}
-  body{background:#fff;}
-  .wrap{max-width:none;padding:0;}
-  nav.site,.stamp,.subscribe,footer.site .made{display:none!important;}
-  header.site{margin-bottom:8px;}
-  figure.chart,table,figcaption{break-inside:avoid;page-break-inside:avoid;}
-  tr,li{break-inside:avoid;page-break-inside:avoid;}
-  h2,h3{break-after:avoid;page-break-after:avoid;}
-  a{color:var(--ink);text-decoration:none;}
-  .print-only{display:block;margin-top:18px;padding-top:10px;
-    border-top:1px solid var(--line);color:var(--muted);font-size:11px;}
-}
-</style><article class="prose"><p class="report-for">A note from Bayes FC &middot; prepared for the Transfermarkt data desk</p><h1 class="report-title">Ten squad valuations the betting market disagrees with</h1><p class="report-date"><time datetime="2026-08-18">August 18, 2026</time></p><p>Your values are crowd-sourced, and each league gets a full pass about twice a
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E%E2%9A%BD%3C/text%3E%3C/svg%3E"><title>Ten squad valuations the betting market disagrees with — Bayes FC</title><meta name="description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta name="robots" content="noindex,nofollow"><link rel="canonical" href="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta property="og:type" content="article"><meta property="og:site_name" content="Bayes FC"><meta property="og:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta property="og:description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><meta property="og:url" content="https://bayesfc.com/reports/squad-value-divergence-8fa2c1/"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Ten squad valuations the betting market disagrees with — Bayes FC"><meta name="twitter:description" content="Which squad valuations the betting market disagrees with most, and why squad age does not explain the gaps."><style>:root{--lg-EPL:#2a78d6;--lg-LALIGA:#008300;--lg-SERIEA:#e87ba4;--lg-BUNDESLIGA:#eda100;--lg-LIGUE1:#1baf7a;--lg-LIGAPT:#eb6834;--lg-EREDIVISIE:#4a3aa7}@media (prefers-color-scheme:dark){:root{--lg-EPL:#3987e5;--lg-LALIGA:#008300;--lg-SERIEA:#d55181;--lg-BUNDESLIGA:#c98500;--lg-LIGUE1:#199e70;--lg-LIGAPT:#d95926;--lg-EREDIVISIE:#9085e9}}svg.scatter circle[data-lg="EPL"],.legend i.sw[data-lg="EPL"]{fill:var(--lg-EPL);background:var(--lg-EPL)}svg.scatter circle[data-lg="LALIGA"],.legend i.sw[data-lg="LALIGA"]{fill:var(--lg-LALIGA);background:var(--lg-LALIGA)}svg.scatter circle[data-lg="SERIEA"],.legend i.sw[data-lg="SERIEA"]{fill:var(--lg-SERIEA);background:var(--lg-SERIEA)}svg.scatter circle[data-lg="BUNDESLIGA"],.legend i.sw[data-lg="BUNDESLIGA"]{fill:var(--lg-BUNDESLIGA);background:var(--lg-BUNDESLIGA)}svg.scatter circle[data-lg="LIGUE1"],.legend i.sw[data-lg="LIGUE1"]{fill:var(--lg-LIGUE1);background:var(--lg-LIGUE1)}svg.scatter circle[data-lg="LIGAPT"],.legend i.sw[data-lg="LIGAPT"]{fill:var(--lg-LIGAPT);background:var(--lg-LIGAPT)}svg.scatter circle[data-lg="EREDIVISIE"],.legend i.sw[data-lg="EREDIVISIE"]{fill:var(--lg-EREDIVISIE);background:var(--lg-EREDIVISIE)}body.js table.ladder.collapsed tbody tr:nth-child(n+21){display:none;}.expander{display:none;}body.js .expander{display:block;width:max-content;margin:14px auto 0;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 16px;}body.js .expander:hover{border-color:var(--accent);}</style><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://bayesfc.com/#org","name":"Bayes FC","url":"https://bayesfc.com/","description":"Bayes FC — team ratings from the betting market.","founder":{"@id":"https://bayesfc.com/#person"}},{"@type":"WebSite","@id":"https://bayesfc.com/#website","url":"https://bayesfc.com/","name":"Bayes FC","publisher":{"@id":"https://bayesfc.com/#org"}},{"@type":"Person","@id":"https://bayesfc.com/#person","name":"Belkacem","url":"https://belkacem.xyz","sameAs":["https://belkacem.xyz"]}]}</script><style>.report-for{letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:26px 0 8px;font-size:12px;font-weight:650}.report-title{letter-spacing:-.02em;margin:0 0 6px;font-size:28px;font-weight:680;line-height:1.18}.report-date{color:var(--muted);margin:0 0 4px;font-size:13px}.report-lede{color:var(--muted);margin:14px 0 4px;font-size:16.5px;line-height:1.6}.print-only{display:none}@media print{:root{--bg:#fff;--surface:#fff;--ink:#18181b;--muted:#5f636b;--line:#e7e5e4;--accent:#0f766e;--pos:#15803d;--neg:#b91c1c;--heat:15,118,110;--hot-ink:#fff;--grid:#00000029}@page{size:A4;margin:18mm 16mm}body{background:#fff}.wrap{max-width:none;padding:0}nav.site,.stamp,.subscribe,footer.site .made{display:none!important}header.site{margin-bottom:8px}figure.chart,table,figcaption,tr,li{break-inside:avoid;page-break-inside:avoid}h2,h3{break-after:avoid;page-break-after:avoid}a{color:var(--ink);text-decoration:none}.print-only{border-top:1px solid var(--line);color:var(--muted);margin-top:18px;padding-top:10px;font-size:11px;display:block}}
+</style><link rel="stylesheet" href="/_astro/Site.A4NvKMu5.css"></head><body><script>document.body.className="js";</script><div class="wrap"><header class="site"><div class="brand"><h1>Bayes<span>&#8202;FC</span></h1><span class="tag">team ratings from the betting market</span></div><nav class="site"><a href="/index.html">Global</a><a href="/leagues.html">Leagues</a><a href="/club/index.html">Clubs</a><a href="/blog/index.html">Blog</a><a href="/methodology.html">Methodology</a></nav><div class="stamp"><span class="dot"></span>ratings as of <time datetime="2026-09-12">2026-09-12</time> · last rebuilt <time datetime="2026-09-12T05:45:27.762856+00:00">2026-09-12 05:45 UTC</time></div></header><article class="prose"><p class="report-for">A note from Bayes FC &middot; prepared for the Transfermarkt data desk</p><h1 class="report-title">Ten squad valuations the betting market disagrees with</h1><p class="report-date"><time datetime="2026-08-18">August 18, 2026</time></p><p>Your values are crowd-sourced, and each league gets a full pass about twice a
 season. Between passes, nothing independent tells you which of ~130 squads has
 moved.</p>
 <p>Betting markets do. Every match is priced by people who lose money when the
@@ -472,7 +10,7 @@ fee.</p>
 listed at €71m; the market prices that squad like a €184m one. Alavés, Lens, NEC
 Nijmegen and Groningen sit in the same place. Five clubs run the other way.</p>
 <p>This is not a better valuation. It is a queue.</p>
-<h2>Where the number comes from</h2>
+<h2 id="where-the-number-comes-from">Where the number comes from</h2>
 <p>Bayes FC reads closing handicap and totals odds, turns them into expected goals
 per match, and fits an attack and defence rating for each club. Strength is
 attack + defence: one scale, seven leagues, updated daily.</p>
@@ -532,8 +70,7 @@ table.gaps td.gap { font-weight:700; color:var(--ink); }
 table.gaps caption { caption-side:bottom; text-align:left; color:var(--muted);
   font-size:12.5px; line-height:1.5; padding-top:10px; }
 </style>
-
-<h2>The picture</h2>
+<h2 id="the-picture">The picture</h2>
 <figure class="chart">
 <svg class="vs" viewBox="0 0 720 470" role="img" width="100%"
      aria-label="Scatter of Transfermarkt squad market value on a log euro axis against Bayes FC market-implied team strength for the top seven European leagues. Most clubs track a rising line; the labelled clubs sit farthest off it, above when valued richly and below when valued lightly.">
@@ -705,7 +242,6 @@ table.gaps caption { caption-side:bottom; text-align:left; color:var(--muted);
 <div class="keys"><span><i style="background:var(--ink);opacity:.28"></i>a club</span><span><i style="background:var(--accent)"></i>value looks light for its strength</span><span><i style="background:var(--warn)"></i>value looks rich for its strength</span></div>
 <figcaption>Each dot is a club: horizontal is our market-implied strength, vertical is Transfermarkt&rsquo;s total squad value on a log scale. The dashed line is one pooled fit across all seven leagues (R&sup2;=0.87); the shaded band is its typical spread (&plusmn;57%). Above the line means valued richly for the strength the market reads today; below it, lightly. The labelled clubs sit farthest off it. <span class="hoverhint">Hover any dot on screen for that club&rsquo;s numbers; its league peers light up beside it.</span></figcaption>
 </figure>
-
 <script>
 /* Hover layer for the valuation scatter (#156). Progressive enhancement: the
    figure is complete without it, and print never sees it. */
@@ -748,13 +284,12 @@ table.gaps caption { caption-side:bottom; text-align:left; color:var(--muted);
   });
 })();
 </script>
-
 <p>Stronger squads are worth more. The ten labelled clubs sit farthest off the
 line.</p>
 <p>Leagues sit at different heights — Serie A about +40% above it, La Liga about
 −25% below. Each club below is an outlier inside its own league too. Hover a dot
 to see its league.</p>
-<h2>It is not age</h2>
+<h2 id="it-is-not-age">It is not age</h2>
 <p>A young squad can be worth more than its results. So we added squad age as a
 second term.</p>
 <p>It barely moves. R² goes from 0.871 to 0.875, about −6% per extra year at equal
@@ -775,14 +310,13 @@ strength. Every gap below survives it.</p>
 </tbody>
 <caption>&ldquo;Strength + age imply&rdquo; is the squad value the pooled fit predicts from the club&rsquo;s current strength and squad age. A negative gap means Transfermarkt&rsquo;s value sits below that; positive, above. Ordered lightest to richest. Strength as of 2026-08-16; Transfermarkt values 2026-08-11. Thin-record and newly promoted clubs are held out.</caption>
 </table>
-
 <p>Fiorentina looks like a lag: results fell, the value did not. Parma and Frankfurt
 sell well, so a premium is expected — but not +267% and +106%.</p>
-<h2>What it is for</h2>
+<h2 id="what-it-is-for">What it is for</h2>
 <p>A queue, ranked every day by how far the two numbers sit apart.</p>
 <p>And a trend: a squad whose strength has climbed for a month while its published
 value held flat is a staleness alarm.</p>
-<h2>Limits</h2>
+<h2 id="limits">Limits</h2>
 <ul>
 <li><strong>Value is not strength.</strong> Contracts, one marquee asset, an academy: a team
 rating cannot see them. These are clubs to check, not verdicts.</li>
@@ -792,73 +326,11 @@ is sturdier.</li>
 <li><strong>Age is a team mean.</strong> Minutes-weighted would be sharper.</li>
 <li><strong>The line carries a league offset.</strong> Read each gap against its league as well.</li>
 </ul>
-<hr />
+<hr>
 <p>Happy to run this against your live values and compare notes. No strings.</p>
 <p><strong>Belkacem</strong> · <a href="https://bayesfc.com">bayesfc.com</a> ·
 <a href="mailto:b.berchiche@gmail.com">b.berchiche@gmail.com</a></p>
 <p><em>Strength: Bayes FC market-implied ratings, 2026-08-16. Squad values and squad
 age: Transfermarkt, 2026-08-11. Method:
 <a href="../../blog/how-we-turn-betting-odds-into-team-strength.html">how we turn betting odds into team strength</a>.</em></p>
-<p class="print-only">https://bayesfc.com/reports/squad-value-divergence-8fa2c1/ &middot; prepared 2026-08-18 for the Transfermarkt data desk &middot; Ratings: Bayes FC (bayesfc.com)</p></article>
-<section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section>
-<footer class="site">
-  <div>Market-implied team ratings · rebuilt daily.<br>
-    <span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC,
-    all rights reserved.</span></div>
-  <div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> ·
-    made with <span class="heart">&#9829;</span> by
-    <a href="https://belkacem.xyz">Belkacem</a></div>
-</footer>
-</div>
-
-<script>
-(function(){
-  function cmp(a, b, key, dir, text){
-    var x=a.dataset[key], y=b.dataset[key];
-    var xm=(x===undefined||x===''), ym=(y===undefined||y==='');
-    if(xm||ym) return xm&&ym ? 0 : (xm?1:-1);          // blanks last, always
-    if(text) return dir==='asc' ? x.localeCompare(y) : y.localeCompare(x);
-    var d=parseFloat(x)-parseFloat(y);
-    return dir==='asc' ? d : -d;
-  }
-  function sortTable(t, th, dir){
-    var key=th.dataset.sort, text=th.dataset.type==='text';
-    var ties=(th.dataset.tie||'').split(',').filter(Boolean);
-    var body=t.querySelector('tbody');
-    var rows=[].slice.call(body.querySelectorAll('tr'));
-    rows.sort(function(a,b){
-      var r=cmp(a,b,key,dir,text);
-      for(var i=0;i<ties.length && r===0;i++) r=cmp(a,b,ties[i],dir,false);
-      return r;
-    });
-    rows.forEach(function(r){ body.appendChild(r); });
-    t.querySelectorAll('th.sortable').forEach(function(o){
-      var on=o===th;
-      o.classList.toggle('sorted', on);
-      o.setAttribute('aria-sort', on ? (dir==='asc'?'ascending':'descending') : 'none');
-      var c=o.querySelector('.caret');
-      if(c) c.textContent = on ? (dir==='asc'?'\u25B2':'\u25BC') : '';
-    });
-  }
-  document.querySelectorAll('table.ladder, table.proj').forEach(function(t){
-    t.querySelectorAll('th.sortable').forEach(function(th){
-      th.setAttribute('tabindex','0');
-      th.setAttribute('role','button');
-      function go(){
-        var dir = th.classList.contains('sorted')
-          ? (t.dataset.dir==='asc' ? 'desc' : 'asc')
-          : (th.dataset.dir || 'desc');
-        t.dataset.dir=dir;
-        sortTable(t, th, dir);
-      }
-      th.addEventListener('click', go);
-      th.addEventListener('keydown', function(e){
-        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); }
-      });
-    });
-  });
-})();
-</script>
-<!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "762e95ac6c554a9aa575ff1d8cc88013"}'></script><!-- End Cloudflare Web Analytics -->
-</body>
-</html>
+<p class="print-only">https://bayesfc.com/reports/squad-value-divergence-8fa2c1/ &middot; prepared 2026-08-18 for the Transfermarkt data desk &middot; Ratings: Bayes FC (bayesfc.com)</p></article><section class="subscribe"><h2>The market knows first. Now so do you.</h2><p>Betting markets are the most accurate predictor in football. We distill them into team ratings and email you who&rsquo;s climbing and who&rsquo;s quietly falling.</p><form action="https://buttondown.com/api/emails/embed-subscribe/bayesfc" method="post" class="embeddable-buttondown-form"><input type="email" name="email" aria-label="Email address" placeholder="you@example.com" required><button type="submit">Subscribe</button></form><p class="fine"><a href="https://buttondown.com/refer/bayesfc" target="_blank" rel="noopener">Powered by Buttondown.</a></p></section><footer class="site"><div>Market-implied team ratings · rebuilt daily.<br><span class="cite">Cite as &ldquo;Ratings: Bayes FC (bayesfc.com)&rdquo; · &copy; Bayes FC, all rights reserved.</span></div><div class="made"><a href="mailto:belkacem@bayesfc.com">Contact</a> · made with <span class="heart">&#9829;</span> by<a href="https://belkacem.xyz">Belkacem</a></div></footer></div><script type="module">function e(e,t,n,r,i){let a=e.dataset[n],o=t.dataset[n],s=a===void 0||a===``,c=o===void 0||o===``;if(s||c)return s&&c?0:s?1:-1;if(i)return r===`asc`?a.localeCompare(o):o.localeCompare(a);let l=parseFloat(a)-parseFloat(o);return r===`asc`?l:-l}function t(t,n,r){let i=n.dataset.sort,a=n.dataset.type===`text`,o=(n.dataset.tie||``).split(`,`).filter(Boolean),s=t.querySelector(`tbody`),c=Array.from(s.querySelectorAll(`tr`));c.sort((t,n)=>{let s=e(t,n,i,r,a);for(let i=0;i<o.length&&s===0;i++)s=e(t,n,o[i],r,!1);return s}),c.forEach(e=>s.appendChild(e)),t.querySelectorAll(`th.sortable`).forEach(e=>{let t=e===n;e.classList.toggle(`sorted`,t),e.setAttribute(`aria-sort`,t?r===`asc`?`ascending`:`descending`:`none`);let i=e.querySelector(`.caret`);i&&(i.textContent=t?r===`asc`?`▲`:`▼`:``)})}document.querySelectorAll(`table.ladder, table.proj`).forEach(e=>{e.querySelectorAll(`th.sortable`).forEach(n=>{n.setAttribute(`tabindex`,`0`),n.setAttribute(`role`,`button`);let r=()=>{let r=n.classList.contains(`sorted`)?e.dataset.dir===`asc`?`desc`:`asc`:n.dataset.dir||`desc`;e.dataset.dir=r,t(e,n,r)};n.addEventListener(`click`,r),n.addEventListener(`keydown`,e=>{(e.key===`Enter`||e.key===` `)&&(e.preventDefault(),r())})})});</script><!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="{&quot;token&quot;: &quot;762e95ac6c554a9aa575ff1d8cc88013&quot;}"></script><!-- End Cloudflare Web Analytics --></body></html>
