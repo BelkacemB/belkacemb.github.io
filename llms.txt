@@ -10,29 +10,29 @@
 
 ## Questions
 
-- [Who is the strongest team in Europe?](https://bayesfc.com/strongest-team-in-europe/): As of 25 September 2026, the market rates Arsenal the strongest club in Europe, ahead of Manchester City and Barcelona.
-- [Which is the strongest league in Europe?](https://bayesfc.com/strongest-league-in-europe/): As of 25 September 2026, the Premier League is the strongest league in Europe by the average rating of its clubs, ahead of La Liga and Ligue 1.
-- [Who will win the Premier League this season?](https://bayesfc.com/premier-league/title-race/): As of 25 September 2026, Manchester City is the most likely Premier League champion at 51%, ahead of Arsenal (45%) and Liverpool (3%).
-- [Who is the strongest team in the Premier League?](https://bayesfc.com/premier-league/strongest-team/): As of 25 September 2026, the market rates Arsenal the strongest side in the Premier League, ahead of Manchester City and Liverpool.
-- [Who will be relegated from the Premier League this season?](https://bayesfc.com/premier-league/relegation/): As of 25 September 2026, Hull is the most likely to be relegated from the Premier League at 75%, ahead of Coventry (73%) and Ipswich (42%).
-- [Who will win La Liga this season?](https://bayesfc.com/la-liga/title-race/): As of 25 September 2026, Barcelona is the most likely La Liga champion at 84%, ahead of Real Madrid (15%) and Atletico Madrid (1%).
-- [Who is the strongest team in La Liga?](https://bayesfc.com/la-liga/strongest-team/): As of 25 September 2026, the market rates Barcelona the strongest side in La Liga, ahead of Real Madrid and Atletico Madrid.
-- [Who will be relegated from La Liga this season?](https://bayesfc.com/la-liga/relegation/): As of 25 September 2026, Malaga is the most likely to be relegated from La Liga at 68%, ahead of Elche (44%) and Santander (34%).
-- [Who will win Serie A this season?](https://bayesfc.com/serie-a/title-race/): As of 25 September 2026, Inter is the most likely Serie A champion at 60%, ahead of Roma (16%) and Juventus (11%).
-- [Who is the strongest team in Serie A?](https://bayesfc.com/serie-a/strongest-team/): As of 25 September 2026, the market rates Inter the strongest side in Serie A, ahead of Juventus and Roma.
-- [Who will be relegated from Serie A this season?](https://bayesfc.com/serie-a/relegation/): As of 25 September 2026, Parma is the most likely to be relegated from Serie A at 68%, ahead of Monza (49%) and Lecce (44%).
-- [Who will win the Bundesliga this season?](https://bayesfc.com/bundesliga/title-race/): As of 25 September 2026, Bayern Munich is the most likely Bundesliga champion at 97%, ahead of Dortmund (3%) and Leverkusen (–).
-- [Who is the strongest team in the Bundesliga?](https://bayesfc.com/bundesliga/strongest-team/): As of 25 September 2026, the market rates Bayern Munich the strongest side in the Bundesliga, ahead of Dortmund and Leverkusen.
-- [Who will be relegated from the Bundesliga this season?](https://bayesfc.com/bundesliga/relegation/): As of 25 September 2026, Union Berlin is the most likely to be relegated from the Bundesliga at 44%, ahead of Paderborn (39%) and M'gladbach (32%).
-- [Who will win Ligue 1 this season?](https://bayesfc.com/ligue-1/title-race/): As of 25 September 2026, Paris SG is the most likely Ligue 1 champion at 95%, ahead of Monaco (3%) and Lille (1%).
-- [Who is the strongest team in Ligue 1?](https://bayesfc.com/ligue-1/strongest-team/): As of 25 September 2026, the market rates Paris SG the strongest side in Ligue 1, ahead of Lens and Lille.
-- [Who will be relegated from Ligue 1 this season?](https://bayesfc.com/ligue-1/relegation/): As of 25 September 2026, Le Havre is the most likely to be relegated from Ligue 1 at 53%, ahead of Le Mans (37%) and Troyes (34%).
-- [Who will win the Primeira Liga this season?](https://bayesfc.com/primeira-liga/title-race/): As of 25 September 2026, Benfica is the most likely Primeira Liga champion at 48%, ahead of Porto (37%) and Sp Lisbon (15%).
-- [Who is the strongest team in the Primeira Liga?](https://bayesfc.com/primeira-liga/strongest-team/): As of 25 September 2026, the market rates Benfica the strongest side in the Primeira Liga, ahead of Sp Lisbon and Porto.
-- [Who will be relegated from the Primeira Liga this season?](https://bayesfc.com/primeira-liga/relegation/): As of 25 September 2026, Casa Pia is the most likely to be relegated from the Primeira Liga at 58%, ahead of Nacional (33%) and Rio Ave (33%).
-- [Who will win the Eredivisie this season?](https://bayesfc.com/eredivisie/title-race/): As of 25 September 2026, PSV Eindhoven is the most likely Eredivisie champion at 59%, ahead of Feyenoord (19%) and Twente (9%).
-- [Who is the strongest team in the Eredivisie?](https://bayesfc.com/eredivisie/strongest-team/): As of 25 September 2026, the market rates PSV Eindhoven the strongest side in the Eredivisie, ahead of Feyenoord and Ajax.
-- [Who will be relegated from the Eredivisie this season?](https://bayesfc.com/eredivisie/relegation/): As of 25 September 2026, Willem II is the most likely to be relegated from the Eredivisie at 79%, ahead of Cambuur (57%) and Den Haag (32%).
+- [Who is the strongest team in Europe?](https://bayesfc.com/strongest-team-in-europe/): As of 26 September 2026, the market rates Arsenal the strongest club in Europe, ahead of Manchester City and Barcelona.
+- [Which is the strongest league in Europe?](https://bayesfc.com/strongest-league-in-europe/): As of 26 September 2026, the Premier League is the strongest league in Europe by the average rating of its clubs, ahead of La Liga and Ligue 1.
+- [Who will win the Premier League this season?](https://bayesfc.com/premier-league/title-race/): As of 26 September 2026, Manchester City is the most likely Premier League champion at 49%, ahead of Arsenal (47%) and Liverpool (3%).
+- [Who is the strongest team in the Premier League?](https://bayesfc.com/premier-league/strongest-team/): As of 26 September 2026, the market rates Arsenal the strongest side in the Premier League, ahead of Manchester City and Liverpool.
+- [Who will be relegated from the Premier League this season?](https://bayesfc.com/premier-league/relegation/): As of 26 September 2026, Hull is the most likely to be relegated from the Premier League at 75%, ahead of Coventry (72%) and Ipswich (42%).
+- [Who will win La Liga this season?](https://bayesfc.com/la-liga/title-race/): As of 26 September 2026, Barcelona is the most likely La Liga champion at 84%, ahead of Real Madrid (15%) and Atletico Madrid (1%).
+- [Who is the strongest team in La Liga?](https://bayesfc.com/la-liga/strongest-team/): As of 26 September 2026, the market rates Barcelona the strongest side in La Liga, ahead of Real Madrid and Atletico Madrid.
+- [Who will be relegated from La Liga this season?](https://bayesfc.com/la-liga/relegation/): As of 26 September 2026, Malaga is the most likely to be relegated from La Liga at 68%, ahead of Elche (44%) and Santander (35%).
+- [Who will win Serie A this season?](https://bayesfc.com/serie-a/title-race/): As of 26 September 2026, Inter is the most likely Serie A champion at 59%, ahead of Roma (17%) and Juventus (11%).
+- [Who is the strongest team in Serie A?](https://bayesfc.com/serie-a/strongest-team/): As of 26 September 2026, the market rates Inter the strongest side in Serie A, ahead of Juventus and Roma.
+- [Who will be relegated from Serie A this season?](https://bayesfc.com/serie-a/relegation/): As of 26 September 2026, Parma is the most likely to be relegated from Serie A at 68%, ahead of Monza (52%) and Venezia (43%).
+- [Who will win the Bundesliga this season?](https://bayesfc.com/bundesliga/title-race/): As of 26 September 2026, Bayern Munich is the most likely Bundesliga champion at 97%, ahead of Dortmund (3%) and Leverkusen (–).
+- [Who is the strongest team in the Bundesliga?](https://bayesfc.com/bundesliga/strongest-team/): As of 26 September 2026, the market rates Bayern Munich the strongest side in the Bundesliga, ahead of Dortmund and Leverkusen.
+- [Who will be relegated from the Bundesliga this season?](https://bayesfc.com/bundesliga/relegation/): As of 26 September 2026, Union Berlin is the most likely to be relegated from the Bundesliga at 44%, ahead of Paderborn (39%) and M'gladbach (32%).
+- [Who will win Ligue 1 this season?](https://bayesfc.com/ligue-1/title-race/): As of 26 September 2026, Paris SG is the most likely Ligue 1 champion at 95%, ahead of Monaco (3%) and Lille (1%).
+- [Who is the strongest team in Ligue 1?](https://bayesfc.com/ligue-1/strongest-team/): As of 26 September 2026, the market rates Paris SG the strongest side in Ligue 1, ahead of Lens and Lille.
+- [Who will be relegated from Ligue 1 this season?](https://bayesfc.com/ligue-1/relegation/): As of 26 September 2026, Le Havre is the most likely to be relegated from Ligue 1 at 53%, ahead of Le Mans (37%) and Troyes (33%).
+- [Who will win the Primeira Liga this season?](https://bayesfc.com/primeira-liga/title-race/): As of 26 September 2026, Benfica is the most likely Primeira Liga champion at 48%, ahead of Porto (37%) and Sp Lisbon (15%).
+- [Who is the strongest team in the Primeira Liga?](https://bayesfc.com/primeira-liga/strongest-team/): As of 26 September 2026, the market rates Benfica the strongest side in the Primeira Liga, ahead of Sp Lisbon and Porto.
+- [Who will be relegated from the Primeira Liga this season?](https://bayesfc.com/primeira-liga/relegation/): As of 26 September 2026, Casa Pia is the most likely to be relegated from the Primeira Liga at 58%, ahead of Nacional (33%) and Rio Ave (33%).
+- [Who will win the Eredivisie this season?](https://bayesfc.com/eredivisie/title-race/): As of 26 September 2026, PSV Eindhoven is the most likely Eredivisie champion at 60%, ahead of Feyenoord (18%) and Twente (8%).
+- [Who is the strongest team in the Eredivisie?](https://bayesfc.com/eredivisie/strongest-team/): As of 26 September 2026, the market rates PSV Eindhoven the strongest side in the Eredivisie, ahead of Feyenoord and Ajax.
+- [Who will be relegated from the Eredivisie this season?](https://bayesfc.com/eredivisie/relegation/): As of 26 September 2026, Willem II is the most likely to be relegated from the Eredivisie at 79%, ahead of Cambuur (57%) and Den Haag (32%).
 
 ## Writing
 
