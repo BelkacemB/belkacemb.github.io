@@ -1,11 +1,13 @@
 # Bayes FC
 
-> Team ratings from the betting market: daily attack, defence, and overall strength ratings for Europe's top football clubs, derived from closing betting-market prices and rebuilt every day.
+> Football power rankings from the betting market: daily attack, defence, and overall strength ratings for Europe's top football clubs, derived from closing betting-market prices and rebuilt every day.
+
+Bayes FC publishes market-based football power rankings for 7 European leagues: every club on one cross-league scale, plus a table per league, updated daily.
 
 ## Ratings
 
-- [Global cross-league ladder](https://bayesfc.com/): A cross-league ladder placing every European club on one comparable strength scale, rebuilt daily from betting-market closing prices.
-- [League ladders](https://bayesfc.com/leagues.html): Daily attack, defence, and overall strength ratings for every club in Europe's top football leagues, derived from closing betting-market prices and comparable within each league.
+- [Global cross-league ladder](https://bayesfc.com/): Market-based football power rankings: every European club on one comparable strength scale, rebuilt daily from betting-market closing prices.
+- [League ladders](https://bayesfc.com/leagues.html): Football power rankings for each of Europe's top leagues: daily attack, defence and overall strength ratings for every club, derived from closing betting-market prices.
 - [Club pages](https://bayesfc.com/club/): one page per rated club — its rating over time, recent results, upcoming fixtures and season projection (132 clubs).
 
 ## Questions
