@@ -12,6 +12,7 @@
 
 - [Who is the strongest team in Europe?](https://bayesfc.com/strongest-team-in-europe/): As of 27 September 2026, the market rates Arsenal the strongest club in Europe, ahead of Manchester City and Barcelona.
 - [Which is the strongest league in Europe?](https://bayesfc.com/strongest-league-in-europe/): As of 27 September 2026, the Premier League is the strongest league in Europe by the average rating of its clubs, ahead of La Liga and Ligue 1.
+- [Which league has the most open title race?](https://bayesfc.com/most-open-title-race/): Europe's top leagues ranked by how open the title race is: effective contenders from a daily season simulation, and the same for relegation.
 - [Who will win the Premier League this season?](https://bayesfc.com/premier-league/title-race/): As of 27 September 2026, Manchester City is the most likely Premier League champion at 49%, ahead of Arsenal (46%) and Liverpool (3%).
 - [Who is the strongest team in the Premier League?](https://bayesfc.com/premier-league/strongest-team/): As of 27 September 2026, the market rates Arsenal the strongest side in the Premier League, ahead of Manchester City and Liverpool.
 - [Who will be relegated from the Premier League this season?](https://bayesfc.com/premier-league/relegation/): As of 27 September 2026, Hull is the most likely to be relegated from the Premier League at 74%, ahead of Coventry (72%) and Ipswich (42%).
